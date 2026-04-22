@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mechbench-schema"
+version = "0.1.0"
+description = "Typed emission contract for the mechbench family. Pydantic models as single source of truth; generates TypeScript bindings for mechbench-ui."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Benji Smith", email = "benji@shaxpir.com" }]
+keywords = ["interpretability", "schema", "pydantic", "mechbench"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries",
+]
+dependencies = [
+    "pydantic>=2.6",
+]
+
+[project.optional-dependencies]
+codegen = ["datamodel-code-generator[typescript]>=0.25"]
+dev = ["pytest>=8", "ruff>=0.5"]
+
+[project.urls]
+Homepage = "https://github.com/mechbench/mechbench-schema"
+"Meta repo" = "https://github.com/mechbench/mechbench"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["mechbench_schema*"]
