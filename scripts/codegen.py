@@ -54,8 +54,12 @@ def collect_schema() -> dict:
     sys.path.insert(0, str(REPO / "src"))
     import mechbench_schema  # noqa: E402
 
+    # Prefer __schema_all__ if present (types that cross the wire); fall back
+    # to __all__ (the full Python API) otherwise.
+    names = getattr(mechbench_schema, "__schema_all__", mechbench_schema.__all__)
+
     defs: dict[str, dict] = {}
-    for name in mechbench_schema.__all__:
+    for name in names:
         obj = getattr(mechbench_schema, name)
         if inspect.isclass(obj) and issubclass(obj, BaseModel):
             sub = obj.model_json_schema(ref_template="#/$defs/{model}")

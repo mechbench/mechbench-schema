@@ -366,6 +366,18 @@ export type TokenLabels1 = string[] | null;
  */
 export type TopTokens = string[] | null;
 /**
+ * A mechbench object id. See mechbench/docs/IDENTITY_AND_NAMESPACING.md for the full grammar. Five categories: user-named (<owner>/<project>/.../<leaf>), canonical (~canonical/<area>/.../<leaf>), platform (~system/<area>/.../<leaf>), global content-hashed (~hash/<algo>:<digest>), and workspace-scoped content-hashed (<owner>/<project>/~hash/<algo>:<digest>).
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "MechbenchPath".
+ */
+export type MechbenchPath = string;
+/**
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "PathCategory".
+ */
+export type PathCategory = "user_named" | "canonical" | "platform" | "global_hash" | "scoped_hash";
+/**
  * Human-readable summary.
  */
 export type Description4 = string;

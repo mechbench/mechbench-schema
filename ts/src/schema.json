@@ -912,6 +912,20 @@
       "title": "LogitLensTrajectory",
       "type": "object"
     },
+    "MechbenchPath": {
+      "description": "A mechbench object id. See mechbench/docs/IDENTITY_AND_NAMESPACING.md for the full grammar. Five categories: user-named (<owner>/<project>/.../<leaf>), canonical (~canonical/<area>/.../<leaf>), platform (~system/<area>/.../<leaf>), global content-hashed (~hash/<algo>:<digest>), and workspace-scoped content-hashed (<owner>/<project>/~hash/<algo>:<digest>).",
+      "type": "string"
+    },
+    "PathCategory": {
+      "enum": [
+        "user_named",
+        "canonical",
+        "platform",
+        "global_hash",
+        "scoped_hash"
+      ],
+      "type": "string"
+    },
     "PerHeadBase": {
       "description": "Fields every per-head data file carries.\n\n`n_heads` is the query-side head count per attention block;\n`n_kv_heads` is the (smaller) KV-side count under grouped-query\nattention. Charts rendering per-head data typically iterate the full\nn_heads \u00d7 n_layers grid; some downstream analyses care about the\nKV-grouping (e.g. KV-sharing-boundary effects) and need n_kv_heads.",
       "properties": {

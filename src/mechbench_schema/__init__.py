@@ -16,6 +16,18 @@ from .attention_trace import (
     AttentionPattern,
     AttentionTraceData,
 )
+from .identity import (
+    InvalidPathError,
+    MechbenchPath,
+    ParsedPath,
+    PathCategory,
+    make_canonical_path,
+    make_global_hash_path,
+    make_platform_path,
+    make_scoped_hash_path,
+    make_user_path,
+    parse_path,
+)
 from .cluster_data import (
     Cluster,
     ClusterSet,
@@ -50,7 +62,7 @@ from .vector_data import (
     Vector,
 )
 
-__version__ = "0.7.0"
+__version__ = "0.8.0"
 
 __all__ = [
     # Per-layer data (records indexed by transformer layer)
@@ -84,4 +96,56 @@ __all__ = [
     "PerLayerPerPositionBase",
     "LogitLensTrajectory",
     "PerLayerPerPositionData",
+    # Identity / namespacing (see docs/IDENTITY_AND_NAMESPACING.md)
+    "MechbenchPath",
+    "ParsedPath",
+    "PathCategory",
+    "InvalidPathError",
+    "parse_path",
+    "make_user_path",
+    "make_canonical_path",
+    "make_platform_path",
+    "make_global_hash_path",
+    "make_scoped_hash_path",
+]
+
+# Names that should be emitted to TS via codegen. Subset of __all__ — excludes
+# Python-side utilities (functions, exceptions, non-Pydantic dataclasses)
+# that don't cross the wire.
+__schema_all__ = [
+    # Per-layer data
+    "PerLayerBase",
+    "LayerAggregates",
+    "AblationPrompt",
+    "LayerAblationPayload",
+    "DlaPrompt",
+    "DlaSweepPayload",
+    "ConvergenceRow",
+    "ConvergencePayload",
+    "PerLayerData",
+    # Per-head data
+    "PerHeadBase",
+    "PerHeadScalarGrid",
+    "PerHeadData",
+    # Attention-trace data
+    "AttentionPattern",
+    "AttentionTraceData",
+    # Vector data
+    "CapturedVector",
+    "SteeringVector",
+    "ProbeVector",
+    "CentroidVector",
+    "HookKind",
+    "Vector",
+    # Cluster data
+    "Cluster",
+    "ClusterSet",
+    # Per-(layer, position) data
+    "PerLayerPerPositionBase",
+    "LogitLensTrajectory",
+    "PerLayerPerPositionData",
+    # Identity (only the validated-string type crosses the wire; parsers and
+    # helpers are Python-side-only)
+    "MechbenchPath",
+    "PathCategory",
 ]
