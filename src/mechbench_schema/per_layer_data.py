@@ -1,21 +1,27 @@
-"""Chart-data envelope types.
+"""Per-layer data shapes.
 
-Shapes that mechbench-experiments' exporters write to JSON and mechbench-ui
-reads to render charts. Each top-level payload is a discriminable kind plus
-a common per-layer envelope; concrete chart components match on `kind` and
-consume the typed payload.
+Records that associate some measurement with each transformer layer.
+Today the measurements are numeric scalars per layer (ablation damage,
+DLA diffs, convergence peak values); the category naturally extends
+to per-layer vectors, matrices, categorical labels, and other
+per-layer quantities that future experiments will produce.
+
+This module organizes the schema by *domain axis* (records indexed by
+layer), not by consumer. The UI renders these as charts, but the same
+records could drive a CSV export, an agent's tool surface, or any
+other downstream renderer.
 
 The three kinds today:
 
-  layer_ablation   — step_02-style: per-layer damage (Δ log p) from ablating
-                      each layer in turn across a prompt battery.
+  layer_ablation   — step_02-style: per-layer damage (Δ log p) from
+                      ablating each layer in turn across a prompt battery.
   dla_sweep        — step_33-style: per-layer (target - distractor) logit
                       difference across a prompt battery.
   convergence      — cross-experiment summary: one peak_layer per source
                       experiment, with rich metadata per row.
 
 Add a new kind by (a) writing the payload model here, (b) adding its kind
-literal to ChartData, (c) exporting it from __init__.py, (d) re-running
+literal to PerLayerData, (c) exporting it from __init__.py, (d) re-running
 scripts/codegen.py.
 """
 
@@ -149,9 +155,9 @@ class ConvergencePayload(PerLayerBase):
     experiments: list[ConvergenceRow]
 
 
-# --- Discriminated union over all chart kinds --------------------------------
+# --- Discriminated union over all per-layer kinds ----------------------------
 
-ChartData = Annotated[
+PerLayerData = Annotated[
     Union[LayerAblationPayload, DlaSweepPayload, ConvergencePayload],
     Field(discriminator="kind"),
 ]

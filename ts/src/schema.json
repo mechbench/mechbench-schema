@@ -97,27 +97,6 @@
       "title": "AttentionPattern",
       "type": "object"
     },
-    "ChartData": {
-      "discriminator": {
-        "mapping": {
-          "convergence": "#/$defs/ConvergencePayload",
-          "dla_sweep": "#/$defs/DlaSweepPayload",
-          "layer_ablation": "#/$defs/LayerAblationPayload"
-        },
-        "propertyName": "kind"
-      },
-      "oneOf": [
-        {
-          "$ref": "#/$defs/LayerAblationPayload"
-        },
-        {
-          "$ref": "#/$defs/DlaSweepPayload"
-        },
-        {
-          "$ref": "#/$defs/ConvergencePayload"
-        }
-      ]
-    },
     "ConvergencePayload": {
       "description": "Cross-experiment summary: N source experiments, one peak layer each.",
       "properties": {
@@ -658,6 +637,27 @@
       ],
       "title": "PerLayerBase",
       "type": "object"
+    },
+    "PerLayerData": {
+      "discriminator": {
+        "mapping": {
+          "convergence": "#/$defs/ConvergencePayload",
+          "dla_sweep": "#/$defs/DlaSweepPayload",
+          "layer_ablation": "#/$defs/LayerAblationPayload"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/LayerAblationPayload"
+        },
+        {
+          "$ref": "#/$defs/DlaSweepPayload"
+        },
+        {
+          "$ref": "#/$defs/ConvergencePayload"
+        }
+      ]
     }
   },
   "$schema": "https://json-schema.org/draft/2020-12/schema",

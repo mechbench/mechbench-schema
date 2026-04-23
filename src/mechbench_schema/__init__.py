@@ -12,9 +12,8 @@ or rendered by a non-Python consumer, it belongs here. If the shape is only
 used as an in-memory container within a single repo, it does not.
 """
 
-from .chart_data import (
+from .per_layer_data import (
     AblationPrompt,
-    ChartData,
     ConvergencePayload,
     ConvergenceRow,
     DlaPrompt,
@@ -22,6 +21,7 @@ from .chart_data import (
     LayerAblationPayload,
     LayerAggregates,
     PerLayerBase,
+    PerLayerData,
 )
 from .records import (
     LensTrajectory,
@@ -33,7 +33,7 @@ from .records import (
 __version__ = "0.2.0"
 
 __all__ = [
-    # Chart-data envelope (mechbench-experiments → mechbench-ui)
+    # Per-layer data (records indexed by transformer layer)
     "PerLayerBase",
     "LayerAggregates",
     "AblationPrompt",
@@ -42,7 +42,7 @@ __all__ = [
     "DlaSweepPayload",
     "ConvergenceRow",
     "ConvergencePayload",
-    "ChartData",
+    "PerLayerData",
     # Emission records (cross-repo)
     "LensTrajectory",
     "LensStep",
