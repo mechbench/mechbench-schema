@@ -1,0 +1,660 @@
+{
+  "$defs": {
+    "AblationPrompt": {
+      "description": "One prompt's contribution to a per-layer ablation sweep.",
+      "properties": {
+        "baseline_logprob": {
+          "title": "Baseline Logprob",
+          "type": "number"
+        },
+        "damage": {
+          "description": "\u0394 log p per ablated layer; length equals n_layers. More negative = more damaging.",
+          "items": {
+            "type": "number"
+          },
+          "title": "Damage",
+          "type": "array"
+        },
+        "target": {
+          "description": "The model's own top-1 prediction on this prompt.",
+          "title": "Target",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "top1_id": {
+          "minimum": 0,
+          "title": "Top1 Id",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "text",
+        "target",
+        "top1_id",
+        "baseline_logprob",
+        "damage"
+      ],
+      "title": "AblationPrompt",
+      "type": "object"
+    },
+    "AttentionPattern": {
+      "description": "Post-softmax attention weights for one (layer, head) over a sequence.",
+      "properties": {
+        "head": {
+          "minimum": 0,
+          "title": "Head",
+          "type": "integer"
+        },
+        "layer": {
+          "minimum": 0,
+          "title": "Layer",
+          "type": "integer"
+        },
+        "n_keys": {
+          "minimum": 1,
+          "title": "N Keys",
+          "type": "integer"
+        },
+        "n_queries": {
+          "minimum": 1,
+          "title": "N Queries",
+          "type": "integer"
+        },
+        "token_labels": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional per-position decoded tokens, for axis labelling.",
+          "title": "Token Labels"
+        },
+        "weights": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Weights",
+          "type": "array"
+        }
+      },
+      "required": [
+        "layer",
+        "head",
+        "n_queries",
+        "n_keys",
+        "weights"
+      ],
+      "title": "AttentionPattern",
+      "type": "object"
+    },
+    "ChartData": {
+      "discriminator": {
+        "mapping": {
+          "convergence": "#/$defs/ConvergencePayload",
+          "dla_sweep": "#/$defs/DlaSweepPayload",
+          "layer_ablation": "#/$defs/LayerAblationPayload"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/LayerAblationPayload"
+        },
+        {
+          "$ref": "#/$defs/DlaSweepPayload"
+        },
+        {
+          "$ref": "#/$defs/ConvergencePayload"
+        }
+      ]
+    },
+    "ConvergencePayload": {
+      "description": "Cross-experiment summary: N source experiments, one peak layer each.",
+      "properties": {
+        "description": {
+          "description": "Human-readable summary; appears in chart footers.",
+          "title": "Description",
+          "type": "string"
+        },
+        "experiment": {
+          "description": "Stable script id, e.g. 'step_02_layer_ablation'.",
+          "title": "Experiment",
+          "type": "string"
+        },
+        "experiments": {
+          "items": {
+            "$ref": "#/$defs/ConvergenceRow"
+          },
+          "title": "Experiments",
+          "type": "array"
+        },
+        "global_layers": {
+          "description": "Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity.",
+          "items": {
+            "type": "integer"
+          },
+          "title": "Global Layers",
+          "type": "array"
+        },
+        "kind": {
+          "const": "convergence",
+          "default": "convergence",
+          "title": "Kind",
+          "type": "string"
+        },
+        "model": {
+          "description": "HuggingFace model id.",
+          "title": "Model",
+          "type": "string"
+        },
+        "n_layers": {
+          "description": "Total decoder-block count.",
+          "minimum": 1,
+          "title": "N Layers",
+          "type": "integer"
+        },
+        "pivot_layer": {
+          "description": "The layer the convergence centers on.",
+          "minimum": 0,
+          "title": "Pivot Layer",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "experiment",
+        "description",
+        "model",
+        "n_layers",
+        "pivot_layer",
+        "experiments"
+      ],
+      "title": "ConvergencePayload",
+      "type": "object"
+    },
+    "ConvergenceRow": {
+      "description": "One source experiment's contribution to a cross-experiment summary.",
+      "properties": {
+        "finding": {
+          "description": "The findings-doc id (e.g. '04', '33').",
+          "title": "Finding",
+          "type": "string"
+        },
+        "id": {
+          "description": "Stable experiment id.",
+          "title": "Id",
+          "type": "string"
+        },
+        "metric_name": {
+          "title": "Metric Name",
+          "type": "string"
+        },
+        "metric_units": {
+          "default": "",
+          "title": "Metric Units",
+          "type": "string"
+        },
+        "peak_description": {
+          "description": "One-paragraph description of the peak.",
+          "title": "Peak Description",
+          "type": "string"
+        },
+        "peak_layer": {
+          "description": "The layer this experiment most strongly fingerprinted.",
+          "minimum": 0,
+          "title": "Peak Layer",
+          "type": "integer"
+        },
+        "peak_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional numeric peak value (metric-specific).",
+          "title": "Peak Value"
+        },
+        "question": {
+          "description": "The natural-language question the experiment answered.",
+          "title": "Question",
+          "type": "string"
+        },
+        "second_layers": {
+          "description": "Secondary layers worth marking on the chart; rendered as smaller markers.",
+          "items": {
+            "type": "integer"
+          },
+          "title": "Second Layers",
+          "type": "array"
+        },
+        "source": {
+          "description": "The script or artifact this row summarizes.",
+          "title": "Source",
+          "type": "string"
+        },
+        "title": {
+          "description": "Human-readable title shown as the row label.",
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "finding",
+        "source",
+        "question",
+        "metric_name",
+        "peak_layer",
+        "peak_description"
+      ],
+      "title": "ConvergenceRow",
+      "type": "object"
+    },
+    "DlaPrompt": {
+      "description": "One prompt's contribution to a DLA sweep (target vs. distractor).",
+      "properties": {
+        "category": {
+          "default": "",
+          "description": "Optional prompt-set category tag (e.g. 'landmark', 'capital').",
+          "title": "Category",
+          "type": "string"
+        },
+        "diffs": {
+          "description": "(target \u2212 distractor) logit per layer; length equals n_layers.",
+          "items": {
+            "type": "number"
+          },
+          "title": "Diffs",
+          "type": "array"
+        },
+        "distractor": {
+          "title": "Distractor",
+          "type": "string"
+        },
+        "distractor_token_id": {
+          "minimum": 0,
+          "title": "Distractor Token Id",
+          "type": "integer"
+        },
+        "target": {
+          "title": "Target",
+          "type": "string"
+        },
+        "target_token_id": {
+          "minimum": 0,
+          "title": "Target Token Id",
+          "type": "integer"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "distractor",
+        "text",
+        "target_token_id",
+        "distractor_token_id",
+        "diffs"
+      ],
+      "title": "DlaPrompt",
+      "type": "object"
+    },
+    "DlaSweepPayload": {
+      "description": "step_33-shape: per-layer (target - distractor) DLA across a prompt battery.",
+      "properties": {
+        "aggregates": {
+          "$ref": "#/$defs/LayerAggregates"
+        },
+        "description": {
+          "description": "Human-readable summary; appears in chart footers.",
+          "title": "Description",
+          "type": "string"
+        },
+        "experiment": {
+          "description": "Stable script id, e.g. 'step_02_layer_ablation'.",
+          "title": "Experiment",
+          "type": "string"
+        },
+        "global_layers": {
+          "description": "Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity.",
+          "items": {
+            "type": "integer"
+          },
+          "title": "Global Layers",
+          "type": "array"
+        },
+        "kind": {
+          "const": "dla_sweep",
+          "default": "dla_sweep",
+          "title": "Kind",
+          "type": "string"
+        },
+        "model": {
+          "description": "HuggingFace model id.",
+          "title": "Model",
+          "type": "string"
+        },
+        "n_layers": {
+          "description": "Total decoder-block count.",
+          "minimum": 1,
+          "title": "N Layers",
+          "type": "integer"
+        },
+        "prompts": {
+          "items": {
+            "$ref": "#/$defs/DlaPrompt"
+          },
+          "title": "Prompts",
+          "type": "array"
+        }
+      },
+      "required": [
+        "experiment",
+        "description",
+        "model",
+        "n_layers",
+        "prompts",
+        "aggregates"
+      ],
+      "title": "DlaSweepPayload",
+      "type": "object"
+    },
+    "FactVectorRecord": {
+      "description": "A single fact-vector observation.\n\nA fact vector is a residual-stream vector captured at a specific\n(hook_point, prompt, position). It is the atomic unit of the geometry\nanalyses in mechbench-core.",
+      "properties": {
+        "hook_point": {
+          "description": "The hook name where this vector was captured, e.g. 'blocks.23.resid_post'.",
+          "title": "Hook Point",
+          "type": "string"
+        },
+        "kind": {
+          "default": "residual",
+          "enum": [
+            "residual",
+            "attn_out",
+            "mlp_out",
+            "gate_out",
+            "other"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional categorical label, e.g. 'capital-city', 'past-tense'.",
+          "title": "Label"
+        },
+        "layer": {
+          "minimum": 0,
+          "title": "Layer",
+          "type": "integer"
+        },
+        "position": {
+          "minimum": 0,
+          "title": "Position",
+          "type": "integer"
+        },
+        "prompt_id": {
+          "title": "Prompt Id",
+          "type": "string"
+        },
+        "values": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Values",
+          "type": "array"
+        }
+      },
+      "required": [
+        "hook_point",
+        "prompt_id",
+        "position",
+        "layer",
+        "values"
+      ],
+      "title": "FactVectorRecord",
+      "type": "object"
+    },
+    "LayerAblationPayload": {
+      "description": "step_02-shape: per-layer ablation damage across a prompt battery.",
+      "properties": {
+        "aggregates": {
+          "$ref": "#/$defs/LayerAggregates"
+        },
+        "description": {
+          "description": "Human-readable summary; appears in chart footers.",
+          "title": "Description",
+          "type": "string"
+        },
+        "experiment": {
+          "description": "Stable script id, e.g. 'step_02_layer_ablation'.",
+          "title": "Experiment",
+          "type": "string"
+        },
+        "global_layers": {
+          "description": "Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity.",
+          "items": {
+            "type": "integer"
+          },
+          "title": "Global Layers",
+          "type": "array"
+        },
+        "kind": {
+          "const": "layer_ablation",
+          "default": "layer_ablation",
+          "title": "Kind",
+          "type": "string"
+        },
+        "model": {
+          "description": "HuggingFace model id.",
+          "title": "Model",
+          "type": "string"
+        },
+        "n_layers": {
+          "description": "Total decoder-block count.",
+          "minimum": 1,
+          "title": "N Layers",
+          "type": "integer"
+        },
+        "prompts": {
+          "items": {
+            "$ref": "#/$defs/AblationPrompt"
+          },
+          "title": "Prompts",
+          "type": "array"
+        }
+      },
+      "required": [
+        "experiment",
+        "description",
+        "model",
+        "n_layers",
+        "prompts",
+        "aggregates"
+      ],
+      "title": "LayerAblationPayload",
+      "type": "object"
+    },
+    "LayerAggregates": {
+      "description": "Per-layer summary statistics across a prompt battery.",
+      "properties": {
+        "mean": {
+          "description": "Per-layer mean; length equals n_layers.",
+          "items": {
+            "type": "number"
+          },
+          "title": "Mean",
+          "type": "array"
+        },
+        "median": {
+          "description": "Per-layer median; length equals n_layers.",
+          "items": {
+            "type": "number"
+          },
+          "title": "Median",
+          "type": "array"
+        }
+      },
+      "required": [
+        "mean",
+        "median"
+      ],
+      "title": "LayerAggregates",
+      "type": "object"
+    },
+    "LensStep": {
+      "description": "One (layer, position) entry of a logit-lens trajectory.",
+      "properties": {
+        "layer": {
+          "description": "0-indexed transformer layer.",
+          "minimum": 0,
+          "title": "Layer",
+          "type": "integer"
+        },
+        "logprob": {
+          "description": "Log-probability of the target token at this (layer, position).",
+          "title": "Logprob",
+          "type": "number"
+        },
+        "position": {
+          "description": "0-indexed token position.",
+          "minimum": 0,
+          "title": "Position",
+          "type": "integer"
+        },
+        "rank": {
+          "description": "Rank of the target token under the lens readout.",
+          "minimum": 0,
+          "title": "Rank",
+          "type": "integer"
+        },
+        "top_token": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The model's argmax token under the lens at this (layer, position). Optional.",
+          "title": "Top Token"
+        }
+      },
+      "required": [
+        "layer",
+        "position",
+        "rank",
+        "logprob"
+      ],
+      "title": "LensStep",
+      "type": "object"
+    },
+    "LensTrajectory": {
+      "description": "A logit-lens trajectory over layers and (optionally) positions.",
+      "properties": {
+        "metadata": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Metadata",
+          "type": "object"
+        },
+        "prompt_id": {
+          "description": "Identifier of the source prompt.",
+          "title": "Prompt Id",
+          "type": "string"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/$defs/LensStep"
+          },
+          "title": "Steps",
+          "type": "array"
+        },
+        "target_token": {
+          "description": "The token whose rank/logprob is being tracked.",
+          "title": "Target Token",
+          "type": "string"
+        }
+      },
+      "required": [
+        "prompt_id",
+        "target_token",
+        "steps"
+      ],
+      "title": "LensTrajectory",
+      "type": "object"
+    },
+    "PerLayerBase": {
+      "description": "Fields every per-layer chart-data file carries.\n\n`experiment` is the stable id of the source script (matches the Python\nmodule name). `model` is the HuggingFace model id. `n_layers` and\n`global_layers` describe the model's layer structure so charts can\nadapt across model variants (E4B: 42, E2B: 30, ...).",
+      "properties": {
+        "description": {
+          "description": "Human-readable summary; appears in chart footers.",
+          "title": "Description",
+          "type": "string"
+        },
+        "experiment": {
+          "description": "Stable script id, e.g. 'step_02_layer_ablation'.",
+          "title": "Experiment",
+          "type": "string"
+        },
+        "global_layers": {
+          "description": "Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity.",
+          "items": {
+            "type": "integer"
+          },
+          "title": "Global Layers",
+          "type": "array"
+        },
+        "model": {
+          "description": "HuggingFace model id.",
+          "title": "Model",
+          "type": "string"
+        },
+        "n_layers": {
+          "description": "Total decoder-block count.",
+          "minimum": 1,
+          "title": "N Layers",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "experiment",
+        "description",
+        "model",
+        "n_layers"
+      ],
+      "title": "PerLayerBase",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "mechbench-schema"
+}
