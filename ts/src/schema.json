@@ -139,7 +139,7 @@
           "type": "array"
         },
         "global_layers": {
-          "description": "Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity.",
+          "description": "Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.",
           "items": {
             "type": "integer"
           },
@@ -175,6 +175,7 @@
         "description",
         "model",
         "n_layers",
+        "global_layers",
         "pivot_layer",
         "experiments"
       ],
@@ -233,7 +234,7 @@
           "type": "string"
         },
         "second_layers": {
-          "description": "Secondary layers worth marking on the chart; rendered as smaller markers.",
+          "description": "Secondary layers worth marking on the chart; rendered as smaller markers. Pass an empty list if the experiment has a single peak.",
           "items": {
             "type": "integer"
           },
@@ -259,7 +260,8 @@
         "question",
         "metric_name",
         "peak_layer",
-        "peak_description"
+        "peak_description",
+        "second_layers"
       ],
       "title": "ConvergenceRow",
       "type": "object"
@@ -268,8 +270,7 @@
       "description": "One prompt's contribution to a DLA sweep (target vs. distractor).",
       "properties": {
         "category": {
-          "default": "",
-          "description": "Optional prompt-set category tag (e.g. 'landmark', 'capital').",
+          "description": "Prompt-set category tag (e.g. 'landmark', 'capital'). Pass an empty string when the prompt set has no categorical metadata.",
           "title": "Category",
           "type": "string"
         },
@@ -310,6 +311,7 @@
         "text",
         "target_token_id",
         "distractor_token_id",
+        "category",
         "diffs"
       ],
       "title": "DlaPrompt",
@@ -332,7 +334,7 @@
           "type": "string"
         },
         "global_layers": {
-          "description": "Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity.",
+          "description": "Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.",
           "items": {
             "type": "integer"
           },
@@ -369,6 +371,7 @@
         "description",
         "model",
         "n_layers",
+        "global_layers",
         "prompts",
         "aggregates"
       ],
@@ -457,7 +460,7 @@
           "type": "string"
         },
         "global_layers": {
-          "description": "Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity.",
+          "description": "Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.",
           "items": {
             "type": "integer"
           },
@@ -494,6 +497,7 @@
         "description",
         "model",
         "n_layers",
+        "global_layers",
         "prompts",
         "aggregates"
       ],
@@ -626,7 +630,7 @@
           "type": "string"
         },
         "global_layers": {
-          "description": "Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity.",
+          "description": "Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.",
           "items": {
             "type": "integer"
           },
@@ -649,7 +653,8 @@
         "experiment",
         "description",
         "model",
-        "n_layers"
+        "n_layers",
+        "global_layers"
       ],
       "title": "PerLayerBase",
       "type": "object"

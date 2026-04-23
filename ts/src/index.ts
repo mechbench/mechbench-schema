@@ -2,4 +2,5 @@
 // by scripts/codegen.py at the repo root. Edit the Pydantic models in
 // src/mechbench_schema/ and re-run codegen instead.
 
-export * from "./generated";
+// Node ESM requires the .js extension on relative imports, even in TS source.
+export * from "./generated.js";

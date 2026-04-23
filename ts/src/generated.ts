@@ -43,7 +43,7 @@ export type Description = string;
  */
 export type Experiment = string;
 /**
- * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity.
+ * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
 export type GlobalLayers = number[];
 export type Kind = "layer_ablation";
@@ -65,7 +65,7 @@ export type Description1 = string;
  */
 export type Experiment1 = string;
 /**
- * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity.
+ * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
 export type GlobalLayers1 = number[];
 export type Kind1 = "dla_sweep";
@@ -78,7 +78,7 @@ export type Model1 = string;
  */
 export type NLayers1 = number;
 /**
- * Optional prompt-set category tag (e.g. 'landmark', 'capital').
+ * Prompt-set category tag (e.g. 'landmark', 'capital'). Pass an empty string when the prompt set has no categorical metadata.
  */
 export type Category = string;
 /**
@@ -126,7 +126,7 @@ export type PeakValue = number | null;
  */
 export type Question = string;
 /**
- * Secondary layers worth marking on the chart; rendered as smaller markers.
+ * Secondary layers worth marking on the chart; rendered as smaller markers. Pass an empty list if the experiment has a single peak.
  */
 export type SecondLayers = number[];
 /**
@@ -139,7 +139,7 @@ export type Source = string;
 export type Title = string;
 export type Experiments = ConvergenceRow[];
 /**
- * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity.
+ * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
 export type GlobalLayers2 = number[];
 export type Kind2 = "convergence";
@@ -206,7 +206,7 @@ export type Description3 = string;
  */
 export type Experiment3 = string;
 /**
- * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity.
+ * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
 export type GlobalLayers3 = number[];
 /**
@@ -258,7 +258,7 @@ export interface LayerAblationPayload {
   aggregates: LayerAggregates;
   description: Description;
   experiment: Experiment;
-  global_layers?: GlobalLayers;
+  global_layers: GlobalLayers;
   kind?: Kind;
   model: Model;
   n_layers: NLayers;
@@ -284,7 +284,7 @@ export interface DlaSweepPayload {
   aggregates: LayerAggregates;
   description: Description1;
   experiment: Experiment1;
-  global_layers?: GlobalLayers1;
+  global_layers: GlobalLayers1;
   kind?: Kind1;
   model: Model1;
   n_layers: NLayers1;
@@ -297,7 +297,7 @@ export interface DlaSweepPayload {
  * via the `definition` "DlaPrompt".
  */
 export interface DlaPrompt {
-  category?: Category;
+  category: Category;
   diffs: Diffs;
   distractor: Distractor;
   distractor_token_id: DistractorTokenId;
@@ -315,7 +315,7 @@ export interface ConvergencePayload {
   description: Description2;
   experiment: Experiment2;
   experiments: Experiments;
-  global_layers?: GlobalLayers2;
+  global_layers: GlobalLayers2;
   kind?: Kind2;
   model: Model2;
   n_layers: NLayers2;
@@ -336,7 +336,7 @@ export interface ConvergenceRow {
   peak_layer: PeakLayer;
   peak_value?: PeakValue;
   question: Question;
-  second_layers?: SecondLayers;
+  second_layers: SecondLayers;
   source: Source;
   title: Title;
 }
@@ -401,7 +401,7 @@ export interface Metadata {
 export interface PerLayerBase {
   description: Description3;
   experiment: Experiment3;
-  global_layers?: GlobalLayers3;
+  global_layers: GlobalLayers3;
   model: Model3;
   n_layers: NLayers3;
 }

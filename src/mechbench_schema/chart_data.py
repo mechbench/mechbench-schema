@@ -42,11 +42,13 @@ class PerLayerBase(BaseModel):
     model: str = Field(..., description="HuggingFace model id.")
     n_layers: int = Field(..., ge=1, description="Total decoder-block count.")
     global_layers: list[int] = Field(
-        default_factory=list,
+        ...,
         description=(
             "Layer indices to be visually highlighted. For Gemma 4 these are "
             "the global-attention layers; other architectures may use this for "
-            "fresh-KV / MoE-routing / whatever architectural non-uniformity."
+            "fresh-KV / MoE-routing / whatever architectural non-uniformity. "
+            "Pass an empty list if the architecture has no layers worth "
+            "highlighting."
         ),
     )
 
@@ -92,8 +94,11 @@ class DlaPrompt(BaseModel):
     target_token_id: int = Field(..., ge=0)
     distractor_token_id: int = Field(..., ge=0)
     category: str = Field(
-        "",
-        description="Optional prompt-set category tag (e.g. 'landmark', 'capital').",
+        ...,
+        description=(
+            "Prompt-set category tag (e.g. 'landmark', 'capital'). Pass an "
+            "empty string when the prompt set has no categorical metadata."
+        ),
     )
     diffs: list[float] = Field(
         ...,
@@ -128,8 +133,11 @@ class ConvergenceRow(BaseModel):
     )
     peak_description: str = Field(..., description="One-paragraph description of the peak.")
     second_layers: list[int] = Field(
-        default_factory=list,
-        description="Secondary layers worth marking on the chart; rendered as smaller markers.",
+        ...,
+        description=(
+            "Secondary layers worth marking on the chart; rendered as smaller "
+            "markers. Pass an empty list if the experiment has a single peak."
+        ),
     )
 
 
