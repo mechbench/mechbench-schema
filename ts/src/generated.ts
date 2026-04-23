@@ -309,67 +309,62 @@ export type Model2 = string;
 export type NLayers2 = number;
 export type Prompts1 = AblationPrompt[];
 /**
- * 0-indexed transformer layer.
- */
-export type Layer2 = number;
-/**
- * Log-probability of the target token at this (layer, position).
- */
-export type Logprob = number;
-/**
- * 0-indexed token position.
- */
-export type Position1 = number;
-/**
- * Rank of the target token under the lens readout.
- */
-export type Rank = number;
-/**
- * The model's argmax token under the lens at this (layer, position). Optional.
- */
-export type TopToken = string | null;
-/**
- * Identifier of the source prompt.
- */
-export type PromptId1 = string;
-export type Steps = LensStep[];
-/**
- * The token whose rank/logprob is being tracked.
- */
-export type TargetToken = string;
-/**
  * Human-readable summary.
  */
 export type Description3 = string;
 /**
- * Stable script id, e.g. 'step_32_per_head_dla'.
+ * Stable script id, e.g. 'step_01_logit_lens_batch'.
  */
 export type Experiment3 = string;
 /**
- * Layer indices to be visually highlighted. Same semantics as the per_layer_data.PerLayerBase field.
+ * Layer indices to be visually highlighted. Same semantics as the other domain-axis modules. Empty list if the architecture has no layers worth highlighting.
  */
 export type GlobalLayers3 = number[];
+export type Kind4 = "logit_lens_trajectory";
+/**
+ * Log-probability of target_token under the lens at each (layer, position). Flat row-major, length n_layers * seq_len.
+ */
+export type Logprobs = number[];
 /**
  * HuggingFace model id.
  */
 export type Model3 = string;
 /**
- * Query-side attention heads per block.
- */
-export type NHeads = number;
-/**
- * KV-side attention heads per block (GQA).
- */
-export type NKvHeads = number;
-/**
  * Total decoder-block count.
  */
 export type NLayers3 = number;
 /**
- * This interface was referenced by `MechbenchSchema`'s JSON-Schema
- * via the `definition` "PerHeadData".
+ * Identifier of the source prompt this record was computed against.
  */
-export type PerHeadData = PerHeadScalarGrid;
+export type PromptId1 = string;
+/**
+ * The raw prompt text.
+ */
+export type PromptText = string;
+/**
+ * Rank of target_token under the lens at each (layer, position). Flat row-major, length n_layers * seq_len. 0 == top-1.
+ */
+export type Ranks = number[];
+/**
+ * Input sequence length.
+ */
+export type SeqLen = number;
+/**
+ * The token whose rank and logprob are being tracked.
+ */
+export type TargetToken = string;
+/**
+ * Tokenizer-specific id of target_token.
+ */
+export type TargetTokenId1 = number;
+/**
+ * Optional per-position decoded tokens. Length equals seq_len when present. Useful for axis labelling. Absent when the positional labels aren't meaningful (e.g. for padding-heavy batched input).
+ */
+export type TokenLabels1 = string[] | null;
+/**
+ * Optional per-(layer, position) argmax token under the lens. Flat row-major when present, length n_layers * seq_len. Useful for narrating layer-by-layer condensation of the model's prediction.
+ */
+export type TopTokens = string[] | null;
 /**
  * Human-readable summary.
  */
@@ -382,7 +377,40 @@ export type Experiment4 = string;
  * Layer indices to be visually highlighted. Same semantics as the per_layer_data.PerLayerBase field.
  */
 export type GlobalLayers4 = number[];
-export type Kind4 = "per_head_scalar_grid";
+/**
+ * HuggingFace model id.
+ */
+export type Model4 = string;
+/**
+ * Query-side attention heads per block.
+ */
+export type NHeads = number;
+/**
+ * KV-side attention heads per block (GQA).
+ */
+export type NKvHeads = number;
+/**
+ * Total decoder-block count.
+ */
+export type NLayers4 = number;
+/**
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "PerHeadData".
+ */
+export type PerHeadData = PerHeadScalarGrid;
+/**
+ * Human-readable summary.
+ */
+export type Description5 = string;
+/**
+ * Stable script id, e.g. 'step_32_per_head_dla'.
+ */
+export type Experiment5 = string;
+/**
+ * Layer indices to be visually highlighted. Same semantics as the per_layer_data.PerLayerBase field.
+ */
+export type GlobalLayers5 = number[];
+export type Kind5 = "per_head_scalar_grid";
 /**
  * What the scalars measure (e.g. 'DLA contribution').
  */
@@ -394,7 +422,7 @@ export type MetricUnits1 = string;
 /**
  * HuggingFace model id.
  */
-export type Model4 = string;
+export type Model5 = string;
 /**
  * Query-side attention heads per block.
  */
@@ -406,7 +434,7 @@ export type NKvHeads1 = number;
 /**
  * Total decoder-block count.
  */
-export type NLayers4 = number;
+export type NLayers5 = number;
 /**
  * Row-major [n_layers * n_heads] flat list. values[layer * n_heads + head] is the scalar for (layer, head).
  */
@@ -414,28 +442,69 @@ export type Values4 = number[];
 /**
  * Human-readable summary; appears in chart footers.
  */
-export type Description5 = string;
+export type Description6 = string;
 /**
  * Stable script id, e.g. 'step_02_layer_ablation'.
  */
-export type Experiment5 = string;
+export type Experiment6 = string;
 /**
  * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
-export type GlobalLayers5 = number[];
+export type GlobalLayers6 = number[];
 /**
  * HuggingFace model id.
  */
-export type Model5 = string;
+export type Model6 = string;
 /**
  * Total decoder-block count.
  */
-export type NLayers5 = number;
+export type NLayers6 = number;
 /**
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "PerLayerData".
  */
 export type PerLayerData = LayerAblationPayload | DlaSweepPayload | ConvergencePayload;
+/**
+ * Human-readable summary.
+ */
+export type Description7 = string;
+/**
+ * Stable script id, e.g. 'step_01_logit_lens_batch'.
+ */
+export type Experiment7 = string;
+/**
+ * Layer indices to be visually highlighted. Same semantics as the other domain-axis modules. Empty list if the architecture has no layers worth highlighting.
+ */
+export type GlobalLayers7 = number[];
+/**
+ * HuggingFace model id.
+ */
+export type Model7 = string;
+/**
+ * Total decoder-block count.
+ */
+export type NLayers7 = number;
+/**
+ * Identifier of the source prompt this record was computed against.
+ */
+export type PromptId2 = string;
+/**
+ * The raw prompt text.
+ */
+export type PromptText1 = string;
+/**
+ * Input sequence length.
+ */
+export type SeqLen1 = number;
+/**
+ * Optional per-position decoded tokens. Length equals seq_len when present. Useful for axis labelling. Absent when the positional labels aren't meaningful (e.g. for padding-heavy batched input).
+ */
+export type TokenLabels2 = string[] | null;
+/**
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "PerLayerPerPositionData".
+ */
+export type PerLayerPerPositionData = LogitLensTrajectory;
 /**
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "Vector".
@@ -726,32 +795,41 @@ export interface LayerAblationPayload {
   prompts: Prompts1;
 }
 /**
- * One (layer, position) entry of a logit-lens trajectory.
+ * A logit-lens trajectory over layers and positions.
+ *
+ * Projects the residual stream at each (layer, position) through the
+ * model's output head and records the target token's rank and
+ * log-probability. Optionally records the argmax token at each
+ * position ("top_tokens"), useful for narrating a trajectory.
+ *
+ * The three flat lists (`ranks`, `logprobs`, optionally `top_tokens`)
+ * are all row-major `[n_layers * seq_len]`: index `layer * seq_len +
+ * position`. Consumers reshape at ingest.
+ *
+ * Replaces the old records.LensStep + records.LensTrajectory pair,
+ * which modeled one step per entry and paid struct-per-entry
+ * overhead. The flat-list shape is tighter on the wire and matches
+ * the convention used by the other per-layer and per-head modules.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
- * via the `definition` "LensStep".
+ * via the `definition` "LogitLensTrajectory".
  */
-export interface LensStep {
-  layer: Layer2;
-  logprob: Logprob;
-  position: Position1;
-  rank: Rank;
-  top_token?: TopToken;
-}
-/**
- * A logit-lens trajectory over layers and (optionally) positions.
- *
- * This interface was referenced by `MechbenchSchema`'s JSON-Schema
- * via the `definition` "LensTrajectory".
- */
-export interface LensTrajectory {
-  metadata?: Metadata6;
+export interface LogitLensTrajectory {
+  description: Description3;
+  experiment: Experiment3;
+  global_layers: GlobalLayers3;
+  kind?: Kind4;
+  logprobs: Logprobs;
+  model: Model3;
+  n_layers: NLayers3;
   prompt_id: PromptId1;
-  steps: Steps;
+  prompt_text: PromptText;
+  ranks: Ranks;
+  seq_len: SeqLen;
   target_token: TargetToken;
-}
-export interface Metadata6 {
-  [k: string]: string;
+  target_token_id: TargetTokenId1;
+  token_labels?: TokenLabels1;
+  top_tokens?: TopTokens;
 }
 /**
  * Fields every per-head data file carries.
@@ -766,13 +844,13 @@ export interface Metadata6 {
  * via the `definition` "PerHeadBase".
  */
 export interface PerHeadBase {
-  description: Description3;
-  experiment: Experiment3;
-  global_layers: GlobalLayers3;
-  model: Model3;
+  description: Description4;
+  experiment: Experiment4;
+  global_layers: GlobalLayers4;
+  model: Model4;
   n_heads: NHeads;
   n_kv_heads: NKvHeads;
-  n_layers: NLayers3;
+  n_layers: NLayers4;
 }
 /**
  * [n_layers × n_heads] grid of scalar values, one per head.
@@ -791,16 +869,16 @@ export interface PerHeadBase {
  * via the `definition` "PerHeadScalarGrid".
  */
 export interface PerHeadScalarGrid {
-  description: Description4;
-  experiment: Experiment4;
-  global_layers: GlobalLayers4;
-  kind?: Kind4;
+  description: Description5;
+  experiment: Experiment5;
+  global_layers: GlobalLayers5;
+  kind?: Kind5;
   metric_name: MetricName1;
   metric_units: MetricUnits1;
-  model: Model4;
+  model: Model5;
   n_heads: NHeads1;
   n_kv_heads: NKvHeads1;
-  n_layers: NLayers4;
+  n_layers: NLayers5;
   values: Values4;
 }
 /**
@@ -815,9 +893,26 @@ export interface PerHeadScalarGrid {
  * via the `definition` "PerLayerBase".
  */
 export interface PerLayerBase {
-  description: Description5;
-  experiment: Experiment5;
-  global_layers: GlobalLayers5;
-  model: Model5;
-  n_layers: NLayers5;
+  description: Description6;
+  experiment: Experiment6;
+  global_layers: GlobalLayers6;
+  model: Model6;
+  n_layers: NLayers6;
+}
+/**
+ * Fields every per-(layer, position) record carries.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "PerLayerPerPositionBase".
+ */
+export interface PerLayerPerPositionBase {
+  description: Description7;
+  experiment: Experiment7;
+  global_layers: GlobalLayers7;
+  model: Model7;
+  n_layers: NLayers7;
+  prompt_id: PromptId2;
+  prompt_text: PromptText1;
+  seq_len: SeqLen1;
+  token_labels?: TokenLabels2;
 }

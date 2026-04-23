@@ -781,89 +781,135 @@
       "title": "LayerAggregates",
       "type": "object"
     },
-    "LensStep": {
-      "description": "One (layer, position) entry of a logit-lens trajectory.",
+    "LogitLensTrajectory": {
+      "description": "A logit-lens trajectory over layers and positions.\n\nProjects the residual stream at each (layer, position) through the\nmodel's output head and records the target token's rank and\nlog-probability. Optionally records the argmax token at each\nposition (\"top_tokens\"), useful for narrating a trajectory.\n\nThe three flat lists (`ranks`, `logprobs`, optionally `top_tokens`)\nare all row-major `[n_layers * seq_len]`: index `layer * seq_len +\nposition`. Consumers reshape at ingest.\n\nReplaces the old records.LensStep + records.LensTrajectory pair,\nwhich modeled one step per entry and paid struct-per-entry\noverhead. The flat-list shape is tighter on the wire and matches\nthe convention used by the other per-layer and per-head modules.",
       "properties": {
-        "layer": {
-          "description": "0-indexed transformer layer.",
-          "minimum": 0,
-          "title": "Layer",
+        "description": {
+          "description": "Human-readable summary.",
+          "title": "Description",
+          "type": "string"
+        },
+        "experiment": {
+          "description": "Stable script id, e.g. 'step_01_logit_lens_batch'.",
+          "title": "Experiment",
+          "type": "string"
+        },
+        "global_layers": {
+          "description": "Layer indices to be visually highlighted. Same semantics as the other domain-axis modules. Empty list if the architecture has no layers worth highlighting.",
+          "items": {
+            "type": "integer"
+          },
+          "title": "Global Layers",
+          "type": "array"
+        },
+        "kind": {
+          "const": "logit_lens_trajectory",
+          "default": "logit_lens_trajectory",
+          "title": "Kind",
+          "type": "string"
+        },
+        "logprobs": {
+          "description": "Log-probability of target_token under the lens at each (layer, position). Flat row-major, length n_layers * seq_len.",
+          "items": {
+            "type": "number"
+          },
+          "title": "Logprobs",
+          "type": "array"
+        },
+        "model": {
+          "description": "HuggingFace model id.",
+          "title": "Model",
+          "type": "string"
+        },
+        "n_layers": {
+          "description": "Total decoder-block count.",
+          "minimum": 1,
+          "title": "N Layers",
           "type": "integer"
         },
-        "logprob": {
-          "description": "Log-probability of the target token at this (layer, position).",
-          "title": "Logprob",
-          "type": "number"
+        "prompt_id": {
+          "description": "Identifier of the source prompt this record was computed against.",
+          "title": "Prompt Id",
+          "type": "string"
         },
-        "position": {
-          "description": "0-indexed token position.",
-          "minimum": 0,
-          "title": "Position",
+        "prompt_text": {
+          "description": "The raw prompt text.",
+          "title": "Prompt Text",
+          "type": "string"
+        },
+        "ranks": {
+          "description": "Rank of target_token under the lens at each (layer, position). Flat row-major, length n_layers * seq_len. 0 == top-1.",
+          "items": {
+            "type": "integer"
+          },
+          "title": "Ranks",
+          "type": "array"
+        },
+        "seq_len": {
+          "description": "Input sequence length.",
+          "minimum": 1,
+          "title": "Seq Len",
           "type": "integer"
         },
-        "rank": {
-          "description": "Rank of the target token under the lens readout.",
+        "target_token": {
+          "description": "The token whose rank and logprob are being tracked.",
+          "title": "Target Token",
+          "type": "string"
+        },
+        "target_token_id": {
+          "description": "Tokenizer-specific id of target_token.",
           "minimum": 0,
-          "title": "Rank",
+          "title": "Target Token Id",
           "type": "integer"
         },
-        "top_token": {
+        "token_labels": {
           "anyOf": [
             {
-              "type": "string"
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
             },
             {
               "type": "null"
             }
           ],
           "default": null,
-          "description": "The model's argmax token under the lens at this (layer, position). Optional.",
-          "title": "Top Token"
+          "description": "Optional per-position decoded tokens. Length equals seq_len when present. Useful for axis labelling. Absent when the positional labels aren't meaningful (e.g. for padding-heavy batched input).",
+          "title": "Token Labels"
+        },
+        "top_tokens": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional per-(layer, position) argmax token under the lens. Flat row-major when present, length n_layers * seq_len. Useful for narrating layer-by-layer condensation of the model's prediction.",
+          "title": "Top Tokens"
         }
       },
       "required": [
-        "layer",
-        "position",
-        "rank",
-        "logprob"
-      ],
-      "title": "LensStep",
-      "type": "object"
-    },
-    "LensTrajectory": {
-      "description": "A logit-lens trajectory over layers and (optionally) positions.",
-      "properties": {
-        "metadata": {
-          "additionalProperties": {
-            "type": "string"
-          },
-          "title": "Metadata",
-          "type": "object"
-        },
-        "prompt_id": {
-          "description": "Identifier of the source prompt.",
-          "title": "Prompt Id",
-          "type": "string"
-        },
-        "steps": {
-          "items": {
-            "$ref": "#/$defs/LensStep"
-          },
-          "title": "Steps",
-          "type": "array"
-        },
-        "target_token": {
-          "description": "The token whose rank/logprob is being tracked.",
-          "title": "Target Token",
-          "type": "string"
-        }
-      },
-      "required": [
+        "experiment",
+        "description",
+        "model",
+        "n_layers",
+        "seq_len",
+        "global_layers",
         "prompt_id",
+        "prompt_text",
         "target_token",
-        "steps"
+        "target_token_id",
+        "ranks",
+        "logprobs"
       ],
-      "title": "LensTrajectory",
+      "title": "LogitLensTrajectory",
       "type": "object"
     },
     "PerHeadBase": {
@@ -1081,6 +1127,97 @@
         },
         {
           "$ref": "#/$defs/ConvergencePayload"
+        }
+      ]
+    },
+    "PerLayerPerPositionBase": {
+      "description": "Fields every per-(layer, position) record carries.",
+      "properties": {
+        "description": {
+          "description": "Human-readable summary.",
+          "title": "Description",
+          "type": "string"
+        },
+        "experiment": {
+          "description": "Stable script id, e.g. 'step_01_logit_lens_batch'.",
+          "title": "Experiment",
+          "type": "string"
+        },
+        "global_layers": {
+          "description": "Layer indices to be visually highlighted. Same semantics as the other domain-axis modules. Empty list if the architecture has no layers worth highlighting.",
+          "items": {
+            "type": "integer"
+          },
+          "title": "Global Layers",
+          "type": "array"
+        },
+        "model": {
+          "description": "HuggingFace model id.",
+          "title": "Model",
+          "type": "string"
+        },
+        "n_layers": {
+          "description": "Total decoder-block count.",
+          "minimum": 1,
+          "title": "N Layers",
+          "type": "integer"
+        },
+        "prompt_id": {
+          "description": "Identifier of the source prompt this record was computed against.",
+          "title": "Prompt Id",
+          "type": "string"
+        },
+        "prompt_text": {
+          "description": "The raw prompt text.",
+          "title": "Prompt Text",
+          "type": "string"
+        },
+        "seq_len": {
+          "description": "Input sequence length.",
+          "minimum": 1,
+          "title": "Seq Len",
+          "type": "integer"
+        },
+        "token_labels": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional per-position decoded tokens. Length equals seq_len when present. Useful for axis labelling. Absent when the positional labels aren't meaningful (e.g. for padding-heavy batched input).",
+          "title": "Token Labels"
+        }
+      },
+      "required": [
+        "experiment",
+        "description",
+        "model",
+        "n_layers",
+        "seq_len",
+        "global_layers",
+        "prompt_id",
+        "prompt_text"
+      ],
+      "title": "PerLayerPerPositionBase",
+      "type": "object"
+    },
+    "PerLayerPerPositionData": {
+      "discriminator": {
+        "mapping": {
+          "logit_lens_trajectory": "#/$defs/LogitLensTrajectory"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/LogitLensTrajectory"
         }
       ]
     },

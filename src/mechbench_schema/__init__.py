@@ -36,9 +36,10 @@ from .per_layer_data import (
     PerLayerBase,
     PerLayerData,
 )
-from .records import (
-    LensTrajectory,
-    LensStep,
+from .per_layer_per_position_data import (
+    LogitLensTrajectory,
+    PerLayerPerPositionBase,
+    PerLayerPerPositionData,
 )
 from .vector_data import (
     CapturedVector,
@@ -49,7 +50,7 @@ from .vector_data import (
     Vector,
 )
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 
 __all__ = [
     # Per-layer data (records indexed by transformer layer)
@@ -79,7 +80,8 @@ __all__ = [
     # Cluster data (collections of vectors with aggregate stats)
     "Cluster",
     "ClusterSet",
-    # Miscellaneous emission records (awaiting domain-axis homes; see 000156)
-    "LensTrajectory",
-    "LensStep",
+    # Per-(layer, position) data (residual-stream-axis records)
+    "PerLayerPerPositionBase",
+    "LogitLensTrajectory",
+    "PerLayerPerPositionData",
 ]
