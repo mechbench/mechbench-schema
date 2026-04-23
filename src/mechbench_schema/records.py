@@ -34,22 +34,6 @@ class LensTrajectory(BaseModel):
     metadata: dict[str, str] = Field(default_factory=dict)
 
 
-class AttentionPattern(BaseModel):
-    """Post-softmax attention weights for one (layer, head) over a sequence."""
-
-    layer: int = Field(..., ge=0)
-    head: int = Field(..., ge=0)
-    n_queries: int = Field(..., ge=1)
-    n_keys: int = Field(..., ge=1)
-    # Row-major flattened weights; shape is [n_queries * n_keys].
-    # A flat list keeps the wire format JSON-native; consumers reshape on ingest.
-    weights: list[float]
-    token_labels: list[str] | None = Field(
-        None,
-        description="Optional per-position decoded tokens, for axis labelling.",
-    )
-
-
 class FactVectorRecord(BaseModel):
     """A single fact-vector observation.
 

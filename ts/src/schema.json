@@ -41,24 +41,34 @@
       "type": "object"
     },
     "AttentionPattern": {
-      "description": "Post-softmax attention weights for one (layer, head) over a sequence.",
+      "description": "Post-softmax attention weights for one (layer, head) over a sequence.\n\nThe weights matrix is stored as a flat row-major `[n_queries * n_keys]`\nlist. Consumers reshape on ingest; this keeps the wire format\nJSON-native and trivially diffable. `token_labels`, when present,\nlabels both axes (self-attention) \u2014 for cross-attention the caller\nshould split into query_labels / key_labels (not yet modeled;\nadd when needed).",
       "properties": {
         "head": {
+          "description": "0-indexed attention head within the layer.",
           "minimum": 0,
           "title": "Head",
           "type": "integer"
         },
+        "kind": {
+          "const": "attention_pattern",
+          "default": "attention_pattern",
+          "title": "Kind",
+          "type": "string"
+        },
         "layer": {
+          "description": "0-indexed transformer layer.",
           "minimum": 0,
           "title": "Layer",
           "type": "integer"
         },
         "n_keys": {
+          "description": "Key-side sequence length.",
           "minimum": 1,
           "title": "N Keys",
           "type": "integer"
         },
         "n_queries": {
+          "description": "Query-side sequence length.",
           "minimum": 1,
           "title": "N Queries",
           "type": "integer"
@@ -76,10 +86,11 @@
             }
           ],
           "default": null,
-          "description": "Optional per-position decoded tokens, for axis labelling.",
+          "description": "Optional per-position decoded tokens, for axis labelling. Assumes self-attention (same labels on both axes); if the shape is asymmetric, model the split explicitly.",
           "title": "Token Labels"
         },
         "weights": {
+          "description": "Row-major flattened post-softmax weights, shape [n_queries * n_keys]. weights[q * n_keys + k] is the attention weight from query q to key k.",
           "items": {
             "type": "number"
           },
@@ -96,6 +107,19 @@
       ],
       "title": "AttentionPattern",
       "type": "object"
+    },
+    "AttentionTraceData": {
+      "discriminator": {
+        "mapping": {
+          "attention_pattern": "#/$defs/AttentionPattern"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/AttentionPattern"
+        }
+      ]
     },
     "ConvergencePayload": {
       "description": "Cross-experiment summary: N source experiments, one peak layer each.",

@@ -12,6 +12,10 @@ or rendered by a non-Python consumer, it belongs here. If the shape is only
 used as an in-memory container within a single repo, it does not.
 """
 
+from .attention_trace import (
+    AttentionPattern,
+    AttentionTraceData,
+)
 from .per_head_data import (
     PerHeadBase,
     PerHeadData,
@@ -31,11 +35,10 @@ from .per_layer_data import (
 from .records import (
     LensTrajectory,
     LensStep,
-    AttentionPattern,
     FactVectorRecord,
 )
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 __all__ = [
     # Per-layer data (records indexed by transformer layer)
@@ -52,9 +55,11 @@ __all__ = [
     "PerHeadBase",
     "PerHeadScalarGrid",
     "PerHeadData",
-    # Emission records (cross-repo)
+    # Attention-trace data (records indexed by (layer, head, position, position))
+    "AttentionPattern",
+    "AttentionTraceData",
+    # Miscellaneous emission records (awaiting domain-axis homes; see 000156)
     "LensTrajectory",
     "LensStep",
-    "AttentionPattern",
     "FactVectorRecord",
 ]

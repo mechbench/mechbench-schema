@@ -12,15 +12,36 @@ export type Damage = number[];
 export type Target = string;
 export type Text = string;
 export type Top1Id = number;
+/**
+ * 0-indexed attention head within the layer.
+ */
 export type Head = number;
+export type Kind = "attention_pattern";
+/**
+ * 0-indexed transformer layer.
+ */
 export type Layer = number;
+/**
+ * Key-side sequence length.
+ */
 export type NKeys = number;
+/**
+ * Query-side sequence length.
+ */
 export type NQueries = number;
 /**
- * Optional per-position decoded tokens, for axis labelling.
+ * Optional per-position decoded tokens, for axis labelling. Assumes self-attention (same labels on both axes); if the shape is asymmetric, model the split explicitly.
  */
 export type TokenLabels = string[] | null;
+/**
+ * Row-major flattened post-softmax weights, shape [n_queries * n_keys]. weights[q * n_keys + k] is the attention weight from query q to key k.
+ */
 export type Weights = number[];
+/**
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "AttentionTraceData".
+ */
+export type AttentionTraceData = AttentionPattern;
 /**
  * Human-readable summary; appears in chart footers.
  */
@@ -72,7 +93,7 @@ export type Experiments = ConvergenceRow[];
  * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
 export type GlobalLayers = number[];
-export type Kind = "convergence";
+export type Kind1 = "convergence";
 /**
  * HuggingFace model id.
  */
@@ -118,7 +139,7 @@ export type Experiment1 = string;
  * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
 export type GlobalLayers1 = number[];
-export type Kind1 = "dla_sweep";
+export type Kind2 = "dla_sweep";
 /**
  * HuggingFace model id.
  */
@@ -132,7 +153,7 @@ export type Prompts = DlaPrompt[];
  * The hook name where this vector was captured, e.g. 'blocks.23.resid_post'.
  */
 export type HookPoint = string;
-export type Kind2 = "residual" | "attn_out" | "mlp_out" | "gate_out" | "other";
+export type Kind3 = "residual" | "attn_out" | "mlp_out" | "gate_out" | "other";
 /**
  * Optional categorical label, e.g. 'capital-city', 'past-tense'.
  */
@@ -153,7 +174,7 @@ export type Experiment2 = string;
  * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
 export type GlobalLayers2 = number[];
-export type Kind3 = "layer_ablation";
+export type Kind4 = "layer_ablation";
 /**
  * HuggingFace model id.
  */
@@ -237,7 +258,7 @@ export type Experiment4 = string;
  * Layer indices to be visually highlighted. Same semantics as the per_layer_data.PerLayerBase field.
  */
 export type GlobalLayers4 = number[];
-export type Kind4 = "per_head_scalar_grid";
+export type Kind5 = "per_head_scalar_grid";
 /**
  * What the scalars measure (e.g. 'DLA contribution').
  */
@@ -311,11 +332,19 @@ export interface AblationPrompt {
 /**
  * Post-softmax attention weights for one (layer, head) over a sequence.
  *
+ * The weights matrix is stored as a flat row-major `[n_queries * n_keys]`
+ * list. Consumers reshape on ingest; this keeps the wire format
+ * JSON-native and trivially diffable. `token_labels`, when present,
+ * labels both axes (self-attention) — for cross-attention the caller
+ * should split into query_labels / key_labels (not yet modeled;
+ * add when needed).
+ *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "AttentionPattern".
  */
 export interface AttentionPattern {
   head: Head;
+  kind?: Kind;
   layer: Layer;
   n_keys: NKeys;
   n_queries: NQueries;
@@ -333,7 +362,7 @@ export interface ConvergencePayload {
   experiment: Experiment;
   experiments: Experiments;
   global_layers: GlobalLayers;
-  kind?: Kind;
+  kind?: Kind1;
   model: Model;
   n_layers: NLayers;
   pivot_layer: PivotLayer;
@@ -383,7 +412,7 @@ export interface DlaSweepPayload {
   description: Description1;
   experiment: Experiment1;
   global_layers: GlobalLayers1;
-  kind?: Kind1;
+  kind?: Kind2;
   model: Model1;
   n_layers: NLayers1;
   prompts: Prompts;
@@ -410,7 +439,7 @@ export interface LayerAggregates {
  */
 export interface FactVectorRecord {
   hook_point: HookPoint;
-  kind?: Kind2;
+  kind?: Kind3;
   label?: Label;
   layer: Layer1;
   position: Position;
@@ -428,7 +457,7 @@ export interface LayerAblationPayload {
   description: Description2;
   experiment: Experiment2;
   global_layers: GlobalLayers2;
-  kind?: Kind3;
+  kind?: Kind4;
   model: Model2;
   n_layers: NLayers2;
   prompts: Prompts1;
@@ -502,7 +531,7 @@ export interface PerHeadScalarGrid {
   description: Description4;
   experiment: Experiment4;
   global_layers: GlobalLayers4;
-  kind?: Kind4;
+  kind?: Kind5;
   metric_name: MetricName1;
   metric_units: MetricUnits1;
   model: Model4;
