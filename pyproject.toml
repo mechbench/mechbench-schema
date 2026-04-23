@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mechbench-schema"
-version = "0.5.0"
+version = "0.6.0"
 description = "Typed emission contract for the mechbench family. Pydantic models as single source of truth; generates TypeScript bindings for mechbench-ui."
 readme = "README.md"
 requires-python = ">=3.11"

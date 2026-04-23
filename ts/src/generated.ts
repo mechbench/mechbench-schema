@@ -97,6 +97,84 @@ export type Origin1 = "centroid";
  */
 export type Values1 = number[];
 /**
+ * Stable cluster identifier.
+ */
+export type Id = string;
+/**
+ * Human-readable cluster label (e.g. 'capital-city fact vectors'). Use empty string if the cluster is unlabeled.
+ */
+export type Label2 = string;
+/**
+ * Short description of how this direction was derived.
+ */
+export type Derivation = string;
+/**
+ * Explicit dimensionality, for validation and for headers that need the dimension without loading the full values array.
+ */
+export type Dim2 = number;
+/**
+ * Optional categorical label (e.g. 'capital-city', 'past-tense').
+ */
+export type Label3 = string | null;
+export type Origin2 = "steering";
+/**
+ * Optional: the concept this steering vector is meant to push toward.
+ */
+export type TargetConcept = string | null;
+/**
+ * The vector's components. Length equals `dim`. Dtype is float on the wire; callers preserving bf16 should convert at the transport boundary.
+ */
+export type Values2 = number[];
+/**
+ * The classifier family the weight vector was fit for.
+ */
+export type ClassifierType = "linear" | "logistic" | "other";
+/**
+ * Explicit dimensionality, for validation and for headers that need the dimension without loading the full values array.
+ */
+export type Dim3 = number;
+/**
+ * Optional categorical label (e.g. 'capital-city', 'past-tense').
+ */
+export type Label4 = string | null;
+export type Origin3 = "probe";
+/**
+ * What the probe predicts.
+ */
+export type TargetLabel = string;
+/**
+ * The vector's components. Length equals `dim`. Dtype is float on the wire; callers preserving bf16 should convert at the transport boundary.
+ */
+export type Values3 = number[];
+/**
+ * The member vectors, inline on the wire. Length should equal n_members (validated). For large clusters see task 000161 (binary transport) before scaling up.
+ */
+export type Members = (CapturedVector | SteeringVector | ProbeVector | CentroidVector)[];
+/**
+ * Explicit member count. Validated against len(members). Useful for header-only reads that don't want to materialize the full members list.
+ */
+export type NMembers1 = number;
+/**
+ * The member clusters.
+ */
+export type Clusters = Cluster[];
+/**
+ * Stable identifier for this cluster-set.
+ */
+export type Id1 = string;
+/**
+ * Human-readable label for the set.
+ */
+export type Label5 = string;
+/**
+ * Flat upper-triangle (excluding diagonal) of the centroid-cosine matrix. Length n*(n-1)/2 for n clusters. None if centroids are not present on all clusters.
+ */
+export type PairwiseCosine = number[] | null;
+/**
+ * Aggregate silhouette score across all member vectors. None if not computed.
+ */
+export type Silhouette = number | null;
+/**
  * Human-readable summary; appears in chart footers.
  */
 export type Description = string;
@@ -111,7 +189,7 @@ export type Finding = string;
 /**
  * Stable experiment id.
  */
-export type Id = string;
+export type Id2 = string;
 export type MetricName = string;
 export type MetricUnits = string;
 /**
@@ -332,7 +410,7 @@ export type NLayers4 = number;
 /**
  * Row-major [n_layers * n_heads] flat list. values[layer * n_heads + head] is the scalar for (layer, head).
  */
-export type Values2 = number[];
+export type Values4 = number[];
 /**
  * Human-readable summary; appears in chart footers.
  */
@@ -358,48 +436,6 @@ export type NLayers5 = number;
  * via the `definition` "PerLayerData".
  */
 export type PerLayerData = LayerAblationPayload | DlaSweepPayload | ConvergencePayload;
-/**
- * The classifier family the weight vector was fit for.
- */
-export type ClassifierType = "linear" | "logistic" | "other";
-/**
- * Explicit dimensionality, for validation and for headers that need the dimension without loading the full values array.
- */
-export type Dim2 = number;
-/**
- * Optional categorical label (e.g. 'capital-city', 'past-tense').
- */
-export type Label2 = string | null;
-export type Origin2 = "probe";
-/**
- * What the probe predicts.
- */
-export type TargetLabel = string;
-/**
- * The vector's components. Length equals `dim`. Dtype is float on the wire; callers preserving bf16 should convert at the transport boundary.
- */
-export type Values3 = number[];
-/**
- * Short description of how this direction was derived.
- */
-export type Derivation = string;
-/**
- * Explicit dimensionality, for validation and for headers that need the dimension without loading the full values array.
- */
-export type Dim3 = number;
-/**
- * Optional categorical label (e.g. 'capital-city', 'past-tense').
- */
-export type Label3 = string | null;
-export type Origin3 = "steering";
-/**
- * Optional: the concept this steering vector is meant to push toward.
- */
-export type TargetConcept = string | null;
-/**
- * The vector's components. Length equals `dim`. Dtype is float on the wire; callers preserving bf16 should convert at the transport boundary.
- */
-export type Values4 = number[];
 /**
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "Vector".
@@ -498,6 +534,106 @@ export interface Metadata1 {
   [k: string]: string;
 }
 /**
+ * A named group of vectors with optional aggregate stats.
+ *
+ * `members` is stored inline for simplicity. `centroid` is optional —
+ * computed on demand by callers that care; a Cluster with many members
+ * but no centroid is a valid, useful record (the geometry analyses
+ * often compute cluster membership without materializing a centroid).
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "Cluster".
+ */
+export interface Cluster {
+  /**
+   * Optional computed centroid. When present, its cluster_id should match this cluster's id (validated) and its n_members should match this cluster's n_members.
+   */
+  centroid?: CentroidVector | null;
+  id: Id;
+  label: Label2;
+  members: Members;
+  metadata?: Metadata4;
+  n_members: NMembers1;
+}
+/**
+ * A learned or derived direction intended for intervention.
+ *
+ * Carries a description of how it was derived — usually a short
+ * natural-language note ("centroid of capital-city fact vectors minus
+ * centroid of person-name fact vectors at L23.resid_post", or "SVD
+ * component 0 of W_V for (L23, H5)"). Downstream consumers that need
+ * to reproduce or compose steering vectors read the description.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "SteeringVector".
+ */
+export interface SteeringVector {
+  derivation: Derivation;
+  dim: Dim2;
+  label?: Label3;
+  metadata?: Metadata2;
+  origin?: Origin2;
+  target_concept?: TargetConcept;
+  values: Values2;
+}
+/**
+ * Freeform string-keyed metadata for caller-specific extensions.
+ */
+export interface Metadata2 {
+  [k: string]: string;
+}
+/**
+ * A linear-probe weight vector.
+ *
+ * Classifies residual-stream vectors by projecting onto this direction.
+ * `target_label` names what the probe predicts; `classifier_type`
+ * distinguishes linear regression, logistic regression, etc.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "ProbeVector".
+ */
+export interface ProbeVector {
+  classifier_type?: ClassifierType;
+  dim: Dim3;
+  label?: Label4;
+  metadata?: Metadata3;
+  origin?: Origin3;
+  target_label: TargetLabel;
+  values: Values3;
+}
+/**
+ * Freeform string-keyed metadata for caller-specific extensions.
+ */
+export interface Metadata3 {
+  [k: string]: string;
+}
+export interface Metadata4 {
+  [k: string]: string;
+}
+/**
+ * A collection of clusters plus cross-cluster aggregate stats.
+ *
+ * The pairwise-cosine matrix is stored as a flat upper-triangle list
+ * (excluding the diagonal), length `n * (n - 1) / 2` for `n` clusters,
+ * indexed row-major: entry `[i, j]` with `i < j` sits at index
+ * `i * (n - 1) - (i * (i - 1)) // 2 + (j - i - 1)`. Callers that want
+ * a square matrix reshape on ingest.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "ClusterSet".
+ */
+export interface ClusterSet {
+  clusters: Clusters;
+  id: Id1;
+  label?: Label5;
+  metadata?: Metadata5;
+  pairwise_cosine?: PairwiseCosine;
+  silhouette?: Silhouette;
+}
+export interface Metadata5 {
+  [k: string]: string;
+}
+/**
  * Cross-experiment summary: N source experiments, one peak layer each.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
@@ -521,7 +657,7 @@ export interface ConvergencePayload {
  */
 export interface ConvergenceRow {
   finding: Finding;
-  id: Id;
+  id: Id2;
   metric_name: MetricName;
   metric_units?: MetricUnits;
   peak_description: PeakDescription;
@@ -609,12 +745,12 @@ export interface LensStep {
  * via the `definition` "LensTrajectory".
  */
 export interface LensTrajectory {
-  metadata?: Metadata2;
+  metadata?: Metadata6;
   prompt_id: PromptId1;
   steps: Steps;
   target_token: TargetToken;
 }
-export interface Metadata2 {
+export interface Metadata6 {
   [k: string]: string;
 }
 /**
@@ -665,7 +801,7 @@ export interface PerHeadScalarGrid {
   n_heads: NHeads1;
   n_kv_heads: NKvHeads1;
   n_layers: NLayers4;
-  values: Values2;
+  values: Values4;
 }
 /**
  * Fields every per-layer chart-data file carries.
@@ -684,56 +820,4 @@ export interface PerLayerBase {
   global_layers: GlobalLayers5;
   model: Model5;
   n_layers: NLayers5;
-}
-/**
- * A linear-probe weight vector.
- *
- * Classifies residual-stream vectors by projecting onto this direction.
- * `target_label` names what the probe predicts; `classifier_type`
- * distinguishes linear regression, logistic regression, etc.
- *
- * This interface was referenced by `MechbenchSchema`'s JSON-Schema
- * via the `definition` "ProbeVector".
- */
-export interface ProbeVector {
-  classifier_type?: ClassifierType;
-  dim: Dim2;
-  label?: Label2;
-  metadata?: Metadata3;
-  origin?: Origin2;
-  target_label: TargetLabel;
-  values: Values3;
-}
-/**
- * Freeform string-keyed metadata for caller-specific extensions.
- */
-export interface Metadata3 {
-  [k: string]: string;
-}
-/**
- * A learned or derived direction intended for intervention.
- *
- * Carries a description of how it was derived — usually a short
- * natural-language note ("centroid of capital-city fact vectors minus
- * centroid of person-name fact vectors at L23.resid_post", or "SVD
- * component 0 of W_V for (L23, H5)"). Downstream consumers that need
- * to reproduce or compose steering vectors read the description.
- *
- * This interface was referenced by `MechbenchSchema`'s JSON-Schema
- * via the `definition` "SteeringVector".
- */
-export interface SteeringVector {
-  derivation: Derivation;
-  dim: Dim3;
-  label?: Label3;
-  metadata?: Metadata4;
-  origin?: Origin3;
-  target_concept?: TargetConcept;
-  values: Values4;
-}
-/**
- * Freeform string-keyed metadata for caller-specific extensions.
- */
-export interface Metadata4 {
-  [k: string]: string;
 }

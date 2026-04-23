@@ -278,6 +278,150 @@
       "title": "CentroidVector",
       "type": "object"
     },
+    "Cluster": {
+      "description": "A named group of vectors with optional aggregate stats.\n\n`members` is stored inline for simplicity. `centroid` is optional \u2014\ncomputed on demand by callers that care; a Cluster with many members\nbut no centroid is a valid, useful record (the geometry analyses\noften compute cluster membership without materializing a centroid).",
+      "properties": {
+        "centroid": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CentroidVector"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional computed centroid. When present, its cluster_id should match this cluster's id (validated) and its n_members should match this cluster's n_members."
+        },
+        "id": {
+          "description": "Stable cluster identifier.",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "description": "Human-readable cluster label (e.g. 'capital-city fact vectors'). Use empty string if the cluster is unlabeled.",
+          "title": "Label",
+          "type": "string"
+        },
+        "members": {
+          "description": "The member vectors, inline on the wire. Length should equal n_members (validated). For large clusters see task 000161 (binary transport) before scaling up.",
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "captured": "#/$defs/CapturedVector",
+                "centroid": "#/$defs/CentroidVector",
+                "probe": "#/$defs/ProbeVector",
+                "steering": "#/$defs/SteeringVector"
+              },
+              "propertyName": "origin"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/CapturedVector"
+              },
+              {
+                "$ref": "#/$defs/SteeringVector"
+              },
+              {
+                "$ref": "#/$defs/ProbeVector"
+              },
+              {
+                "$ref": "#/$defs/CentroidVector"
+              }
+            ]
+          },
+          "title": "Members",
+          "type": "array"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Metadata",
+          "type": "object"
+        },
+        "n_members": {
+          "description": "Explicit member count. Validated against len(members). Useful for header-only reads that don't want to materialize the full members list.",
+          "minimum": 0,
+          "title": "N Members",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "members",
+        "n_members"
+      ],
+      "title": "Cluster",
+      "type": "object"
+    },
+    "ClusterSet": {
+      "description": "A collection of clusters plus cross-cluster aggregate stats.\n\nThe pairwise-cosine matrix is stored as a flat upper-triangle list\n(excluding the diagonal), length `n * (n - 1) / 2` for `n` clusters,\nindexed row-major: entry `[i, j]` with `i < j` sits at index\n`i * (n - 1) - (i * (i - 1)) // 2 + (j - i - 1)`. Callers that want\na square matrix reshape on ingest.",
+      "properties": {
+        "clusters": {
+          "description": "The member clusters.",
+          "items": {
+            "$ref": "#/$defs/Cluster"
+          },
+          "title": "Clusters",
+          "type": "array"
+        },
+        "id": {
+          "description": "Stable identifier for this cluster-set.",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "default": "",
+          "description": "Human-readable label for the set.",
+          "title": "Label",
+          "type": "string"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Metadata",
+          "type": "object"
+        },
+        "pairwise_cosine": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Flat upper-triangle (excluding diagonal) of the centroid-cosine matrix. Length n*(n-1)/2 for n clusters. None if centroids are not present on all clusters.",
+          "title": "Pairwise Cosine"
+        },
+        "silhouette": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Aggregate silhouette score across all member vectors. None if not computed.",
+          "title": "Silhouette"
+        }
+      },
+      "required": [
+        "id",
+        "clusters"
+      ],
+      "title": "ClusterSet",
+      "type": "object"
+    },
     "ConvergencePayload": {
       "description": "Cross-experiment summary: N source experiments, one peak layer each.",
       "properties": {

@@ -16,6 +16,10 @@ from .attention_trace import (
     AttentionPattern,
     AttentionTraceData,
 )
+from .cluster_data import (
+    Cluster,
+    ClusterSet,
+)
 from .per_head_data import (
     PerHeadBase,
     PerHeadData,
@@ -45,7 +49,7 @@ from .vector_data import (
     Vector,
 )
 
-__version__ = "0.5.0"
+__version__ = "0.6.0"
 
 __all__ = [
     # Per-layer data (records indexed by transformer layer)
@@ -72,6 +76,9 @@ __all__ = [
     "CentroidVector",
     "HookKind",
     "Vector",
+    # Cluster data (collections of vectors with aggregate stats)
+    "Cluster",
+    "ClusterSet",
     # Miscellaneous emission records (awaiting domain-axis homes; see 000156)
     "LensTrajectory",
     "LensStep",
