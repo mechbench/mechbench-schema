@@ -1,13 +1,24 @@
-"""Emission record types.
+"""Legacy emission record types awaiting domain-axis homes.
 
-Each model here describes the shape of one kind of interpretability datum
-that crosses repo boundaries. Keep these models narrow, composable, and
-versioned — changes here ripple to every consumer.
+This file is a holding pen. As the domain-axis convention matures (see
+per_layer_data.py / per_head_data.py / attention_trace.py /
+vector_data.py), records here migrate to their proper modules. Task
+000156 tracks the ongoing reorg.
+
+Remaining residents:
+
+  LensStep / LensTrajectory — indexed by (layer, position); will migrate
+                               to per_layer_per_position_data.py when
+                               that module lands (task 000158).
+
+Once the last record leaves, this file gets deleted.
+
+Previously housed, now migrated:
+  - AttentionPattern → attention_trace.py (task 000155)
+  - FactVectorRecord → vector_data.CapturedVector (task 000159)
 """
 
 from __future__ import annotations
-
-from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -32,27 +43,3 @@ class LensTrajectory(BaseModel):
     target_token: str = Field(..., description="The token whose rank/logprob is being tracked.")
     steps: list[LensStep]
     metadata: dict[str, str] = Field(default_factory=dict)
-
-
-class FactVectorRecord(BaseModel):
-    """A single fact-vector observation.
-
-    A fact vector is a residual-stream vector captured at a specific
-    (hook_point, prompt, position). It is the atomic unit of the geometry
-    analyses in mechbench-core.
-    """
-
-    hook_point: str = Field(
-        ...,
-        description="The hook name where this vector was captured, e.g. 'blocks.23.resid_post'.",
-    )
-    prompt_id: str
-    position: int = Field(..., ge=0)
-    layer: int = Field(..., ge=0)
-    # d_model-length float32 vector. Use a flat list for JSON; parquet/npz for bulk storage.
-    values: list[float]
-    label: str | None = Field(
-        None,
-        description="Optional categorical label, e.g. 'capital-city', 'past-tense'.",
-    )
-    kind: Literal["residual", "attn_out", "mlp_out", "gate_out", "other"] = "residual"

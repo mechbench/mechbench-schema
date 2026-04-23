@@ -43,6 +43,60 @@ export type Weights = number[];
  */
 export type AttentionTraceData = AttentionPattern;
 /**
+ * Explicit dimensionality, for validation and for headers that need the dimension without loading the full values array.
+ */
+export type Dim = number;
+/**
+ * The hook-point class this capture came from. Distinguishes residual-stream vectors from branch-output vectors (attn_out, mlp_out, gate_out) captured at the same layer.
+ */
+export type HookKind = "resid_pre" | "resid_post" | "attn_out" | "mlp_out" | "gate_out" | "other";
+/**
+ * Fully qualified hook name, e.g. 'blocks.23.resid_post'.
+ */
+export type HookPoint = string;
+/**
+ * Optional categorical label (e.g. 'capital-city', 'past-tense').
+ */
+export type Label = string | null;
+/**
+ * 0-indexed transformer layer.
+ */
+export type Layer1 = number;
+export type Origin = "captured";
+/**
+ * 0-indexed token position.
+ */
+export type Position = number;
+/**
+ * Identifier of the source prompt.
+ */
+export type PromptId = string;
+/**
+ * The vector's components. Length equals `dim`. Dtype is float on the wire; callers preserving bf16 should convert at the transport boundary.
+ */
+export type Values = number[];
+/**
+ * Stable id of the source cluster.
+ */
+export type ClusterId = string;
+/**
+ * Explicit dimensionality, for validation and for headers that need the dimension without loading the full values array.
+ */
+export type Dim1 = number;
+/**
+ * Optional categorical label (e.g. 'capital-city', 'past-tense').
+ */
+export type Label1 = string | null;
+/**
+ * Number of member vectors averaged into this centroid.
+ */
+export type NMembers = number;
+export type Origin1 = "centroid";
+/**
+ * The vector's components. Length equals `dim`. Dtype is float on the wire; callers preserving bf16 should convert at the transport boundary.
+ */
+export type Values1 = number[];
+/**
  * Human-readable summary; appears in chart footers.
  */
 export type Description = string;
@@ -150,18 +204,10 @@ export type Model1 = string;
 export type NLayers1 = number;
 export type Prompts = DlaPrompt[];
 /**
- * The hook name where this vector was captured, e.g. 'blocks.23.resid_post'.
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "HookKind".
  */
-export type HookPoint = string;
-export type Kind3 = "residual" | "attn_out" | "mlp_out" | "gate_out" | "other";
-/**
- * Optional categorical label, e.g. 'capital-city', 'past-tense'.
- */
-export type Label = string | null;
-export type Layer1 = number;
-export type Position = number;
-export type PromptId = string;
-export type Values = number[];
+export type HookKind1 = "resid_pre" | "resid_post" | "attn_out" | "mlp_out" | "gate_out" | "other";
 /**
  * Human-readable summary; appears in chart footers.
  */
@@ -174,7 +220,7 @@ export type Experiment2 = string;
  * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
 export type GlobalLayers2 = number[];
-export type Kind4 = "layer_ablation";
+export type Kind3 = "layer_ablation";
 /**
  * HuggingFace model id.
  */
@@ -258,7 +304,7 @@ export type Experiment4 = string;
  * Layer indices to be visually highlighted. Same semantics as the per_layer_data.PerLayerBase field.
  */
 export type GlobalLayers4 = number[];
-export type Kind5 = "per_head_scalar_grid";
+export type Kind4 = "per_head_scalar_grid";
 /**
  * What the scalars measure (e.g. 'DLA contribution').
  */
@@ -286,7 +332,7 @@ export type NLayers4 = number;
 /**
  * Row-major [n_layers * n_heads] flat list. values[layer * n_heads + head] is the scalar for (layer, head).
  */
-export type Values1 = number[];
+export type Values2 = number[];
 /**
  * Human-readable summary; appears in chart footers.
  */
@@ -312,6 +358,53 @@ export type NLayers5 = number;
  * via the `definition` "PerLayerData".
  */
 export type PerLayerData = LayerAblationPayload | DlaSweepPayload | ConvergencePayload;
+/**
+ * The classifier family the weight vector was fit for.
+ */
+export type ClassifierType = "linear" | "logistic" | "other";
+/**
+ * Explicit dimensionality, for validation and for headers that need the dimension without loading the full values array.
+ */
+export type Dim2 = number;
+/**
+ * Optional categorical label (e.g. 'capital-city', 'past-tense').
+ */
+export type Label2 = string | null;
+export type Origin2 = "probe";
+/**
+ * What the probe predicts.
+ */
+export type TargetLabel = string;
+/**
+ * The vector's components. Length equals `dim`. Dtype is float on the wire; callers preserving bf16 should convert at the transport boundary.
+ */
+export type Values3 = number[];
+/**
+ * Short description of how this direction was derived.
+ */
+export type Derivation = string;
+/**
+ * Explicit dimensionality, for validation and for headers that need the dimension without loading the full values array.
+ */
+export type Dim3 = number;
+/**
+ * Optional categorical label (e.g. 'capital-city', 'past-tense').
+ */
+export type Label3 = string | null;
+export type Origin3 = "steering";
+/**
+ * Optional: the concept this steering vector is meant to push toward.
+ */
+export type TargetConcept = string | null;
+/**
+ * The vector's components. Length equals `dim`. Dtype is float on the wire; callers preserving bf16 should convert at the transport boundary.
+ */
+export type Values4 = number[];
+/**
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "Vector".
+ */
+export type Vector = CapturedVector | SteeringVector | ProbeVector | CentroidVector;
 
 export interface MechbenchSchema {
   [k: string]: unknown;
@@ -350,6 +443,59 @@ export interface AttentionPattern {
   n_queries: NQueries;
   token_labels?: TokenLabels;
   weights: Weights;
+}
+/**
+ * A vector read from a hook point during a forward pass.
+ *
+ * Replaces the old `FactVectorRecord` from records.py. Adds the `origin`
+ * discriminator and renames the old `kind` field to `hook_kind` to make
+ * room for `origin` at the top level without collision.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "CapturedVector".
+ */
+export interface CapturedVector {
+  dim: Dim;
+  hook_kind?: HookKind;
+  hook_point: HookPoint;
+  label?: Label;
+  layer: Layer1;
+  metadata?: Metadata;
+  origin?: Origin;
+  position: Position;
+  prompt_id: PromptId;
+  values: Values;
+}
+/**
+ * Freeform string-keyed metadata for caller-specific extensions.
+ */
+export interface Metadata {
+  [k: string]: string;
+}
+/**
+ * The centroid of a cluster of vectors.
+ *
+ * `cluster_id` is the stable id of the cluster this is the centroid of;
+ * `n_members` is the size of that cluster at centroid-computation time.
+ * Typically emitted alongside the Cluster record from cluster_data.py.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "CentroidVector".
+ */
+export interface CentroidVector {
+  cluster_id: ClusterId;
+  dim: Dim1;
+  label?: Label1;
+  metadata?: Metadata1;
+  n_members: NMembers;
+  origin?: Origin1;
+  values: Values1;
+}
+/**
+ * Freeform string-keyed metadata for caller-specific extensions.
+ */
+export interface Metadata1 {
+  [k: string]: string;
 }
 /**
  * Cross-experiment summary: N source experiments, one peak layer each.
@@ -428,25 +574,6 @@ export interface LayerAggregates {
   median: Median;
 }
 /**
- * A single fact-vector observation.
- *
- * A fact vector is a residual-stream vector captured at a specific
- * (hook_point, prompt, position). It is the atomic unit of the geometry
- * analyses in mechbench-core.
- *
- * This interface was referenced by `MechbenchSchema`'s JSON-Schema
- * via the `definition` "FactVectorRecord".
- */
-export interface FactVectorRecord {
-  hook_point: HookPoint;
-  kind?: Kind3;
-  label?: Label;
-  layer: Layer1;
-  position: Position;
-  prompt_id: PromptId;
-  values: Values;
-}
-/**
  * step_02-shape: per-layer ablation damage across a prompt battery.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
@@ -457,7 +584,7 @@ export interface LayerAblationPayload {
   description: Description2;
   experiment: Experiment2;
   global_layers: GlobalLayers2;
-  kind?: Kind4;
+  kind?: Kind3;
   model: Model2;
   n_layers: NLayers2;
   prompts: Prompts1;
@@ -482,12 +609,12 @@ export interface LensStep {
  * via the `definition` "LensTrajectory".
  */
 export interface LensTrajectory {
-  metadata?: Metadata;
+  metadata?: Metadata2;
   prompt_id: PromptId1;
   steps: Steps;
   target_token: TargetToken;
 }
-export interface Metadata {
+export interface Metadata2 {
   [k: string]: string;
 }
 /**
@@ -531,14 +658,14 @@ export interface PerHeadScalarGrid {
   description: Description4;
   experiment: Experiment4;
   global_layers: GlobalLayers4;
-  kind?: Kind5;
+  kind?: Kind4;
   metric_name: MetricName1;
   metric_units: MetricUnits1;
   model: Model4;
   n_heads: NHeads1;
   n_kv_heads: NKvHeads1;
   n_layers: NLayers4;
-  values: Values1;
+  values: Values2;
 }
 /**
  * Fields every per-layer chart-data file carries.
@@ -557,4 +684,56 @@ export interface PerLayerBase {
   global_layers: GlobalLayers5;
   model: Model5;
   n_layers: NLayers5;
+}
+/**
+ * A linear-probe weight vector.
+ *
+ * Classifies residual-stream vectors by projecting onto this direction.
+ * `target_label` names what the probe predicts; `classifier_type`
+ * distinguishes linear regression, logistic regression, etc.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "ProbeVector".
+ */
+export interface ProbeVector {
+  classifier_type?: ClassifierType;
+  dim: Dim2;
+  label?: Label2;
+  metadata?: Metadata3;
+  origin?: Origin2;
+  target_label: TargetLabel;
+  values: Values3;
+}
+/**
+ * Freeform string-keyed metadata for caller-specific extensions.
+ */
+export interface Metadata3 {
+  [k: string]: string;
+}
+/**
+ * A learned or derived direction intended for intervention.
+ *
+ * Carries a description of how it was derived — usually a short
+ * natural-language note ("centroid of capital-city fact vectors minus
+ * centroid of person-name fact vectors at L23.resid_post", or "SVD
+ * component 0 of W_V for (L23, H5)"). Downstream consumers that need
+ * to reproduce or compose steering vectors read the description.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "SteeringVector".
+ */
+export interface SteeringVector {
+  derivation: Derivation;
+  dim: Dim3;
+  label?: Label3;
+  metadata?: Metadata4;
+  origin?: Origin3;
+  target_concept?: TargetConcept;
+  values: Values4;
+}
+/**
+ * Freeform string-keyed metadata for caller-specific extensions.
+ */
+export interface Metadata4 {
+  [k: string]: string;
 }

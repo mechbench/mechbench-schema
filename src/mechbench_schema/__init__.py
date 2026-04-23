@@ -35,10 +35,17 @@ from .per_layer_data import (
 from .records import (
     LensTrajectory,
     LensStep,
-    FactVectorRecord,
+)
+from .vector_data import (
+    CapturedVector,
+    CentroidVector,
+    HookKind,
+    ProbeVector,
+    SteeringVector,
+    Vector,
 )
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
 __all__ = [
     # Per-layer data (records indexed by transformer layer)
@@ -58,8 +65,14 @@ __all__ = [
     # Attention-trace data (records indexed by (layer, head, position, position))
     "AttentionPattern",
     "AttentionTraceData",
+    # Vector data (atomic directions in residual-stream space)
+    "CapturedVector",
+    "SteeringVector",
+    "ProbeVector",
+    "CentroidVector",
+    "HookKind",
+    "Vector",
     # Miscellaneous emission records (awaiting domain-axis homes; see 000156)
     "LensTrajectory",
     "LensStep",
-    "FactVectorRecord",
 ]

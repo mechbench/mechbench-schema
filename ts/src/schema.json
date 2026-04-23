@@ -121,6 +121,163 @@
         }
       ]
     },
+    "CapturedVector": {
+      "description": "A vector read from a hook point during a forward pass.\n\nReplaces the old `FactVectorRecord` from records.py. Adds the `origin`\ndiscriminator and renames the old `kind` field to `hook_kind` to make\nroom for `origin` at the top level without collision.",
+      "properties": {
+        "dim": {
+          "description": "Explicit dimensionality, for validation and for headers that need the dimension without loading the full values array.",
+          "minimum": 1,
+          "title": "Dim",
+          "type": "integer"
+        },
+        "hook_kind": {
+          "default": "resid_post",
+          "description": "The hook-point class this capture came from. Distinguishes residual-stream vectors from branch-output vectors (attn_out, mlp_out, gate_out) captured at the same layer.",
+          "enum": [
+            "resid_pre",
+            "resid_post",
+            "attn_out",
+            "mlp_out",
+            "gate_out",
+            "other"
+          ],
+          "title": "Hook Kind",
+          "type": "string"
+        },
+        "hook_point": {
+          "description": "Fully qualified hook name, e.g. 'blocks.23.resid_post'.",
+          "title": "Hook Point",
+          "type": "string"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional categorical label (e.g. 'capital-city', 'past-tense').",
+          "title": "Label"
+        },
+        "layer": {
+          "description": "0-indexed transformer layer.",
+          "minimum": 0,
+          "title": "Layer",
+          "type": "integer"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Freeform string-keyed metadata for caller-specific extensions.",
+          "title": "Metadata",
+          "type": "object"
+        },
+        "origin": {
+          "const": "captured",
+          "default": "captured",
+          "title": "Origin",
+          "type": "string"
+        },
+        "position": {
+          "description": "0-indexed token position.",
+          "minimum": 0,
+          "title": "Position",
+          "type": "integer"
+        },
+        "prompt_id": {
+          "description": "Identifier of the source prompt.",
+          "title": "Prompt Id",
+          "type": "string"
+        },
+        "values": {
+          "description": "The vector's components. Length equals `dim`. Dtype is float on the wire; callers preserving bf16 should convert at the transport boundary.",
+          "items": {
+            "type": "number"
+          },
+          "title": "Values",
+          "type": "array"
+        }
+      },
+      "required": [
+        "values",
+        "dim",
+        "hook_point",
+        "prompt_id",
+        "position",
+        "layer"
+      ],
+      "title": "CapturedVector",
+      "type": "object"
+    },
+    "CentroidVector": {
+      "description": "The centroid of a cluster of vectors.\n\n`cluster_id` is the stable id of the cluster this is the centroid of;\n`n_members` is the size of that cluster at centroid-computation time.\nTypically emitted alongside the Cluster record from cluster_data.py.",
+      "properties": {
+        "cluster_id": {
+          "description": "Stable id of the source cluster.",
+          "title": "Cluster Id",
+          "type": "string"
+        },
+        "dim": {
+          "description": "Explicit dimensionality, for validation and for headers that need the dimension without loading the full values array.",
+          "minimum": 1,
+          "title": "Dim",
+          "type": "integer"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional categorical label (e.g. 'capital-city', 'past-tense').",
+          "title": "Label"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Freeform string-keyed metadata for caller-specific extensions.",
+          "title": "Metadata",
+          "type": "object"
+        },
+        "n_members": {
+          "description": "Number of member vectors averaged into this centroid.",
+          "minimum": 1,
+          "title": "N Members",
+          "type": "integer"
+        },
+        "origin": {
+          "const": "centroid",
+          "default": "centroid",
+          "title": "Origin",
+          "type": "string"
+        },
+        "values": {
+          "description": "The vector's components. Length equals `dim`. Dtype is float on the wire; callers preserving bf16 should convert at the transport boundary.",
+          "items": {
+            "type": "number"
+          },
+          "title": "Values",
+          "type": "array"
+        }
+      },
+      "required": [
+        "values",
+        "dim",
+        "cluster_id",
+        "n_members"
+      ],
+      "title": "CentroidVector",
+      "type": "object"
+    },
     "ConvergencePayload": {
       "description": "Cross-experiment summary: N source experiments, one peak layer each.",
       "properties": {
@@ -381,70 +538,16 @@
       "title": "DlaSweepPayload",
       "type": "object"
     },
-    "FactVectorRecord": {
-      "description": "A single fact-vector observation.\n\nA fact vector is a residual-stream vector captured at a specific\n(hook_point, prompt, position). It is the atomic unit of the geometry\nanalyses in mechbench-core.",
-      "properties": {
-        "hook_point": {
-          "description": "The hook name where this vector was captured, e.g. 'blocks.23.resid_post'.",
-          "title": "Hook Point",
-          "type": "string"
-        },
-        "kind": {
-          "default": "residual",
-          "enum": [
-            "residual",
-            "attn_out",
-            "mlp_out",
-            "gate_out",
-            "other"
-          ],
-          "title": "Kind",
-          "type": "string"
-        },
-        "label": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "description": "Optional categorical label, e.g. 'capital-city', 'past-tense'.",
-          "title": "Label"
-        },
-        "layer": {
-          "minimum": 0,
-          "title": "Layer",
-          "type": "integer"
-        },
-        "position": {
-          "minimum": 0,
-          "title": "Position",
-          "type": "integer"
-        },
-        "prompt_id": {
-          "title": "Prompt Id",
-          "type": "string"
-        },
-        "values": {
-          "items": {
-            "type": "number"
-          },
-          "title": "Values",
-          "type": "array"
-        }
-      },
-      "required": [
-        "hook_point",
-        "prompt_id",
-        "position",
-        "layer",
-        "values"
+    "HookKind": {
+      "enum": [
+        "resid_pre",
+        "resid_post",
+        "attn_out",
+        "mlp_out",
+        "gate_out",
+        "other"
       ],
-      "title": "FactVectorRecord",
-      "type": "object"
+      "type": "string"
     },
     "LayerAblationPayload": {
       "description": "step_02-shape: per-layer ablation damage across a prompt battery.",
@@ -834,6 +937,171 @@
         },
         {
           "$ref": "#/$defs/ConvergencePayload"
+        }
+      ]
+    },
+    "ProbeVector": {
+      "description": "A linear-probe weight vector.\n\nClassifies residual-stream vectors by projecting onto this direction.\n`target_label` names what the probe predicts; `classifier_type`\ndistinguishes linear regression, logistic regression, etc.",
+      "properties": {
+        "classifier_type": {
+          "default": "linear",
+          "description": "The classifier family the weight vector was fit for.",
+          "enum": [
+            "linear",
+            "logistic",
+            "other"
+          ],
+          "title": "Classifier Type",
+          "type": "string"
+        },
+        "dim": {
+          "description": "Explicit dimensionality, for validation and for headers that need the dimension without loading the full values array.",
+          "minimum": 1,
+          "title": "Dim",
+          "type": "integer"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional categorical label (e.g. 'capital-city', 'past-tense').",
+          "title": "Label"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Freeform string-keyed metadata for caller-specific extensions.",
+          "title": "Metadata",
+          "type": "object"
+        },
+        "origin": {
+          "const": "probe",
+          "default": "probe",
+          "title": "Origin",
+          "type": "string"
+        },
+        "target_label": {
+          "description": "What the probe predicts.",
+          "title": "Target Label",
+          "type": "string"
+        },
+        "values": {
+          "description": "The vector's components. Length equals `dim`. Dtype is float on the wire; callers preserving bf16 should convert at the transport boundary.",
+          "items": {
+            "type": "number"
+          },
+          "title": "Values",
+          "type": "array"
+        }
+      },
+      "required": [
+        "values",
+        "dim",
+        "target_label"
+      ],
+      "title": "ProbeVector",
+      "type": "object"
+    },
+    "SteeringVector": {
+      "description": "A learned or derived direction intended for intervention.\n\nCarries a description of how it was derived \u2014 usually a short\nnatural-language note (\"centroid of capital-city fact vectors minus\ncentroid of person-name fact vectors at L23.resid_post\", or \"SVD\ncomponent 0 of W_V for (L23, H5)\"). Downstream consumers that need\nto reproduce or compose steering vectors read the description.",
+      "properties": {
+        "derivation": {
+          "description": "Short description of how this direction was derived.",
+          "title": "Derivation",
+          "type": "string"
+        },
+        "dim": {
+          "description": "Explicit dimensionality, for validation and for headers that need the dimension without loading the full values array.",
+          "minimum": 1,
+          "title": "Dim",
+          "type": "integer"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional categorical label (e.g. 'capital-city', 'past-tense').",
+          "title": "Label"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Freeform string-keyed metadata for caller-specific extensions.",
+          "title": "Metadata",
+          "type": "object"
+        },
+        "origin": {
+          "const": "steering",
+          "default": "steering",
+          "title": "Origin",
+          "type": "string"
+        },
+        "target_concept": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Optional: the concept this steering vector is meant to push toward.",
+          "title": "Target Concept"
+        },
+        "values": {
+          "description": "The vector's components. Length equals `dim`. Dtype is float on the wire; callers preserving bf16 should convert at the transport boundary.",
+          "items": {
+            "type": "number"
+          },
+          "title": "Values",
+          "type": "array"
+        }
+      },
+      "required": [
+        "values",
+        "dim",
+        "derivation"
+      ],
+      "title": "SteeringVector",
+      "type": "object"
+    },
+    "Vector": {
+      "discriminator": {
+        "mapping": {
+          "captured": "#/$defs/CapturedVector",
+          "centroid": "#/$defs/CentroidVector",
+          "probe": "#/$defs/ProbeVector",
+          "steering": "#/$defs/SteeringVector"
+        },
+        "propertyName": "origin"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/CapturedVector"
+        },
+        {
+          "$ref": "#/$defs/SteeringVector"
+        },
+        {
+          "$ref": "#/$defs/ProbeVector"
+        },
+        {
+          "$ref": "#/$defs/CentroidVector"
         }
       ]
     }
