@@ -595,6 +595,160 @@
       "title": "LensTrajectory",
       "type": "object"
     },
+    "PerHeadBase": {
+      "description": "Fields every per-head data file carries.\n\n`n_heads` is the query-side head count per attention block;\n`n_kv_heads` is the (smaller) KV-side count under grouped-query\nattention. Charts rendering per-head data typically iterate the full\nn_heads \u00d7 n_layers grid; some downstream analyses care about the\nKV-grouping (e.g. KV-sharing-boundary effects) and need n_kv_heads.",
+      "properties": {
+        "description": {
+          "description": "Human-readable summary.",
+          "title": "Description",
+          "type": "string"
+        },
+        "experiment": {
+          "description": "Stable script id, e.g. 'step_32_per_head_dla'.",
+          "title": "Experiment",
+          "type": "string"
+        },
+        "global_layers": {
+          "description": "Layer indices to be visually highlighted. Same semantics as the per_layer_data.PerLayerBase field.",
+          "items": {
+            "type": "integer"
+          },
+          "title": "Global Layers",
+          "type": "array"
+        },
+        "model": {
+          "description": "HuggingFace model id.",
+          "title": "Model",
+          "type": "string"
+        },
+        "n_heads": {
+          "description": "Query-side attention heads per block.",
+          "minimum": 1,
+          "title": "N Heads",
+          "type": "integer"
+        },
+        "n_kv_heads": {
+          "description": "KV-side attention heads per block (GQA).",
+          "minimum": 1,
+          "title": "N Kv Heads",
+          "type": "integer"
+        },
+        "n_layers": {
+          "description": "Total decoder-block count.",
+          "minimum": 1,
+          "title": "N Layers",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "experiment",
+        "description",
+        "model",
+        "n_layers",
+        "n_heads",
+        "n_kv_heads",
+        "global_layers"
+      ],
+      "title": "PerHeadBase",
+      "type": "object"
+    },
+    "PerHeadData": {
+      "discriminator": {
+        "mapping": {
+          "per_head_scalar_grid": "#/$defs/PerHeadScalarGrid"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/PerHeadScalarGrid"
+        }
+      ]
+    },
+    "PerHeadScalarGrid": {
+      "description": "[n_layers \u00d7 n_heads] grid of scalar values, one per head.\n\nCovers the common archetypes: per-head DLA contribution, OV-circuit\nrank-0 singular value, attention entropy, Q/K silhouette, etc. The\n`metric_name` and `metric_units` fields on the envelope describe what\nthe numbers *mean*; consumers render accordingly.\n\nThe `values` field is stored as a flat row-major `[n_layers * n_heads]`\nlist of floats rather than a nested `list[list[float]]`. This keeps\nthe wire format JSON-native and trivially diffable; consumers reshape\non ingest.",
+      "properties": {
+        "description": {
+          "description": "Human-readable summary.",
+          "title": "Description",
+          "type": "string"
+        },
+        "experiment": {
+          "description": "Stable script id, e.g. 'step_32_per_head_dla'.",
+          "title": "Experiment",
+          "type": "string"
+        },
+        "global_layers": {
+          "description": "Layer indices to be visually highlighted. Same semantics as the per_layer_data.PerLayerBase field.",
+          "items": {
+            "type": "integer"
+          },
+          "title": "Global Layers",
+          "type": "array"
+        },
+        "kind": {
+          "const": "per_head_scalar_grid",
+          "default": "per_head_scalar_grid",
+          "title": "Kind",
+          "type": "string"
+        },
+        "metric_name": {
+          "description": "What the scalars measure (e.g. 'DLA contribution').",
+          "title": "Metric Name",
+          "type": "string"
+        },
+        "metric_units": {
+          "description": "Units for display (e.g. 'logit points'). Empty string if unitless.",
+          "title": "Metric Units",
+          "type": "string"
+        },
+        "model": {
+          "description": "HuggingFace model id.",
+          "title": "Model",
+          "type": "string"
+        },
+        "n_heads": {
+          "description": "Query-side attention heads per block.",
+          "minimum": 1,
+          "title": "N Heads",
+          "type": "integer"
+        },
+        "n_kv_heads": {
+          "description": "KV-side attention heads per block (GQA).",
+          "minimum": 1,
+          "title": "N Kv Heads",
+          "type": "integer"
+        },
+        "n_layers": {
+          "description": "Total decoder-block count.",
+          "minimum": 1,
+          "title": "N Layers",
+          "type": "integer"
+        },
+        "values": {
+          "description": "Row-major [n_layers * n_heads] flat list. values[layer * n_heads + head] is the scalar for (layer, head).",
+          "items": {
+            "type": "number"
+          },
+          "title": "Values",
+          "type": "array"
+        }
+      },
+      "required": [
+        "experiment",
+        "description",
+        "model",
+        "n_layers",
+        "n_heads",
+        "n_kv_heads",
+        "global_layers",
+        "metric_name",
+        "metric_units",
+        "values"
+      ],
+      "title": "PerHeadScalarGrid",
+      "type": "object"
+    },
     "PerLayerBase": {
       "description": "Fields every per-layer chart-data file carries.\n\n`experiment` is the stable id of the source script (matches the Python\nmodule name). `model` is the HuggingFace model id. `n_layers` and\n`global_layers` describe the model's layer structure so charts can\nadapt across model variants (E4B: 42, E2B: 30, ...).",
       "properties": {

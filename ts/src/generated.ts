@@ -193,15 +193,15 @@ export type Steps = LensStep[];
  */
 export type TargetToken = string;
 /**
- * Human-readable summary; appears in chart footers.
+ * Human-readable summary.
  */
 export type Description3 = string;
 /**
- * Stable script id, e.g. 'step_02_layer_ablation'.
+ * Stable script id, e.g. 'step_32_per_head_dla'.
  */
 export type Experiment3 = string;
 /**
- * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
+ * Layer indices to be visually highlighted. Same semantics as the per_layer_data.PerLayerBase field.
  */
 export type GlobalLayers3 = number[];
 /**
@@ -209,9 +209,83 @@ export type GlobalLayers3 = number[];
  */
 export type Model3 = string;
 /**
+ * Query-side attention heads per block.
+ */
+export type NHeads = number;
+/**
+ * KV-side attention heads per block (GQA).
+ */
+export type NKvHeads = number;
+/**
  * Total decoder-block count.
  */
 export type NLayers3 = number;
+/**
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "PerHeadData".
+ */
+export type PerHeadData = PerHeadScalarGrid;
+/**
+ * Human-readable summary.
+ */
+export type Description4 = string;
+/**
+ * Stable script id, e.g. 'step_32_per_head_dla'.
+ */
+export type Experiment4 = string;
+/**
+ * Layer indices to be visually highlighted. Same semantics as the per_layer_data.PerLayerBase field.
+ */
+export type GlobalLayers4 = number[];
+export type Kind4 = "per_head_scalar_grid";
+/**
+ * What the scalars measure (e.g. 'DLA contribution').
+ */
+export type MetricName1 = string;
+/**
+ * Units for display (e.g. 'logit points'). Empty string if unitless.
+ */
+export type MetricUnits1 = string;
+/**
+ * HuggingFace model id.
+ */
+export type Model4 = string;
+/**
+ * Query-side attention heads per block.
+ */
+export type NHeads1 = number;
+/**
+ * KV-side attention heads per block (GQA).
+ */
+export type NKvHeads1 = number;
+/**
+ * Total decoder-block count.
+ */
+export type NLayers4 = number;
+/**
+ * Row-major [n_layers * n_heads] flat list. values[layer * n_heads + head] is the scalar for (layer, head).
+ */
+export type Values1 = number[];
+/**
+ * Human-readable summary; appears in chart footers.
+ */
+export type Description5 = string;
+/**
+ * Stable script id, e.g. 'step_02_layer_ablation'.
+ */
+export type Experiment5 = string;
+/**
+ * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
+ */
+export type GlobalLayers5 = number[];
+/**
+ * HuggingFace model id.
+ */
+export type Model5 = string;
+/**
+ * Total decoder-block count.
+ */
+export type NLayers5 = number;
 /**
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "PerLayerData".
@@ -388,6 +462,56 @@ export interface Metadata {
   [k: string]: string;
 }
 /**
+ * Fields every per-head data file carries.
+ *
+ * `n_heads` is the query-side head count per attention block;
+ * `n_kv_heads` is the (smaller) KV-side count under grouped-query
+ * attention. Charts rendering per-head data typically iterate the full
+ * n_heads × n_layers grid; some downstream analyses care about the
+ * KV-grouping (e.g. KV-sharing-boundary effects) and need n_kv_heads.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "PerHeadBase".
+ */
+export interface PerHeadBase {
+  description: Description3;
+  experiment: Experiment3;
+  global_layers: GlobalLayers3;
+  model: Model3;
+  n_heads: NHeads;
+  n_kv_heads: NKvHeads;
+  n_layers: NLayers3;
+}
+/**
+ * [n_layers × n_heads] grid of scalar values, one per head.
+ *
+ * Covers the common archetypes: per-head DLA contribution, OV-circuit
+ * rank-0 singular value, attention entropy, Q/K silhouette, etc. The
+ * `metric_name` and `metric_units` fields on the envelope describe what
+ * the numbers *mean*; consumers render accordingly.
+ *
+ * The `values` field is stored as a flat row-major `[n_layers * n_heads]`
+ * list of floats rather than a nested `list[list[float]]`. This keeps
+ * the wire format JSON-native and trivially diffable; consumers reshape
+ * on ingest.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "PerHeadScalarGrid".
+ */
+export interface PerHeadScalarGrid {
+  description: Description4;
+  experiment: Experiment4;
+  global_layers: GlobalLayers4;
+  kind?: Kind4;
+  metric_name: MetricName1;
+  metric_units: MetricUnits1;
+  model: Model4;
+  n_heads: NHeads1;
+  n_kv_heads: NKvHeads1;
+  n_layers: NLayers4;
+  values: Values1;
+}
+/**
  * Fields every per-layer chart-data file carries.
  *
  * `experiment` is the stable id of the source script (matches the Python
@@ -399,9 +523,9 @@ export interface Metadata {
  * via the `definition` "PerLayerBase".
  */
 export interface PerLayerBase {
-  description: Description3;
-  experiment: Experiment3;
-  global_layers: GlobalLayers3;
-  model: Model3;
-  n_layers: NLayers3;
+  description: Description5;
+  experiment: Experiment5;
+  global_layers: GlobalLayers5;
+  model: Model5;
+  n_layers: NLayers5;
 }

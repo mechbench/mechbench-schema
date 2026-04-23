@@ -12,6 +12,11 @@ or rendered by a non-Python consumer, it belongs here. If the shape is only
 used as an in-memory container within a single repo, it does not.
 """
 
+from .per_head_data import (
+    PerHeadBase,
+    PerHeadData,
+    PerHeadScalarGrid,
+)
 from .per_layer_data import (
     AblationPrompt,
     ConvergencePayload,
@@ -30,7 +35,7 @@ from .records import (
     FactVectorRecord,
 )
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 __all__ = [
     # Per-layer data (records indexed by transformer layer)
@@ -43,6 +48,10 @@ __all__ = [
     "ConvergenceRow",
     "ConvergencePayload",
     "PerLayerData",
+    # Per-head data (records indexed by (layer, head))
+    "PerHeadBase",
+    "PerHeadScalarGrid",
+    "PerHeadData",
     # Emission records (cross-repo)
     "LensTrajectory",
     "LensStep",
