@@ -16,6 +16,11 @@ from .attention_trace import (
     AttentionPattern,
     AttentionTraceData,
 )
+from .codec_cbor import (
+    dump_canonical,
+    load_canonical,
+    load_raw,
+)
 from .identity import (
     InvalidPathError,
     MechbenchPath,

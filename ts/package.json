@@ -2,7 +2,11 @@
   "name": "mechbench-schema",
   "version": "0.1.0",
   "description": "TypeScript bindings for the mechbench emission schema. Generated from Pydantic models; see ../src/mechbench_schema/ for the source of truth.",
-  "keywords": ["interpretability", "schema", "mechbench"],
+  "keywords": [
+    "interpretability",
+    "schema",
+    "mechbench"
+  ],
   "author": "Benji Smith <benji@shaxpir.com>",
   "license": "MIT",
   "type": "module",
@@ -23,5 +27,8 @@
   },
   "devDependencies": {
     "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "cbor2": "^2.3.0"
   }
 }

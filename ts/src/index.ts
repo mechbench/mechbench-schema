@@ -4,3 +4,4 @@
 
 // Node ESM requires the .js extension on relative imports, even in TS source.
 export * from "./generated.js";
+export { dumpCanonical, loadCanonical } from "./codec-cbor.js";
