@@ -239,6 +239,38 @@ export type NLayers = number;
  */
 export type PivotLayer = number;
 /**
+ * ISO-8601 UTC timestamp, e.g. '2026-08-17T21:04:05Z'.
+ */
+export type CreatedAt = string;
+/**
+ * Recording granularity for document data. See module docstring for
+ * the degradation-chain contract.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "Fidelity".
+ */
+export type Fidelity = "text" | "segments" | "trace";
+/**
+ * Paths of the objects this one was computed from.
+ */
+export type Inputs = string[];
+/**
+ * 'sha256:<hex>' fingerprint of the run configuration (fingerprint_params).
+ */
+export type ParamsFingerprint = string | null;
+/**
+ * Producing package/script id, e.g. 'mechbench-core'.
+ */
+export type Tool = string;
+/**
+ * Version or commit of the producing tool.
+ */
+export type Version = string;
+/**
+ * mechbench-schema version at write time.
+ */
+export type SchemaVersion = string;
+/**
  * Prompt-set category tag (e.g. 'landmark', 'capital'). Pass an empty string when the prompt set has no categorical metadata.
  */
 export type Category = string;
@@ -729,6 +761,10 @@ export interface ConvergencePayload {
   model: Model;
   n_layers: NLayers;
   pivot_layer: PivotLayer;
+  /**
+   * Emission provenance (task 000237). Optional on read for records written before 0.9.0; the API requires it on new writes.
+   */
+  provenance?: Provenance | null;
 }
 /**
  * One source experiment's contribution to a cross-experiment summary.
@@ -748,6 +784,45 @@ export interface ConvergenceRow {
   second_layers: SecondLayers;
   source: Source;
   title: Title;
+}
+/**
+ * What produced an emitted object, from what, when.
+ *
+ * `created_at` is an ISO-8601 UTC timestamp string (e.g.
+ * '2026-08-17T21:04:05Z'). `inputs` are the MechbenchPaths (including
+ * `~hash/...` forms) of the objects this one was computed from — the
+ * lineage index is derived from this list at emission time.
+ * `params_fingerprint` comes from `fingerprint_params` over the run
+ * config. `schema_version` records the mechbench-schema version the
+ * object was written under.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "Provenance".
+ */
+export interface Provenance {
+  created_at: CreatedAt;
+  /**
+   * Recording granularity, for document-bearing objects; None otherwise.
+   */
+  fidelity?: Fidelity | null;
+  inputs?: Inputs;
+  params_fingerprint?: ParamsFingerprint;
+  produced_by: ToolInfo;
+  schema_version: SchemaVersion;
+}
+/**
+ * The producing tool, pinned to a version.
+ *
+ * `tool` is a package or script identity (e.g. 'mechbench-core');
+ * `version` is its release or commit identifier. Together they are the
+ * coarse code-fingerprint until 000162 introduces fine-grained ones.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "ToolInfo".
+ */
+export interface ToolInfo {
+  tool: Tool;
+  version: Version;
 }
 /**
  * One prompt's contribution to a DLA sweep (target vs. distractor).
@@ -779,6 +854,10 @@ export interface DlaSweepPayload {
   model: Model1;
   n_layers: NLayers1;
   prompts: Prompts;
+  /**
+   * Emission provenance (task 000237). Optional on read for records written before 0.9.0; the API requires it on new writes.
+   */
+  provenance?: Provenance | null;
 }
 /**
  * Per-layer summary statistics across a prompt battery.
@@ -805,6 +884,10 @@ export interface LayerAblationPayload {
   model: Model2;
   n_layers: NLayers2;
   prompts: Prompts1;
+  /**
+   * Emission provenance (task 000237). Optional on read for records written before 0.9.0; the API requires it on new writes.
+   */
+  provenance?: Provenance | null;
 }
 /**
  * A logit-lens trajectory over layers and positions.
@@ -910,6 +993,10 @@ export interface PerLayerBase {
   global_layers: GlobalLayers6;
   model: Model6;
   n_layers: NLayers6;
+  /**
+   * Emission provenance (task 000237). Optional on read for records written before 0.9.0; the API requires it on new writes.
+   */
+  provenance?: Provenance | null;
 }
 /**
  * Fields every per-(layer, position) record carries.

@@ -31,6 +31,8 @@ from typing import Annotated, Literal, Union
 
 from pydantic import BaseModel, Field
 
+from .provenance import Provenance
+
 
 # --- Common envelope fields ---------------------------------------------------
 
@@ -55,6 +57,14 @@ class PerLayerBase(BaseModel):
             "fresh-KV / MoE-routing / whatever architectural non-uniformity. "
             "Pass an empty list if the architecture has no layers worth "
             "highlighting."
+        ),
+    )
+    provenance: Provenance | None = Field(
+        None,
+        description=(
+            "Emission provenance (task 000237). Optional on read for "
+            "records written before 0.9.0; the API requires it on new "
+            "writes."
         ),
     )
 

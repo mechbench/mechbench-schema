@@ -472,6 +472,18 @@
           "minimum": 0,
           "title": "Pivot Layer",
           "type": "integer"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Emission provenance (task 000237). Optional on read for records written before 0.9.0; the API requires it on new writes."
         }
       },
       "required": [
@@ -668,6 +680,18 @@
           },
           "title": "Prompts",
           "type": "array"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Emission provenance (task 000237). Optional on read for records written before 0.9.0; the API requires it on new writes."
         }
       },
       "required": [
@@ -681,6 +705,16 @@
       ],
       "title": "DlaSweepPayload",
       "type": "object"
+    },
+    "Fidelity": {
+      "description": "Recording granularity for document data. See module docstring for\nthe degradation-chain contract.",
+      "enum": [
+        "text",
+        "segments",
+        "trace"
+      ],
+      "title": "Fidelity",
+      "type": "string"
     },
     "HookKind": {
       "enum": [
@@ -740,6 +774,18 @@
           },
           "title": "Prompts",
           "type": "array"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Emission provenance (task 000237). Optional on read for records written before 0.9.0; the API requires it on new writes."
         }
       },
       "required": [
@@ -1111,6 +1157,18 @@
           "minimum": 1,
           "title": "N Layers",
           "type": "integer"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Emission provenance (task 000237). Optional on read for records written before 0.9.0; the API requires it on new writes."
         }
       },
       "required": [
@@ -1304,6 +1362,65 @@
       "title": "ProbeVector",
       "type": "object"
     },
+    "Provenance": {
+      "description": "What produced an emitted object, from what, when.\n\n`created_at` is an ISO-8601 UTC timestamp string (e.g.\n'2026-08-17T21:04:05Z'). `inputs` are the MechbenchPaths (including\n`~hash/...` forms) of the objects this one was computed from \u2014 the\nlineage index is derived from this list at emission time.\n`params_fingerprint` comes from `fingerprint_params` over the run\nconfig. `schema_version` records the mechbench-schema version the\nobject was written under.",
+      "properties": {
+        "created_at": {
+          "description": "ISO-8601 UTC timestamp, e.g. '2026-08-17T21:04:05Z'.",
+          "title": "Created At",
+          "type": "string"
+        },
+        "fidelity": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Fidelity"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Recording granularity, for document-bearing objects; None otherwise."
+        },
+        "inputs": {
+          "description": "Paths of the objects this one was computed from.",
+          "items": {
+            "description": "A mechbench object id. See mechbench/docs/IDENTITY_AND_NAMESPACING.md for the full grammar. Five categories: user-named (<owner>/<project>/.../<leaf>), canonical (~canonical/<area>/.../<leaf>), platform (~system/<area>/.../<leaf>), global content-hashed (~hash/<algo>:<digest>), and workspace-scoped content-hashed (<owner>/<project>/~hash/<algo>:<digest>).",
+            "type": "string"
+          },
+          "title": "Inputs",
+          "type": "array"
+        },
+        "params_fingerprint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "'sha256:<hex>' fingerprint of the run configuration (fingerprint_params).",
+          "title": "Params Fingerprint"
+        },
+        "produced_by": {
+          "$ref": "#/$defs/ToolInfo"
+        },
+        "schema_version": {
+          "description": "mechbench-schema version at write time.",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "created_at",
+        "produced_by",
+        "schema_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
     "SteeringVector": {
       "description": "A learned or derived direction intended for intervention.\n\nCarries a description of how it was derived \u2014 usually a short\nnatural-language note (\"centroid of capital-city fact vectors minus\ncentroid of person-name fact vectors at L23.resid_post\", or \"SVD\ncomponent 0 of W_V for (L23, H5)\"). Downstream consumers that need\nto reproduce or compose steering vectors read the description.",
       "properties": {
@@ -1373,6 +1490,27 @@
         "derivation"
       ],
       "title": "SteeringVector",
+      "type": "object"
+    },
+    "ToolInfo": {
+      "description": "The producing tool, pinned to a version.\n\n`tool` is a package or script identity (e.g. 'mechbench-core');\n`version` is its release or commit identifier. Together they are the\ncoarse code-fingerprint until 000162 introduces fine-grained ones.",
+      "properties": {
+        "tool": {
+          "description": "Producing package/script id, e.g. 'mechbench-core'.",
+          "title": "Tool",
+          "type": "string"
+        },
+        "version": {
+          "description": "Version or commit of the producing tool.",
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tool",
+        "version"
+      ],
+      "title": "ToolInfo",
       "type": "object"
     },
     "Vector": {

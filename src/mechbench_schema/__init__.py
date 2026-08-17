@@ -42,6 +42,14 @@ from .per_head_data import (
     PerHeadData,
     PerHeadScalarGrid,
 )
+from .provenance import (
+    Emitted,
+    Fidelity,
+    Provenance,
+    ToolInfo,
+    fidelity_satisfies,
+    fingerprint_params,
+)
 from .per_layer_data import (
     AblationPrompt,
     ConvergencePayload,
@@ -67,9 +75,16 @@ from .vector_data import (
     Vector,
 )
 
-__version__ = "0.8.0"
+__version__ = "0.9.0"
 
 __all__ = [
+    # Provenance + fidelity (the emission envelope, task 000237)
+    "Provenance",
+    "ToolInfo",
+    "Emitted",
+    "Fidelity",
+    "fidelity_satisfies",
+    "fingerprint_params",
     # Per-layer data (records indexed by transformer layer)
     "PerLayerBase",
     "LayerAggregates",
