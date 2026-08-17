@@ -42,6 +42,24 @@ from .per_head_data import (
     PerHeadData,
     PerHeadScalarGrid,
 )
+from .document_data import (
+    AnnotationAnchor,
+    AnnotationLayer,
+    AnnotationValue,
+    BASE_KIND_ANNOTATED_TOKENS,
+    BASE_KIND_CONVERSATION,
+    BASE_KIND_TEXT,
+    DocumentCollection,
+    DocumentItem,
+    DocumentPayload,
+    GenerationSpan,
+    KindManifest,
+    RendererBinding,
+    Segment,
+    Segmentation,
+    Trace,
+    Turn,
+)
 from .provenance import (
     Emitted,
     Fidelity,
@@ -75,9 +93,26 @@ from .vector_data import (
     Vector,
 )
 
-__version__ = "0.9.0"
+__version__ = "0.10.0"
 
 __all__ = [
+    # Document collections + annotations + kind manifests (task 000239)
+    "DocumentCollection",
+    "DocumentItem",
+    "DocumentPayload",
+    "Trace",
+    "GenerationSpan",
+    "Segmentation",
+    "Segment",
+    "Turn",
+    "AnnotationLayer",
+    "AnnotationValue",
+    "AnnotationAnchor",
+    "KindManifest",
+    "RendererBinding",
+    "BASE_KIND_TEXT",
+    "BASE_KIND_CONVERSATION",
+    "BASE_KIND_ANNOTATED_TOKENS",
     # Provenance + fidelity (the emission envelope, task 000237)
     "Provenance",
     "ToolInfo",
