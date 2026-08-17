@@ -1391,6 +1391,20 @@
           "title": "Inputs",
           "type": "array"
         },
+        "operation": {
+          "anyOf": [
+            {
+              "description": "A mechbench object id. See mechbench/docs/IDENTITY_AND_NAMESPACING.md for the full grammar. Five categories: user-named (<owner>/<project>/.../<leaf>), canonical (~canonical/<area>/.../<leaf>), platform (~system/<area>/.../<leaf>), global content-hashed (~hash/<algo>:<digest>), and workspace-scoped content-hashed (<owner>/<project>/~hash/<algo>:<digest>).",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The operation that produced this object (task 000248) \u2014 a registered op path when one exists. Optional until the operation registry lands; recording it now prevents archaeology later.",
+          "title": "Operation"
+        },
         "params_fingerprint": {
           "anyOf": [
             {
@@ -1403,6 +1417,20 @@
           "default": null,
           "description": "'sha256:<hex>' fingerprint of the run configuration (fingerprint_params).",
           "title": "Params Fingerprint"
+        },
+        "params_ref": {
+          "anyOf": [
+            {
+              "description": "A mechbench object id. See mechbench/docs/IDENTITY_AND_NAMESPACING.md for the full grammar. Five categories: user-named (<owner>/<project>/.../<leaf>), canonical (~canonical/<area>/.../<leaf>), platform (~system/<area>/.../<leaf>), global content-hashed (~hash/<algo>:<digest>), and workspace-scoped content-hashed (<owner>/<project>/~hash/<algo>:<digest>).",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Path of a stored params object (recoverable, unlike params_fingerprint which is only verifiable).",
+          "title": "Params Ref"
         },
         "produced_by": {
           "$ref": "#/$defs/ToolInfo"

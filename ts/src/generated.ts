@@ -255,9 +255,17 @@ export type Fidelity = "text" | "segments" | "trace";
  */
 export type Inputs = string[];
 /**
+ * The operation that produced this object (task 000248) — a registered op path when one exists. Optional until the operation registry lands; recording it now prevents archaeology later.
+ */
+export type Operation = string | null;
+/**
  * 'sha256:<hex>' fingerprint of the run configuration (fingerprint_params).
  */
 export type ParamsFingerprint = string | null;
+/**
+ * Path of a stored params object (recoverable, unlike params_fingerprint which is only verifiable).
+ */
+export type ParamsRef = string | null;
 /**
  * Producing package/script id, e.g. 'mechbench-core'.
  */
@@ -806,7 +814,9 @@ export interface Provenance {
    */
   fidelity?: Fidelity | null;
   inputs?: Inputs;
+  operation?: Operation;
   params_fingerprint?: ParamsFingerprint;
+  params_ref?: ParamsRef;
   produced_by: ToolInfo;
   schema_version: SchemaVersion;
 }

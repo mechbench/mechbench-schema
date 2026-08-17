@@ -60,6 +60,10 @@ from .document_data import (
     Trace,
     Turn,
 )
+from .metric_data import (
+    MetricColumn,
+    MetricTable,
+)
 from .provenance import (
     Emitted,
     Fidelity,
@@ -93,7 +97,7 @@ from .vector_data import (
     Vector,
 )
 
-__version__ = "0.10.0"
+__version__ = "0.11.0"
 
 __all__ = [
     # Document collections + annotations + kind manifests (task 000239)
@@ -113,6 +117,9 @@ __all__ = [
     "BASE_KIND_TEXT",
     "BASE_KIND_CONVERSATION",
     "BASE_KIND_ANNOTATED_TOKENS",
+    # Metric tables (task 000244)
+    "MetricTable",
+    "MetricColumn",
     # Provenance + fidelity (the emission envelope, task 000237)
     "Provenance",
     "ToolInfo",

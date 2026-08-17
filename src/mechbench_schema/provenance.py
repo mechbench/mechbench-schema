@@ -112,6 +112,22 @@ class Provenance(BaseModel):
         None,
         description="Recording granularity, for document-bearing objects; None otherwise.",
     )
+    operation: MechbenchPath | None = Field(
+        None,
+        description=(
+            "The operation that produced this object (task 000248) — a "
+            "registered op path when one exists. Optional until the "
+            "operation registry lands; recording it now prevents "
+            "archaeology later."
+        ),
+    )
+    params_ref: MechbenchPath | None = Field(
+        None,
+        description=(
+            "Path of a stored params object (recoverable, unlike "
+            "params_fingerprint which is only verifiable)."
+        ),
+    )
 
 
 class Emitted(BaseModel):
