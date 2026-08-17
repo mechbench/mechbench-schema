@@ -192,8 +192,16 @@ class RendererBinding(BaseModel):
     primitive. `field_map` maps primitive slots (e.g. 'text', 'tokens',
     'color_layer') to payload field names or annotation-layer names."""
 
-    primitive: Literal["text", "token_highlighter", "chat", "table"]
-    field_map: dict[str, str] = Field(default_factory=dict)
+    primitive: Literal["text", "token_highlighter", "chat", "table", "series"]
+    field_map: dict[str, str] = Field(
+        default_factory=dict,
+        description=(
+            "Primitive-slot -> payload-field mapping. series slots: rows "
+            "(record-array field), x, y, label; optional orientation "
+            "('horizontal' = domain left-to-right, default; 'vertical' = "
+            "domain top-to-bottom)."
+        ),
+    )
 
 
 class KindManifest(BaseModel):
@@ -207,6 +215,15 @@ class KindManifest(BaseModel):
     version: str = Field(..., description="Manifest version; immutable once registered.")
     item_schema: dict[str, Any]
     renderer: RendererBinding
+    collection_renderer: RendererBinding | None = Field(
+        None,
+        description=(
+            "Optional collection-level view (docs/THE_BENCH.md §4.6 / task "
+            "000250): renders the current page of items onto ONE canvas "
+            "(e.g. series -> one line per item, item id as legend). Small "
+            "collections with a collection renderer default to it."
+        ),
+    )
     provenance: Provenance | None = None
 
 
