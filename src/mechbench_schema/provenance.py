@@ -46,12 +46,12 @@ from .identity import MechbenchPath
 class ToolInfo(BaseModel):
     """The producing tool, pinned to a version.
 
-    `tool` is a package or script identity (e.g. 'mechbench-core');
+    `tool` is a package or script identity (e.g. 'mechbench-compute');
     `version` is its release or commit identifier. Together they are the
     coarse code-fingerprint until 000162 introduces fine-grained ones.
     """
 
-    tool: str = Field(..., description="Producing package/script id, e.g. 'mechbench-core'.")
+    tool: str = Field(..., description="Producing package/script id, e.g. 'mechbench-compute'.")
     version: str = Field(..., description="Version or commit of the producing tool.")
 
 

@@ -126,7 +126,7 @@ Version 0.8.0. Seven modules in active use; the legacy `records.py` holding pen 
 Open work lives in the meta repo's [`tasks/mechbench-schema/`](https://github.com/mechbench/mechbench/tree/main/tasks/mechbench-schema) directory. The two notable open epics downstream of this repo:
 
 - **[`000161`](https://github.com/mechbench/mechbench/tree/main/tasks/mechbench-schema/open)** — compact binary formats for records at rest and in transit (safetensors for tensor-bulk, parquet for record-collections).
-- **[`000163`](https://github.com/mechbench/mechbench/tree/main/tasks/mechbench-meta/open)** — the identity-and-namespacing epic that produced `MechbenchPath`; Phase 4 (content-addressing grammar) remains open and coordinates with [`000162`](https://github.com/mechbench/mechbench/tree/main/tasks/mechbench-core/open) (the DAG-solver epic in `mechbench-core`).
+- **[`000163`](https://github.com/mechbench/mechbench/tree/main/tasks/mechbench-meta/open)** — the identity-and-namespacing epic that produced `MechbenchPath`; Phase 4 (content-addressing grammar) remains open and coordinates with [`000162`](https://github.com/mechbench/mechbench/tree/main/tasks/mechbench-compute/open) (the DAG-solver epic in `mechbench-compute`).
 
 ## License
 

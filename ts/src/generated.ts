@@ -267,7 +267,7 @@ export type ParamsFingerprint = string | null;
  */
 export type ParamsRef = string | null;
 /**
- * Producing package/script id, e.g. 'mechbench-core'.
+ * Producing package/script id, e.g. 'mechbench-compute'.
  */
 export type Tool = string;
 /**
@@ -823,7 +823,7 @@ export interface Provenance {
 /**
  * The producing tool, pinned to a version.
  *
- * `tool` is a package or script identity (e.g. 'mechbench-core');
+ * `tool` is a package or script identity (e.g. 'mechbench-compute');
  * `version` is its release or commit identifier. Together they are the
  * coarse code-fingerprint until 000162 introduces fine-grained ones.
  *

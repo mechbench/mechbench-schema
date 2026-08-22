@@ -9,7 +9,7 @@ Four origins today, discriminated by the `origin` field:
 
   captured    — A vector read from a specific (hook_point, prompt_id,
                  position, layer) during a forward pass. The atomic
-                 unit of the geometry analyses in mechbench-core.
+                 unit of the geometry analyses in mechbench-compute.
                  Migrated from the old records.py `FactVectorRecord`.
   steering    — A learned or derived direction applied as an
                  intervention. Carries the derivation story.
@@ -71,7 +71,7 @@ class _VectorBase(BaseModel):
         return self
 
 
-# Hook-point kinds known to mechbench-core._arch.LAYER_HOOK_POINTS.
+# Hook-point kinds known to mechbench-compute._arch.LAYER_HOOK_POINTS.
 # Kept in a Literal to generate a tight TypeScript union on the UI side.
 HookKind = Literal[
     "resid_pre",

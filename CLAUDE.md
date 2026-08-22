@@ -22,7 +22,7 @@ Belongs here: any shape that is serialized, sent over the wire, or rendered by a
 
 Does NOT belong here:
 
-- In-memory containers used only within `mechbench-core` (→ keep in core).
+- In-memory containers used only within `mechbench-compute` (→ keep in core).
 - Runtime helpers, computation functions, side effects (→ core, or another repo).
 - Matplotlib or TS rendering logic (→ core / ui).
 - Experiment-specific record types (→ experiments can subclass or compose locally).
@@ -55,7 +55,7 @@ cd ts && npm install && npm run build
 
 ## Relationship to the rest of the family
 
-- `mechbench-core` imports Python types from here. Currently a soft dep — upgrade to hard dep once the emission layer is formalized.
+- `mechbench-compute` imports Python types from here. Currently a soft dep — upgrade to hard dep once the emission layer is formalized.
 - `mechbench-ui` imports TS types from the npm package.
 - `mechbench-runner`, `mechbench-remote`, `mechbench-experiments` all import the Python types.
 - `mechbench-skills` uses both halves (Python primitives + TS visualizers depend on matching schema).

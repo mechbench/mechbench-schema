@@ -101,7 +101,7 @@ VECTORS: list[tuple[str, Any, str]] = [
             "fidelity": "trace",
             "inputs": ["benji/proj/corpora/stories"],
             "params_fingerprint": None,
-            "produced_by": {"tool": "mechbench-core", "version": "0.7.0"},
+            "produced_by": {"tool": "mechbench-compute", "version": "0.7.0"},
             "schema_version": "0.9.0",
         },
         "a666696e7075747381781a62656e6a692f70726f6a2f636f72706f72612f73746f7269657368666964656c6974796574726163656a637265617465645f617474323032362d30382d31375432313a30303a30305a6b70726f64756365645f6279a264746f6f6c6e6d65636862656e63682d636f72656776657273696f6e65302e372e306e736368656d615f76657273696f6e65302e392e3072706172616d735f66696e6765727072696e74f6",

@@ -1,7 +1,7 @@
 """mechbench-schema — typed emission contract for the mechbench family.
 
 This package is the single source of truth for every interpretability-record
-shape that crosses a repo boundary. Python consumers (mechbench-core,
+shape that crosses a repo boundary. Python consumers (mechbench-compute,
 mechbench-runner, mechbench-remote, mechbench-experiments) import types from
 here; TypeScript consumers (mechbench-ui) import types from the parallel
 mechbench-schema npm package, which is generated from these Pydantic models

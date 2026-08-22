@@ -1521,10 +1521,10 @@
       "type": "object"
     },
     "ToolInfo": {
-      "description": "The producing tool, pinned to a version.\n\n`tool` is a package or script identity (e.g. 'mechbench-core');\n`version` is its release or commit identifier. Together they are the\ncoarse code-fingerprint until 000162 introduces fine-grained ones.",
+      "description": "The producing tool, pinned to a version.\n\n`tool` is a package or script identity (e.g. 'mechbench-compute');\n`version` is its release or commit identifier. Together they are the\ncoarse code-fingerprint until 000162 introduces fine-grained ones.",
       "properties": {
         "tool": {
-          "description": "Producing package/script id, e.g. 'mechbench-core'.",
+          "description": "Producing package/script id, e.g. 'mechbench-compute'.",
           "title": "Tool",
           "type": "string"
         },
