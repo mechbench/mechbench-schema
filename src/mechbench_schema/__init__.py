@@ -2,7 +2,7 @@
 
 This package is the single source of truth for every interpretability-record
 shape that crosses a repo boundary. Python consumers (mechbench-core,
-mechbench-agent, mechbench-remote, mechbench-experiments) import types from
+mechbench-runner, mechbench-remote, mechbench-experiments) import types from
 here; TypeScript consumers (mechbench-ui) import types from the parallel
 mechbench-schema npm package, which is generated from these Pydantic models
 via scripts/codegen.py.
