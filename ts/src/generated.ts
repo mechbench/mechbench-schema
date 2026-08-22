@@ -179,10 +179,6 @@ export type Silhouette = number | null;
  */
 export type Description = string;
 /**
- * Stable script id, e.g. 'step_02_layer_ablation'.
- */
-export type Experiment = string;
-/**
  * The findings-doc id (e.g. '04', '33').
  */
 export type Finding = string;
@@ -238,6 +234,10 @@ export type NLayers = number;
  * The layer the convergence centers on.
  */
 export type PivotLayer = number;
+/**
+ * Stable id of the producing protocol, e.g. 'step_02_layer_ablation'.
+ */
+export type Protocol = string;
 /**
  * ISO-8601 UTC timestamp, e.g. '2026-08-17T21:04:05Z'.
  */
@@ -304,10 +304,6 @@ export type Median = number[];
  */
 export type Description1 = string;
 /**
- * Stable script id, e.g. 'step_02_layer_ablation'.
- */
-export type Experiment1 = string;
-/**
  * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
 export type GlobalLayers1 = number[];
@@ -322,6 +318,10 @@ export type Model1 = string;
 export type NLayers1 = number;
 export type Prompts = DlaPrompt[];
 /**
+ * Stable id of the producing protocol, e.g. 'step_02_layer_ablation'.
+ */
+export type Protocol1 = string;
+/**
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "HookKind".
  */
@@ -330,10 +330,6 @@ export type HookKind1 = "resid_pre" | "resid_post" | "attn_out" | "mlp_out" | "g
  * Human-readable summary; appears in chart footers.
  */
 export type Description2 = string;
-/**
- * Stable script id, e.g. 'step_02_layer_ablation'.
- */
-export type Experiment2 = string;
 /**
  * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
@@ -349,13 +345,13 @@ export type Model2 = string;
 export type NLayers2 = number;
 export type Prompts1 = AblationPrompt[];
 /**
+ * Stable id of the producing protocol, e.g. 'step_02_layer_ablation'.
+ */
+export type Protocol2 = string;
+/**
  * Human-readable summary.
  */
 export type Description3 = string;
-/**
- * Stable script id, e.g. 'step_01_logit_lens_batch'.
- */
-export type Experiment3 = string;
 /**
  * Layer indices to be visually highlighted. Same semantics as the other domain-axis modules. Empty list if the architecture has no layers worth highlighting.
  */
@@ -381,6 +377,10 @@ export type PromptId1 = string;
  * The raw prompt text.
  */
 export type PromptText = string;
+/**
+ * Stable id of the producing protocol, e.g. 'step_01_logit_lens_batch'.
+ */
+export type Protocol3 = string;
 /**
  * Rank of target_token under the lens at each (layer, position). Flat row-major, length n_layers * seq_len. 0 == top-1.
  */
@@ -422,10 +422,6 @@ export type PathCategory = "user_named" | "canonical" | "platform" | "global_has
  */
 export type Description4 = string;
 /**
- * Stable script id, e.g. 'step_32_per_head_dla'.
- */
-export type Experiment4 = string;
-/**
  * Layer indices to be visually highlighted. Same semantics as the per_layer_data.PerLayerBase field.
  */
 export type GlobalLayers4 = number[];
@@ -446,6 +442,10 @@ export type NKvHeads = number;
  */
 export type NLayers4 = number;
 /**
+ * Stable id of the producing protocol, e.g. 'step_32_per_head_dla'.
+ */
+export type Protocol4 = string;
+/**
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "PerHeadData".
  */
@@ -454,10 +454,6 @@ export type PerHeadData = PerHeadScalarGrid;
  * Human-readable summary.
  */
 export type Description5 = string;
-/**
- * Stable script id, e.g. 'step_32_per_head_dla'.
- */
-export type Experiment5 = string;
 /**
  * Layer indices to be visually highlighted. Same semantics as the per_layer_data.PerLayerBase field.
  */
@@ -488,6 +484,10 @@ export type NKvHeads1 = number;
  */
 export type NLayers5 = number;
 /**
+ * Stable id of the producing protocol, e.g. 'step_32_per_head_dla'.
+ */
+export type Protocol5 = string;
+/**
  * Row-major [n_layers * n_heads] flat list. values[layer * n_heads + head] is the scalar for (layer, head).
  */
 export type Values4 = number[];
@@ -495,10 +495,6 @@ export type Values4 = number[];
  * Human-readable summary; appears in chart footers.
  */
 export type Description6 = string;
-/**
- * Stable script id, e.g. 'step_02_layer_ablation'.
- */
-export type Experiment6 = string;
 /**
  * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
@@ -512,6 +508,10 @@ export type Model6 = string;
  */
 export type NLayers6 = number;
 /**
+ * Stable id of the producing protocol, e.g. 'step_02_layer_ablation'.
+ */
+export type Protocol6 = string;
+/**
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "PerLayerData".
  */
@@ -520,10 +520,6 @@ export type PerLayerData = LayerAblationPayload | DlaSweepPayload | ConvergenceP
  * Human-readable summary.
  */
 export type Description7 = string;
-/**
- * Stable script id, e.g. 'step_01_logit_lens_batch'.
- */
-export type Experiment7 = string;
 /**
  * Layer indices to be visually highlighted. Same semantics as the other domain-axis modules. Empty list if the architecture has no layers worth highlighting.
  */
@@ -544,6 +540,10 @@ export type PromptId2 = string;
  * The raw prompt text.
  */
 export type PromptText1 = string;
+/**
+ * Stable id of the producing protocol, e.g. 'step_01_logit_lens_batch'.
+ */
+export type Protocol7 = string;
 /**
  * Input sequence length.
  */
@@ -762,13 +762,13 @@ export interface Metadata5 {
  */
 export interface ConvergencePayload {
   description: Description;
-  experiment: Experiment;
   experiments: Experiments;
   global_layers: GlobalLayers;
   kind?: Kind1;
   model: Model;
   n_layers: NLayers;
   pivot_layer: PivotLayer;
+  protocol: Protocol;
   /**
    * Emission provenance (task 000237). Optional on read for records written before 0.9.0; the API requires it on new writes.
    */
@@ -858,12 +858,12 @@ export interface DlaPrompt {
 export interface DlaSweepPayload {
   aggregates: LayerAggregates;
   description: Description1;
-  experiment: Experiment1;
   global_layers: GlobalLayers1;
   kind?: Kind2;
   model: Model1;
   n_layers: NLayers1;
   prompts: Prompts;
+  protocol: Protocol1;
   /**
    * Emission provenance (task 000237). Optional on read for records written before 0.9.0; the API requires it on new writes.
    */
@@ -888,12 +888,12 @@ export interface LayerAggregates {
 export interface LayerAblationPayload {
   aggregates: LayerAggregates;
   description: Description2;
-  experiment: Experiment2;
   global_layers: GlobalLayers2;
   kind?: Kind3;
   model: Model2;
   n_layers: NLayers2;
   prompts: Prompts1;
+  protocol: Protocol2;
   /**
    * Emission provenance (task 000237). Optional on read for records written before 0.9.0; the API requires it on new writes.
    */
@@ -921,7 +921,6 @@ export interface LayerAblationPayload {
  */
 export interface LogitLensTrajectory {
   description: Description3;
-  experiment: Experiment3;
   global_layers: GlobalLayers3;
   kind?: Kind4;
   logprobs: Logprobs;
@@ -929,6 +928,7 @@ export interface LogitLensTrajectory {
   n_layers: NLayers3;
   prompt_id: PromptId1;
   prompt_text: PromptText;
+  protocol: Protocol3;
   ranks: Ranks;
   seq_len: SeqLen;
   target_token: TargetToken;
@@ -950,12 +950,12 @@ export interface LogitLensTrajectory {
  */
 export interface PerHeadBase {
   description: Description4;
-  experiment: Experiment4;
   global_layers: GlobalLayers4;
   model: Model4;
   n_heads: NHeads;
   n_kv_heads: NKvHeads;
   n_layers: NLayers4;
+  protocol: Protocol4;
 }
 /**
  * [n_layers × n_heads] grid of scalar values, one per head.
@@ -975,7 +975,6 @@ export interface PerHeadBase {
  */
 export interface PerHeadScalarGrid {
   description: Description5;
-  experiment: Experiment5;
   global_layers: GlobalLayers5;
   kind?: Kind5;
   metric_name: MetricName1;
@@ -984,13 +983,16 @@ export interface PerHeadScalarGrid {
   n_heads: NHeads1;
   n_kv_heads: NKvHeads1;
   n_layers: NLayers5;
+  protocol: Protocol5;
   values: Values4;
 }
 /**
  * Fields every per-layer chart-data file carries.
  *
- * `experiment` is the stable id of the source script (matches the Python
- * module name). `model` is the HuggingFace model id. `n_layers` and
+ * `protocol` is the stable id of the recipe that produced this data: the
+ * source script's module name for research runs, or the platform protocol
+ * for jobs queued through mechbench-api. `model` is the HuggingFace model
+ * id. `n_layers` and
  * `global_layers` describe the model's layer structure so charts can
  * adapt across model variants (E4B: 42, E2B: 30, ...).
  *
@@ -999,10 +1001,10 @@ export interface PerHeadScalarGrid {
  */
 export interface PerLayerBase {
   description: Description6;
-  experiment: Experiment6;
   global_layers: GlobalLayers6;
   model: Model6;
   n_layers: NLayers6;
+  protocol: Protocol6;
   /**
    * Emission provenance (task 000237). Optional on read for records written before 0.9.0; the API requires it on new writes.
    */
@@ -1016,12 +1018,12 @@ export interface PerLayerBase {
  */
 export interface PerLayerPerPositionBase {
   description: Description7;
-  experiment: Experiment7;
   global_layers: GlobalLayers7;
   model: Model7;
   n_layers: NLayers7;
   prompt_id: PromptId2;
   prompt_text: PromptText1;
+  protocol: Protocol7;
   seq_len: SeqLen1;
   token_labels?: TokenLabels2;
 }

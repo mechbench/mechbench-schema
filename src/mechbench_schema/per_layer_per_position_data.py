@@ -43,9 +43,9 @@ from pydantic import BaseModel, Field, model_validator
 class PerLayerPerPositionBase(BaseModel):
     """Fields every per-(layer, position) record carries."""
 
-    experiment: str = Field(
+    protocol: str = Field(
         ...,
-        description="Stable script id, e.g. 'step_01_logit_lens_batch'.",
+        description="Stable id of the producing protocol, e.g. 'step_01_logit_lens_batch'.",
     )
     description: str = Field(..., description="Human-readable summary.")
     model: str = Field(..., description="HuggingFace model id.")

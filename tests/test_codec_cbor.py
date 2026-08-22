@@ -51,7 +51,7 @@ def test_pydantic_roundtrip() -> None:
 
     # Smallest valid payload.
     payload = LayerAblationPayload(
-        experiment="test",
+        protocol="test",
         description="x",
         model="m",
         n_layers=1,

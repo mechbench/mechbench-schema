@@ -39,13 +39,15 @@ from .provenance import Provenance
 class PerLayerBase(BaseModel):
     """Fields every per-layer chart-data file carries.
 
-    `experiment` is the stable id of the source script (matches the Python
-    module name). `model` is the HuggingFace model id. `n_layers` and
+    `protocol` is the stable id of the recipe that produced this data: the
+    source script's module name for research runs, or the platform protocol
+    for jobs queued through mechbench-api. `model` is the HuggingFace model
+    id. `n_layers` and
     `global_layers` describe the model's layer structure so charts can
     adapt across model variants (E4B: 42, E2B: 30, ...).
     """
 
-    experiment: str = Field(..., description="Stable script id, e.g. 'step_02_layer_ablation'.")
+    protocol: str = Field(..., description="Stable id of the producing protocol, e.g. 'step_02_layer_ablation'.")
     description: str = Field(..., description="Human-readable summary; appears in chart footers.")
     model: str = Field(..., description="HuggingFace model id.")
     n_layers: int = Field(..., ge=1, description="Total decoder-block count.")

@@ -49,7 +49,7 @@ class PerHeadBase(BaseModel):
     KV-grouping (e.g. KV-sharing-boundary effects) and need n_kv_heads.
     """
 
-    experiment: str = Field(..., description="Stable script id, e.g. 'step_32_per_head_dla'.")
+    protocol: str = Field(..., description="Stable id of the producing protocol, e.g. 'step_32_per_head_dla'.")
     description: str = Field(..., description="Human-readable summary.")
     model: str = Field(..., description="HuggingFace model id.")
     n_layers: int = Field(..., ge=1, description="Total decoder-block count.")

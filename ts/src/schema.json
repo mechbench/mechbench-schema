@@ -430,11 +430,6 @@
           "title": "Description",
           "type": "string"
         },
-        "experiment": {
-          "description": "Stable script id, e.g. 'step_02_layer_ablation'.",
-          "title": "Experiment",
-          "type": "string"
-        },
         "experiments": {
           "items": {
             "$ref": "#/$defs/ConvergenceRow"
@@ -473,6 +468,11 @@
           "title": "Pivot Layer",
           "type": "integer"
         },
+        "protocol": {
+          "description": "Stable id of the producing protocol, e.g. 'step_02_layer_ablation'.",
+          "title": "Protocol",
+          "type": "string"
+        },
         "provenance": {
           "anyOf": [
             {
@@ -487,7 +487,7 @@
         }
       },
       "required": [
-        "experiment",
+        "protocol",
         "description",
         "model",
         "n_layers",
@@ -644,11 +644,6 @@
           "title": "Description",
           "type": "string"
         },
-        "experiment": {
-          "description": "Stable script id, e.g. 'step_02_layer_ablation'.",
-          "title": "Experiment",
-          "type": "string"
-        },
         "global_layers": {
           "description": "Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.",
           "items": {
@@ -681,6 +676,11 @@
           "title": "Prompts",
           "type": "array"
         },
+        "protocol": {
+          "description": "Stable id of the producing protocol, e.g. 'step_02_layer_ablation'.",
+          "title": "Protocol",
+          "type": "string"
+        },
         "provenance": {
           "anyOf": [
             {
@@ -695,7 +695,7 @@
         }
       },
       "required": [
-        "experiment",
+        "protocol",
         "description",
         "model",
         "n_layers",
@@ -738,11 +738,6 @@
           "title": "Description",
           "type": "string"
         },
-        "experiment": {
-          "description": "Stable script id, e.g. 'step_02_layer_ablation'.",
-          "title": "Experiment",
-          "type": "string"
-        },
         "global_layers": {
           "description": "Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.",
           "items": {
@@ -775,6 +770,11 @@
           "title": "Prompts",
           "type": "array"
         },
+        "protocol": {
+          "description": "Stable id of the producing protocol, e.g. 'step_02_layer_ablation'.",
+          "title": "Protocol",
+          "type": "string"
+        },
         "provenance": {
           "anyOf": [
             {
@@ -789,7 +789,7 @@
         }
       },
       "required": [
-        "experiment",
+        "protocol",
         "description",
         "model",
         "n_layers",
@@ -835,11 +835,6 @@
           "title": "Description",
           "type": "string"
         },
-        "experiment": {
-          "description": "Stable script id, e.g. 'step_01_logit_lens_batch'.",
-          "title": "Experiment",
-          "type": "string"
-        },
         "global_layers": {
           "description": "Layer indices to be visually highlighted. Same semantics as the other domain-axis modules. Empty list if the architecture has no layers worth highlighting.",
           "items": {
@@ -881,6 +876,11 @@
         "prompt_text": {
           "description": "The raw prompt text.",
           "title": "Prompt Text",
+          "type": "string"
+        },
+        "protocol": {
+          "description": "Stable id of the producing protocol, e.g. 'step_01_logit_lens_batch'.",
+          "title": "Protocol",
           "type": "string"
         },
         "ranks": {
@@ -942,7 +942,7 @@
         }
       },
       "required": [
-        "experiment",
+        "protocol",
         "description",
         "model",
         "n_layers",
@@ -980,11 +980,6 @@
           "title": "Description",
           "type": "string"
         },
-        "experiment": {
-          "description": "Stable script id, e.g. 'step_32_per_head_dla'.",
-          "title": "Experiment",
-          "type": "string"
-        },
         "global_layers": {
           "description": "Layer indices to be visually highlighted. Same semantics as the per_layer_data.PerLayerBase field.",
           "items": {
@@ -1015,10 +1010,15 @@
           "minimum": 1,
           "title": "N Layers",
           "type": "integer"
+        },
+        "protocol": {
+          "description": "Stable id of the producing protocol, e.g. 'step_32_per_head_dla'.",
+          "title": "Protocol",
+          "type": "string"
         }
       },
       "required": [
-        "experiment",
+        "protocol",
         "description",
         "model",
         "n_layers",
@@ -1048,11 +1048,6 @@
         "description": {
           "description": "Human-readable summary.",
           "title": "Description",
-          "type": "string"
-        },
-        "experiment": {
-          "description": "Stable script id, e.g. 'step_32_per_head_dla'.",
-          "title": "Experiment",
           "type": "string"
         },
         "global_layers": {
@@ -1102,6 +1097,11 @@
           "title": "N Layers",
           "type": "integer"
         },
+        "protocol": {
+          "description": "Stable id of the producing protocol, e.g. 'step_32_per_head_dla'.",
+          "title": "Protocol",
+          "type": "string"
+        },
         "values": {
           "description": "Row-major [n_layers * n_heads] flat list. values[layer * n_heads + head] is the scalar for (layer, head).",
           "items": {
@@ -1112,7 +1112,7 @@
         }
       },
       "required": [
-        "experiment",
+        "protocol",
         "description",
         "model",
         "n_layers",
@@ -1127,16 +1127,11 @@
       "type": "object"
     },
     "PerLayerBase": {
-      "description": "Fields every per-layer chart-data file carries.\n\n`experiment` is the stable id of the source script (matches the Python\nmodule name). `model` is the HuggingFace model id. `n_layers` and\n`global_layers` describe the model's layer structure so charts can\nadapt across model variants (E4B: 42, E2B: 30, ...).",
+      "description": "Fields every per-layer chart-data file carries.\n\n`protocol` is the stable id of the recipe that produced this data: the\nsource script's module name for research runs, or the platform protocol\nfor jobs queued through mechbench-api. `model` is the HuggingFace model\nid. `n_layers` and\n`global_layers` describe the model's layer structure so charts can\nadapt across model variants (E4B: 42, E2B: 30, ...).",
       "properties": {
         "description": {
           "description": "Human-readable summary; appears in chart footers.",
           "title": "Description",
-          "type": "string"
-        },
-        "experiment": {
-          "description": "Stable script id, e.g. 'step_02_layer_ablation'.",
-          "title": "Experiment",
           "type": "string"
         },
         "global_layers": {
@@ -1158,6 +1153,11 @@
           "title": "N Layers",
           "type": "integer"
         },
+        "protocol": {
+          "description": "Stable id of the producing protocol, e.g. 'step_02_layer_ablation'.",
+          "title": "Protocol",
+          "type": "string"
+        },
         "provenance": {
           "anyOf": [
             {
@@ -1172,7 +1172,7 @@
         }
       },
       "required": [
-        "experiment",
+        "protocol",
         "description",
         "model",
         "n_layers",
@@ -1210,11 +1210,6 @@
           "title": "Description",
           "type": "string"
         },
-        "experiment": {
-          "description": "Stable script id, e.g. 'step_01_logit_lens_batch'.",
-          "title": "Experiment",
-          "type": "string"
-        },
         "global_layers": {
           "description": "Layer indices to be visually highlighted. Same semantics as the other domain-axis modules. Empty list if the architecture has no layers worth highlighting.",
           "items": {
@@ -1244,6 +1239,11 @@
           "title": "Prompt Text",
           "type": "string"
         },
+        "protocol": {
+          "description": "Stable id of the producing protocol, e.g. 'step_01_logit_lens_batch'.",
+          "title": "Protocol",
+          "type": "string"
+        },
         "seq_len": {
           "description": "Input sequence length.",
           "minimum": 1,
@@ -1268,7 +1268,7 @@
         }
       },
       "required": [
-        "experiment",
+        "protocol",
         "description",
         "model",
         "n_layers",
