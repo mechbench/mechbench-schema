@@ -29,7 +29,7 @@ dev = ["pytest>=8", "ruff>=0.5"]
 
 [project.urls]
 Homepage = "https://github.com/mechbench/mechbench-schema"
-"Meta repo" = "https://github.com/mechbench/mechbench"
+Website = "https://mechbench.ai"
 
 [tool.setuptools.packages.find]
 where = ["src"]

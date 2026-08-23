@@ -1,6 +1,6 @@
 # mechbench-schema
 
-The typed emission contract for the [mechbench](https://github.com/mechbench/mechbench) family.
+The typed emission contract for the [mechbench](https://mechbench.ai) family.
 
 **Pydantic models are the single source of truth.** TypeScript bindings are generated from them; both halves are published from this one repo to two package registries.
 
@@ -111,22 +111,22 @@ const payload: LayerAblationPayload = JSON.parse(text);
 - `~hash/<algo>:<digest>` — global content-hashed (deduplicated across users)
 - `<owner>/<project>/~hash/<algo>:<digest>` — workspace-scoped content-hashed
 
-Full spec in the [meta repo's IDENTITY_AND_NAMESPACING.md](https://github.com/mechbench/mechbench/blob/main/docs/IDENTITY_AND_NAMESPACING.md). The Python side (`mechbench_schema.identity`) owns the authoritative validator; a mirror implementation lives in `mechbench-ui/src/lib/mechbenchPath.ts` for UI-side early failure.
+Full spec in the meta repo's IDENTITY_AND_NAMESPACING.md. The Python side (`mechbench_schema.identity`) owns the authoritative validator; a mirror implementation lives in `mechbench-ui/src/lib/mechbenchPath.ts` for UI-side early failure.
 
 ## Why one repo, two publications
 
 Schemas that live in two repos drift. The only invariant that matters — "Python and TS agree on the shape" — is enforced by keeping the source in one place and generating the target. Consumers never need the other language's toolchain to install; `pip` and `npm` each resolve to a clean single-language package.
 
-See [the family overview](https://github.com/mechbench/mechbench) for the rationale behind this and other multi-repo decisions.
+See [the family overview](https://mechbench.ai) for the rationale behind this and other multi-repo decisions.
 
 ## Status
 
 Version 0.8.0. Seven modules in active use; the legacy `records.py` holding pen was retired when the domain-axis reorg completed. `mechbench-experiments`' two exporters (`step_02_layer_ablation`, `step_33_dla_factual_sweep`) emit via Pydantic models; `mechbench-ui`'s chart interfaces are one-line aliases over the generated TS types.
 
-Open work lives in the meta repo's [`tasks/mechbench-schema/`](https://github.com/mechbench/mechbench/tree/main/tasks/mechbench-schema) directory. The two notable open epics downstream of this repo:
+Open work lives in the meta repo's `tasks/mechbench-schema/` directory. The two notable open epics downstream of this repo:
 
-- **[`000161`](https://github.com/mechbench/mechbench/tree/main/tasks/mechbench-schema/open)** — compact binary formats for records at rest and in transit (safetensors for tensor-bulk, parquet for record-collections).
-- **[`000163`](https://github.com/mechbench/mechbench/tree/main/tasks/mechbench-meta/open)** — the identity-and-namespacing epic that produced `MechbenchPath`; Phase 4 (content-addressing grammar) remains open and coordinates with [`000162`](https://github.com/mechbench/mechbench/tree/main/tasks/mechbench-compute/open) (the DAG-solver epic in `mechbench-compute`).
+- **`000161`** — compact binary formats for records at rest and in transit (safetensors for tensor-bulk, parquet for record-collections).
+- **`000163`** — the identity-and-namespacing epic that produced `MechbenchPath`; Phase 4 (content-addressing grammar) remains open and coordinates with `000162` (the DAG-solver epic in `mechbench-compute`).
 
 ## License
 

@@ -57,7 +57,7 @@ cd ts && npm install && npm run build
 
 - `mechbench-compute` imports Python types from here. Currently a soft dep — upgrade to hard dep once the emission layer is formalized.
 - `mechbench-ui` imports TS types from the npm package.
-- `mechbench-runner`, `mechbench-remote`, `mechbench-experiments` all import the Python types.
+- `mechbench-runner` and `mechbench-experiments` import the Python types.
 - `mechbench-skills` uses both halves (Python primitives + TS visualizers depend on matching schema).
 
 Meta repo has the family overview and `tasks/mechbench-schema/` holds the open work.
