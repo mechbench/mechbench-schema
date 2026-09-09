@@ -12,11 +12,82 @@ export type Damage = number[];
 export type Target = string;
 export type Text = string;
 export type Top1Id = number;
+export type BudgetUsd = number | null;
+export type Description = string;
+export type Kind = "agent";
+export type MaxTokens = number;
+/**
+ * An endpoint, or a local model reference (repo[@rev]).
+ */
+export type Model = EndpointRef | string;
+/**
+ * The provider's own model id.
+ */
+export type Model1 = string;
+/**
+ * The dated version pinned at seal, when one was pinned (task 000352). Absent means 'whatever the alias resolves to', and the version that ANSWERED is recorded per call either way.
+ */
+export type ModelVersion = string | null;
+export type Provider = "anthropic" | "openai" | "xai" | "gemini" | "fireworks" | "openai-compatible" | "mock";
+/**
+ * How the transcript refers to it.
+ */
+export type Name = string;
+/**
+ * ISO-8601 UTC timestamp, e.g. '2026-08-17T21:04:05Z'.
+ */
+export type CreatedAt = string;
+/**
+ * Recording granularity for document data. See module docstring for
+ * the degradation-chain contract.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "Fidelity".
+ */
+export type Fidelity = "text" | "segments" | "trace";
+/**
+ * Paths of the objects this one was computed from.
+ */
+export type Inputs = string[];
+/**
+ * The operation that produced this object (task 000248) — a registered op path when one exists. Optional until the operation registry lands; recording it now prevents archaeology later.
+ */
+export type Operation = string | null;
+/**
+ * 'sha256:<hex>' fingerprint of the run configuration (fingerprint_params).
+ */
+export type ParamsFingerprint = string | null;
+/**
+ * Path of a stored params object (recoverable, unlike params_fingerprint which is only verifiable).
+ */
+export type ParamsRef = string | null;
+/**
+ * Producing package/script id, e.g. 'mechbench-compute'.
+ */
+export type Tool = string;
+/**
+ * Version or commit of the producing tool.
+ */
+export type Version = string;
+/**
+ * mechbench-schema version at write time.
+ */
+export type SchemaVersion = string;
+export type System = string;
+export type Temperature = number | null;
+export type Description1 = string;
+export type Name1 = string;
+export type Tools = ToolSpec[];
+export type TopP = number | null;
+export type Agents = Agent[];
+export type Description2 = string;
+export type Kind1 = "agent_collection";
+export type Name2 = string;
 /**
  * 0-indexed attention head within the layer.
  */
 export type Head = number;
-export type Kind = "attention_pattern";
+export type Kind2 = "attention_pattern";
 /**
  * 0-indexed transformer layer.
  */
@@ -42,6 +113,49 @@ export type Weights = number[];
  * via the `definition` "AttentionTraceData".
  */
 export type AttentionTraceData = AttentionPattern;
+export type Attempts = number;
+export type CostUsd = number;
+export type Kind3 = "call_provenance";
+export type LatencyMs = number;
+/**
+ * What was asked for.
+ */
+export type Model2 = string;
+/**
+ * What answered — the provider's own dated string.
+ */
+export type ModelVersion1 = string;
+/**
+ * Version of the price table that priced it.
+ */
+export type PriceTable = string;
+/**
+ * False when the model was not in the price table — a hole, not a guess.
+ */
+export type Priced = boolean;
+export type Provider1 = string;
+/**
+ * Answered from a cassette rather than the wire (task 000350).
+ */
+export type Replayed = boolean;
+/**
+ * sha256 of the canonical request: what was ASKED, never how it was authenticated. The cassette key and the resume identity.
+ */
+export type RequestHash = string;
+export type ResponseId = string;
+/**
+ * Time spent waiting on rate limits, not on the model.
+ */
+export type ThrottledSeconds = number;
+/**
+ * Whether the input count came from the provider's counter or an estimate.
+ */
+export type TokensExact = boolean;
+export type CacheReadTokens = number;
+export type CacheWriteTokens = number;
+export type InputTokens = number;
+export type OutputTokens = number;
+export type ReasoningTokens = number;
 /**
  * Explicit dimensionality, for validation and for headers that need the dimension without loading the full values array.
  */
@@ -177,7 +291,7 @@ export type Silhouette = number | null;
 /**
  * Human-readable summary; appears in chart footers.
  */
-export type Description = string;
+export type Description3 = string;
 /**
  * The findings-doc id (e.g. '04', '33').
  */
@@ -221,11 +335,11 @@ export type Experiments = ConvergenceRow[];
  * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
 export type GlobalLayers = number[];
-export type Kind1 = "convergence";
+export type Kind4 = "convergence";
 /**
  * HuggingFace model id.
  */
-export type Model = string;
+export type Model3 = string;
 /**
  * Total decoder-block count.
  */
@@ -238,46 +352,6 @@ export type PivotLayer = number;
  * Stable id of the producing protocol, e.g. 'step_02_layer_ablation'.
  */
 export type Protocol = string;
-/**
- * ISO-8601 UTC timestamp, e.g. '2026-08-17T21:04:05Z'.
- */
-export type CreatedAt = string;
-/**
- * Recording granularity for document data. See module docstring for
- * the degradation-chain contract.
- *
- * This interface was referenced by `MechbenchSchema`'s JSON-Schema
- * via the `definition` "Fidelity".
- */
-export type Fidelity = "text" | "segments" | "trace";
-/**
- * Paths of the objects this one was computed from.
- */
-export type Inputs = string[];
-/**
- * The operation that produced this object (task 000248) — a registered op path when one exists. Optional until the operation registry lands; recording it now prevents archaeology later.
- */
-export type Operation = string | null;
-/**
- * 'sha256:<hex>' fingerprint of the run configuration (fingerprint_params).
- */
-export type ParamsFingerprint = string | null;
-/**
- * Path of a stored params object (recoverable, unlike params_fingerprint which is only verifiable).
- */
-export type ParamsRef = string | null;
-/**
- * Producing package/script id, e.g. 'mechbench-compute'.
- */
-export type Tool = string;
-/**
- * Version or commit of the producing tool.
- */
-export type Version = string;
-/**
- * mechbench-schema version at write time.
- */
-export type SchemaVersion = string;
 /**
  * Prompt-set category tag (e.g. 'landmark', 'capital'). Pass an empty string when the prompt set has no categorical metadata.
  */
@@ -302,16 +376,16 @@ export type Median = number[];
 /**
  * Human-readable summary; appears in chart footers.
  */
-export type Description1 = string;
+export type Description4 = string;
 /**
  * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
 export type GlobalLayers1 = number[];
-export type Kind2 = "dla_sweep";
+export type Kind5 = "dla_sweep";
 /**
  * HuggingFace model id.
  */
-export type Model1 = string;
+export type Model4 = string;
 /**
  * Total decoder-block count.
  */
@@ -321,6 +395,22 @@ export type Prompts = DlaPrompt[];
  * Stable id of the producing protocol, e.g. 'step_02_layer_ablation'.
  */
 export type Protocol1 = string;
+export type Id3 = string;
+/**
+ * Flat vector; length must equal `dim`.
+ */
+export type Values4 = number[];
+export type Description5 = string;
+export type Dim4 = number;
+export type Kind6 = "embeddings";
+export type Model5 = EndpointRef | string;
+export type Name3 = string;
+/**
+ * Whether rows are unit-length as returned.
+ */
+export type Normalized = boolean;
+export type Rows = EmbeddingRow[];
+export type SpendUsd = number;
 /**
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "HookKind".
@@ -329,16 +419,16 @@ export type HookKind1 = "resid_pre" | "resid_post" | "attn_out" | "mlp_out" | "g
 /**
  * Human-readable summary; appears in chart footers.
  */
-export type Description2 = string;
+export type Description6 = string;
 /**
  * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
 export type GlobalLayers2 = number[];
-export type Kind3 = "layer_ablation";
+export type Kind7 = "layer_ablation";
 /**
  * HuggingFace model id.
  */
-export type Model2 = string;
+export type Model6 = string;
 /**
  * Total decoder-block count.
  */
@@ -351,12 +441,12 @@ export type Protocol2 = string;
 /**
  * Human-readable summary.
  */
-export type Description3 = string;
+export type Description7 = string;
 /**
  * Layer indices to be visually highlighted. Same semantics as the other domain-axis modules. Empty list if the architecture has no layers worth highlighting.
  */
 export type GlobalLayers3 = number[];
-export type Kind4 = "logit_lens_trajectory";
+export type Kind8 = "logit_lens_trajectory";
 /**
  * Log-probability of target_token under the lens at each (layer, position). Flat row-major, length n_layers * seq_len.
  */
@@ -364,7 +454,7 @@ export type Logprobs = number[];
 /**
  * HuggingFace model id.
  */
-export type Model3 = string;
+export type Model7 = string;
 /**
  * Total decoder-block count.
  */
@@ -420,7 +510,7 @@ export type PathCategory = "user_named" | "canonical" | "platform" | "global_has
 /**
  * Human-readable summary.
  */
-export type Description4 = string;
+export type Description8 = string;
 /**
  * Layer indices to be visually highlighted. Same semantics as the per_layer_data.PerLayerBase field.
  */
@@ -428,7 +518,7 @@ export type GlobalLayers4 = number[];
 /**
  * HuggingFace model id.
  */
-export type Model4 = string;
+export type Model8 = string;
 /**
  * Query-side attention heads per block.
  */
@@ -453,12 +543,12 @@ export type PerHeadData = PerHeadScalarGrid;
 /**
  * Human-readable summary.
  */
-export type Description5 = string;
+export type Description9 = string;
 /**
  * Layer indices to be visually highlighted. Same semantics as the per_layer_data.PerLayerBase field.
  */
 export type GlobalLayers5 = number[];
-export type Kind5 = "per_head_scalar_grid";
+export type Kind9 = "per_head_scalar_grid";
 /**
  * What the scalars measure (e.g. 'DLA contribution').
  */
@@ -470,7 +560,7 @@ export type MetricUnits1 = string;
 /**
  * HuggingFace model id.
  */
-export type Model5 = string;
+export type Model9 = string;
 /**
  * Query-side attention heads per block.
  */
@@ -490,11 +580,11 @@ export type Protocol5 = string;
 /**
  * Row-major [n_layers * n_heads] flat list. values[layer * n_heads + head] is the scalar for (layer, head).
  */
-export type Values4 = number[];
+export type Values5 = number[];
 /**
  * Human-readable summary; appears in chart footers.
  */
-export type Description6 = string;
+export type Description10 = string;
 /**
  * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
@@ -502,7 +592,7 @@ export type GlobalLayers6 = number[];
 /**
  * HuggingFace model id.
  */
-export type Model6 = string;
+export type Model10 = string;
 /**
  * Total decoder-block count.
  */
@@ -519,7 +609,7 @@ export type PerLayerData = LayerAblationPayload | DlaSweepPayload | ConvergenceP
 /**
  * Human-readable summary.
  */
-export type Description7 = string;
+export type Description11 = string;
 /**
  * Layer indices to be visually highlighted. Same semantics as the other domain-axis modules. Empty list if the architecture has no layers worth highlighting.
  */
@@ -527,7 +617,7 @@ export type GlobalLayers7 = number[];
 /**
  * HuggingFace model id.
  */
-export type Model7 = string;
+export type Model11 = string;
 /**
  * Total decoder-block count.
  */
@@ -557,6 +647,33 @@ export type TokenLabels2 = string[] | null;
  * via the `definition` "PerLayerPerPositionData".
  */
 export type PerLayerPerPositionData = LogitLensTrajectory;
+export type Id4 = string;
+export type Name4 = string;
+export type Content = string;
+export type IsError = boolean;
+export type ToolCallId = string;
+export type Id5 = string;
+export type Kind10 = "transcript";
+export type Index = number;
+/**
+ * Agent name, or 'user' for scripted input.
+ */
+export type Participant = string;
+export type RoleAsSeen = "user" | "assistant" | "system";
+export type StopReason = string;
+export type Text2 = string;
+export type ToolCalls = ToolCall[];
+export type ToolResults = ToolResult[];
+export type Messages = TranscriptMessage[];
+/**
+ * Agent names, in the order they first speak.
+ */
+export type Participants = string[];
+export type SpendUsd1 = number;
+/**
+ * Turn policy's reason: 'max_turns', 'stop_phrase', 'tool_error', …
+ */
+export type StoppedBecause = string;
 /**
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "Vector".
@@ -580,6 +697,127 @@ export interface AblationPrompt {
   top1_id: Top1Id;
 }
 /**
+ * A participant in a conversation (task 000339): which model, what
+ * it was told, what it may call. An agent is a bench object so the
+ * same participant can be reused across protocols and compared
+ * against itself under one changed field.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "Agent".
+ */
+export interface Agent {
+  budget_usd?: BudgetUsd;
+  description?: Description;
+  kind?: Kind;
+  max_tokens?: MaxTokens;
+  model: Model;
+  name: Name;
+  provenance?: Provenance | null;
+  provider_options?: ProviderOptions1;
+  system?: System;
+  temperature?: Temperature;
+  tools?: Tools;
+  top_p?: TopP;
+}
+/**
+ * A model someone else runs. `provider_options` is keyed by
+ * provider name and passes through to the wire VERBATIM — cache
+ * control, thinking budgets, service tiers, anything the canonical
+ * fields do not name — so a protocol can always reach the real API,
+ * and what it asked for is recorded.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "EndpointRef".
+ */
+export interface EndpointRef {
+  model: Model1;
+  model_version?: ModelVersion;
+  provider: Provider;
+  provider_options?: ProviderOptions;
+}
+/**
+ * provider name -> native fields merged after the canonical ones.
+ */
+export interface ProviderOptions {
+  [k: string]: {
+    [k: string]: unknown;
+  };
+}
+/**
+ * What produced an emitted object, from what, when.
+ *
+ * `created_at` is an ISO-8601 UTC timestamp string (e.g.
+ * '2026-08-17T21:04:05Z'). `inputs` are the MechbenchPaths (including
+ * `~hash/...` forms) of the objects this one was computed from — the
+ * lineage index is derived from this list at emission time.
+ * `params_fingerprint` comes from `fingerprint_params` over the run
+ * config. `schema_version` records the mechbench-schema version the
+ * object was written under.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "Provenance".
+ */
+export interface Provenance {
+  created_at: CreatedAt;
+  /**
+   * Recording granularity, for document-bearing objects; None otherwise.
+   */
+  fidelity?: Fidelity | null;
+  inputs?: Inputs;
+  operation?: Operation;
+  params_fingerprint?: ParamsFingerprint;
+  params_ref?: ParamsRef;
+  produced_by: ToolInfo;
+  schema_version: SchemaVersion;
+}
+/**
+ * The producing tool, pinned to a version.
+ *
+ * `tool` is a package or script identity (e.g. 'mechbench-compute');
+ * `version` is its release or commit identifier. Together they are the
+ * coarse code-fingerprint until 000162 introduces fine-grained ones.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "ToolInfo".
+ */
+export interface ToolInfo {
+  tool: Tool;
+  version: Version;
+}
+export interface ProviderOptions1 {
+  [k: string]: {
+    [k: string]: unknown;
+  };
+}
+/**
+ * A tool as offered to a model: name, description, JSON Schema.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "ToolSpec".
+ */
+export interface ToolSpec {
+  description?: Description1;
+  input_schema?: InputSchema;
+  name: Name1;
+}
+export interface InputSchema {
+  [k: string]: unknown;
+}
+/**
+ * A named set of participants — what a conversation node binds in
+ * one edge instead of N.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "AgentCollection".
+ */
+export interface AgentCollection {
+  agents?: Agents;
+  description?: Description2;
+  kind?: Kind1;
+  name?: Name2;
+  provenance?: Provenance | null;
+}
+/**
  * Post-softmax attention weights for one (layer, head) over a sequence.
  *
  * The weights matrix is stored as a flat row-major `[n_queries * n_keys]`
@@ -594,12 +832,64 @@ export interface AblationPrompt {
  */
 export interface AttentionPattern {
   head: Head;
-  kind?: Kind;
+  kind?: Kind2;
   layer: Layer;
   n_keys: NKeys;
   n_queries: NQueries;
   token_labels?: TokenLabels;
   weights: Weights;
+}
+/**
+ * One call to an external provider, as the item that carries it
+ * records it. The manifest sums these; a reader should be able to
+ * reconstruct the bill and the identity of what answered from the
+ * result alone.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "CallProvenance".
+ */
+export interface CallProvenance {
+  attempts?: Attempts;
+  cost_usd?: CostUsd;
+  kind?: Kind3;
+  latency_ms?: LatencyMs;
+  model: Model2;
+  model_version?: ModelVersion1;
+  price_table?: PriceTable;
+  priced?: Priced;
+  provider: Provider1;
+  provider_options?: ProviderOptions2;
+  rate_limits?: RateLimits;
+  replayed?: Replayed;
+  request_hash?: RequestHash;
+  response_id?: ResponseId;
+  throttled_seconds?: ThrottledSeconds;
+  tokens_exact?: TokensExact;
+  usage?: Usage;
+}
+export interface ProviderOptions2 {
+  [k: string]: unknown;
+}
+/**
+ * What the response headers said about quota.
+ */
+export interface RateLimits {
+  [k: string]: unknown;
+}
+/**
+ * Tokens a call consumed. Cached input is reported separately
+ * because it is priced separately; it is NOT additional to
+ * `input_tokens`, it is part of it.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "Usage".
+ */
+export interface Usage {
+  cache_read_tokens?: CacheReadTokens;
+  cache_write_tokens?: CacheWriteTokens;
+  input_tokens?: InputTokens;
+  output_tokens?: OutputTokens;
+  reasoning_tokens?: ReasoningTokens;
 }
 /**
  * A vector read from a hook point during a forward pass.
@@ -761,11 +1051,11 @@ export interface Metadata5 {
  * via the `definition` "ConvergencePayload".
  */
 export interface ConvergencePayload {
-  description: Description;
+  description: Description3;
   experiments: Experiments;
   global_layers: GlobalLayers;
-  kind?: Kind1;
-  model: Model;
+  kind?: Kind4;
+  model: Model3;
   n_layers: NLayers;
   pivot_layer: PivotLayer;
   protocol: Protocol;
@@ -794,47 +1084,6 @@ export interface ConvergenceRow {
   title: Title;
 }
 /**
- * What produced an emitted object, from what, when.
- *
- * `created_at` is an ISO-8601 UTC timestamp string (e.g.
- * '2026-08-17T21:04:05Z'). `inputs` are the MechbenchPaths (including
- * `~hash/...` forms) of the objects this one was computed from — the
- * lineage index is derived from this list at emission time.
- * `params_fingerprint` comes from `fingerprint_params` over the run
- * config. `schema_version` records the mechbench-schema version the
- * object was written under.
- *
- * This interface was referenced by `MechbenchSchema`'s JSON-Schema
- * via the `definition` "Provenance".
- */
-export interface Provenance {
-  created_at: CreatedAt;
-  /**
-   * Recording granularity, for document-bearing objects; None otherwise.
-   */
-  fidelity?: Fidelity | null;
-  inputs?: Inputs;
-  operation?: Operation;
-  params_fingerprint?: ParamsFingerprint;
-  params_ref?: ParamsRef;
-  produced_by: ToolInfo;
-  schema_version: SchemaVersion;
-}
-/**
- * The producing tool, pinned to a version.
- *
- * `tool` is a package or script identity (e.g. 'mechbench-compute');
- * `version` is its release or commit identifier. Together they are the
- * coarse code-fingerprint until 000162 introduces fine-grained ones.
- *
- * This interface was referenced by `MechbenchSchema`'s JSON-Schema
- * via the `definition` "ToolInfo".
- */
-export interface ToolInfo {
-  tool: Tool;
-  version: Version;
-}
-/**
  * One prompt's contribution to a DLA sweep (target vs. distractor).
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
@@ -857,10 +1106,10 @@ export interface DlaPrompt {
  */
 export interface DlaSweepPayload {
   aggregates: LayerAggregates;
-  description: Description1;
+  description: Description4;
   global_layers: GlobalLayers1;
-  kind?: Kind2;
-  model: Model1;
+  kind?: Kind5;
+  model: Model4;
   n_layers: NLayers1;
   prompts: Prompts;
   protocol: Protocol1;
@@ -880,6 +1129,36 @@ export interface LayerAggregates {
   median: Median;
 }
 /**
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "EmbeddingRow".
+ */
+export interface EmbeddingRow {
+  id: Id3;
+  metadata?: Metadata6;
+  values: Values4;
+}
+export interface Metadata6 {
+  [k: string]: unknown;
+}
+/**
+ * The embed call kind's output (task 000348): one row per input,
+ * flat vectors, the model that produced them recorded.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "Embeddings".
+ */
+export interface Embeddings {
+  description?: Description5;
+  dim: Dim4;
+  kind?: Kind6;
+  model: Model5;
+  name?: Name3;
+  normalized?: Normalized;
+  provenance?: Provenance | null;
+  rows?: Rows;
+  spend_usd?: SpendUsd;
+}
+/**
  * step_02-shape: per-layer ablation damage across a prompt battery.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
@@ -887,10 +1166,10 @@ export interface LayerAggregates {
  */
 export interface LayerAblationPayload {
   aggregates: LayerAggregates;
-  description: Description2;
+  description: Description6;
   global_layers: GlobalLayers2;
-  kind?: Kind3;
-  model: Model2;
+  kind?: Kind7;
+  model: Model6;
   n_layers: NLayers2;
   prompts: Prompts1;
   protocol: Protocol2;
@@ -920,11 +1199,11 @@ export interface LayerAblationPayload {
  * via the `definition` "LogitLensTrajectory".
  */
 export interface LogitLensTrajectory {
-  description: Description3;
+  description: Description7;
   global_layers: GlobalLayers3;
-  kind?: Kind4;
+  kind?: Kind8;
   logprobs: Logprobs;
-  model: Model3;
+  model: Model7;
   n_layers: NLayers3;
   prompt_id: PromptId1;
   prompt_text: PromptText;
@@ -949,9 +1228,9 @@ export interface LogitLensTrajectory {
  * via the `definition` "PerHeadBase".
  */
 export interface PerHeadBase {
-  description: Description4;
+  description: Description8;
   global_layers: GlobalLayers4;
-  model: Model4;
+  model: Model8;
   n_heads: NHeads;
   n_kv_heads: NKvHeads;
   n_layers: NLayers4;
@@ -974,17 +1253,17 @@ export interface PerHeadBase {
  * via the `definition` "PerHeadScalarGrid".
  */
 export interface PerHeadScalarGrid {
-  description: Description5;
+  description: Description9;
   global_layers: GlobalLayers5;
-  kind?: Kind5;
+  kind?: Kind9;
   metric_name: MetricName1;
   metric_units: MetricUnits1;
-  model: Model5;
+  model: Model9;
   n_heads: NHeads1;
   n_kv_heads: NKvHeads1;
   n_layers: NLayers5;
   protocol: Protocol5;
-  values: Values4;
+  values: Values5;
 }
 /**
  * Fields every per-layer chart-data file carries.
@@ -1000,9 +1279,9 @@ export interface PerHeadScalarGrid {
  * via the `definition` "PerLayerBase".
  */
 export interface PerLayerBase {
-  description: Description6;
+  description: Description10;
   global_layers: GlobalLayers6;
-  model: Model6;
+  model: Model10;
   n_layers: NLayers6;
   protocol: Protocol6;
   /**
@@ -1017,13 +1296,80 @@ export interface PerLayerBase {
  * via the `definition` "PerLayerPerPositionBase".
  */
 export interface PerLayerPerPositionBase {
-  description: Description7;
+  description: Description11;
   global_layers: GlobalLayers7;
-  model: Model7;
+  model: Model11;
   n_layers: NLayers7;
   prompt_id: PromptId2;
   prompt_text: PromptText1;
   protocol: Protocol7;
   seq_len: SeqLen1;
   token_labels?: TokenLabels2;
+}
+/**
+ * A model's request to run a tool. `id` correlates it with the
+ * result that answers it.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "ToolCall".
+ */
+export interface ToolCall {
+  arguments?: Arguments;
+  id?: Id4;
+  name: Name4;
+}
+export interface Arguments {
+  [k: string]: unknown;
+}
+/**
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "ToolResult".
+ */
+export interface ToolResult {
+  content?: Content;
+  is_error?: IsError;
+  tool_call_id?: ToolCallId;
+}
+/**
+ * What happened between participants (task 000339). One item of a
+ * conversation node's output; a document collection of these is what
+ * a hundred runs of the same conversation produce.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "Transcript".
+ */
+export interface Transcript {
+  id?: Id5;
+  kind?: Kind10;
+  messages?: Messages;
+  metadata?: Metadata7;
+  participants?: Participants;
+  provenance?: Provenance | null;
+  spend_usd?: SpendUsd1;
+  stopped_because?: StoppedBecause;
+}
+/**
+ * One turn. `participant` is who produced it; `role_as_seen` is
+ * the role it carried in the request that produced the NEXT turn —
+ * in a two-model conversation each side sees the other as the user,
+ * so one exchange has two role assignments and a reader needs both.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "TranscriptMessage".
+ */
+export interface TranscriptMessage {
+  /**
+   * Absent for scripted turns: nobody was asked, nothing was spent.
+   */
+  call?: CallProvenance | null;
+  index: Index;
+  participant: Participant;
+  role_as_seen?: RoleAsSeen;
+  stop_reason?: StopReason;
+  text?: Text2;
+  tool_calls?: ToolCalls;
+  tool_results?: ToolResults;
+}
+export interface Metadata7 {
+  [k: string]: unknown;
 }

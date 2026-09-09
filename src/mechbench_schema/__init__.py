@@ -64,6 +64,26 @@ from .metric_data import (
     MetricColumn,
     MetricTable,
 )
+from .provider_data import (
+    Agent,
+    AgentCollection,
+    BASE_KIND_AGENT,
+    BASE_KIND_CALL_PROVENANCE,
+    BASE_KIND_EMBEDDINGS,
+    BASE_KIND_TRANSCRIPT,
+    CallProvenance,
+    EmbeddingRow,
+    Embeddings,
+    EndpointProvider,
+    EndpointRef,
+    ToolCall,
+    ToolResult,
+    ToolSpec,
+    Transcript,
+    TranscriptMessage,
+    Usage,
+    endpoint_path,
+)
 from .provenance import (
     Emitted,
     Fidelity,
@@ -97,7 +117,7 @@ from .vector_data import (
     Vector,
 )
 
-__version__ = "0.12.0"
+__version__ = "0.14.0"
 
 __all__ = [
     # Document collections + annotations + kind manifests (task 000239)
@@ -120,6 +140,26 @@ __all__ = [
     # Metric tables (task 000244)
     "MetricTable",
     "MetricColumn",
+    # External providers: endpoints, call provenance, agents,
+    # transcripts, embeddings (epic 000334, task 000351)
+    "EndpointRef",
+    "EndpointProvider",
+    "Usage",
+    "CallProvenance",
+    "ToolSpec",
+    "ToolCall",
+    "ToolResult",
+    "Agent",
+    "AgentCollection",
+    "TranscriptMessage",
+    "Transcript",
+    "EmbeddingRow",
+    "Embeddings",
+    "endpoint_path",
+    "BASE_KIND_AGENT",
+    "BASE_KIND_TRANSCRIPT",
+    "BASE_KIND_EMBEDDINGS",
+    "BASE_KIND_CALL_PROVENANCE",
     # Provenance + fidelity (the emission envelope, task 000237)
     "Provenance",
     "ToolInfo",
@@ -175,6 +215,20 @@ __all__ = [
 # Python-side utilities (functions, exceptions, non-Pydantic dataclasses)
 # that don't cross the wire.
 __schema_all__ = [
+    # External providers (epic 000334): the ui renders transcripts and
+    # call costs, so these cross the wire.
+    "EndpointRef",
+    "Usage",
+    "CallProvenance",
+    "ToolSpec",
+    "ToolCall",
+    "ToolResult",
+    "Agent",
+    "AgentCollection",
+    "TranscriptMessage",
+    "Transcript",
+    "EmbeddingRow",
+    "Embeddings",
     # Per-layer data
     "PerLayerBase",
     "LayerAggregates",

@@ -40,6 +40,161 @@
       "title": "AblationPrompt",
       "type": "object"
     },
+    "Agent": {
+      "description": "A participant in a conversation (task 000339): which model, what\nit was told, what it may call. An agent is a bench object so the\nsame participant can be reused across protocols and compared\nagainst itself under one changed field.",
+      "properties": {
+        "budget_usd": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Budget Usd"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "kind": {
+          "const": "agent",
+          "default": "agent",
+          "title": "Kind",
+          "type": "string"
+        },
+        "max_tokens": {
+          "default": 1024,
+          "exclusiveMinimum": 0,
+          "title": "Max Tokens",
+          "type": "integer"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EndpointRef"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "An endpoint, or a local model reference (repo[@rev]).",
+          "title": "Model"
+        },
+        "name": {
+          "description": "How the transcript refers to it.",
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "provider_options": {
+          "additionalProperties": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Provider Options",
+          "type": "object"
+        },
+        "system": {
+          "default": "",
+          "title": "System",
+          "type": "string"
+        },
+        "temperature": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Temperature"
+        },
+        "tools": {
+          "items": {
+            "$ref": "#/$defs/ToolSpec"
+          },
+          "title": "Tools",
+          "type": "array"
+        },
+        "top_p": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Top P"
+        }
+      },
+      "required": [
+        "name",
+        "model"
+      ],
+      "title": "Agent",
+      "type": "object"
+    },
+    "AgentCollection": {
+      "description": "A named set of participants \u2014 what a conversation node binds in\none edge instead of N.",
+      "properties": {
+        "agents": {
+          "items": {
+            "$ref": "#/$defs/Agent"
+          },
+          "title": "Agents",
+          "type": "array"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "kind": {
+          "const": "agent_collection",
+          "default": "agent_collection",
+          "title": "Kind",
+          "type": "string"
+        },
+        "name": {
+          "default": "",
+          "title": "Name",
+          "type": "string"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "AgentCollection",
+      "type": "object"
+    },
     "AttentionPattern": {
       "description": "Post-softmax attention weights for one (layer, head) over a sequence.\n\nThe weights matrix is stored as a flat row-major `[n_queries * n_keys]`\nlist. Consumers reshape on ingest; this keeps the wire format\nJSON-native and trivially diffable. `token_labels`, when present,\nlabels both axes (self-attention) \u2014 for cross-attention the caller\nshould split into query_labels / key_labels (not yet modeled;\nadd when needed).",
       "properties": {
@@ -120,6 +275,112 @@
           "$ref": "#/$defs/AttentionPattern"
         }
       ]
+    },
+    "CallProvenance": {
+      "description": "One call to an external provider, as the item that carries it\nrecords it. The manifest sums these; a reader should be able to\nreconstruct the bill and the identity of what answered from the\nresult alone.",
+      "properties": {
+        "attempts": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Attempts",
+          "type": "integer"
+        },
+        "cost_usd": {
+          "default": 0.0,
+          "minimum": 0,
+          "title": "Cost Usd",
+          "type": "number"
+        },
+        "kind": {
+          "const": "call_provenance",
+          "default": "call_provenance",
+          "title": "Kind",
+          "type": "string"
+        },
+        "latency_ms": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Latency Ms",
+          "type": "integer"
+        },
+        "model": {
+          "description": "What was asked for.",
+          "title": "Model",
+          "type": "string"
+        },
+        "model_version": {
+          "default": "",
+          "description": "What answered \u2014 the provider's own dated string.",
+          "title": "Model Version",
+          "type": "string"
+        },
+        "price_table": {
+          "default": "",
+          "description": "Version of the price table that priced it.",
+          "title": "Price Table",
+          "type": "string"
+        },
+        "priced": {
+          "default": true,
+          "description": "False when the model was not in the price table \u2014 a hole, not a guess.",
+          "title": "Priced",
+          "type": "boolean"
+        },
+        "provider": {
+          "title": "Provider",
+          "type": "string"
+        },
+        "provider_options": {
+          "additionalProperties": true,
+          "title": "Provider Options",
+          "type": "object"
+        },
+        "rate_limits": {
+          "additionalProperties": true,
+          "description": "What the response headers said about quota.",
+          "title": "Rate Limits",
+          "type": "object"
+        },
+        "replayed": {
+          "default": false,
+          "description": "Answered from a cassette rather than the wire (task 000350).",
+          "title": "Replayed",
+          "type": "boolean"
+        },
+        "request_hash": {
+          "default": "",
+          "description": "sha256 of the canonical request: what was ASKED, never how it was authenticated. The cassette key and the resume identity.",
+          "title": "Request Hash",
+          "type": "string"
+        },
+        "response_id": {
+          "default": "",
+          "title": "Response Id",
+          "type": "string"
+        },
+        "throttled_seconds": {
+          "default": 0.0,
+          "description": "Time spent waiting on rate limits, not on the model.",
+          "minimum": 0,
+          "title": "Throttled Seconds",
+          "type": "number"
+        },
+        "tokens_exact": {
+          "default": false,
+          "description": "Whether the input count came from the provider's counter or an estimate.",
+          "title": "Tokens Exact",
+          "type": "boolean"
+        },
+        "usage": {
+          "$ref": "#/$defs/Usage"
+        }
+      },
+      "required": [
+        "provider",
+        "model"
+      ],
+      "title": "CallProvenance",
+      "type": "object"
     },
     "CapturedVector": {
       "description": "A vector read from a hook point during a forward pass.\n\nReplaces the old `FactVectorRecord` from records.py. Adds the `origin`\ndiscriminator and renames the old `kind` field to `hook_kind` to make\nroom for `origin` at the top level without collision.",
@@ -704,6 +965,158 @@
         "aggregates"
       ],
       "title": "DlaSweepPayload",
+      "type": "object"
+    },
+    "EmbeddingRow": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        },
+        "values": {
+          "description": "Flat vector; length must equal `dim`.",
+          "items": {
+            "type": "number"
+          },
+          "title": "Values",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "values"
+      ],
+      "title": "EmbeddingRow",
+      "type": "object"
+    },
+    "Embeddings": {
+      "description": "The embed call kind's output (task 000348): one row per input,\nflat vectors, the model that produced them recorded.",
+      "properties": {
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "dim": {
+          "exclusiveMinimum": 0,
+          "title": "Dim",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "embeddings",
+          "default": "embeddings",
+          "title": "Kind",
+          "type": "string"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EndpointRef"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Model"
+        },
+        "name": {
+          "default": "",
+          "title": "Name",
+          "type": "string"
+        },
+        "normalized": {
+          "default": false,
+          "description": "Whether rows are unit-length as returned.",
+          "title": "Normalized",
+          "type": "boolean"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "rows": {
+          "items": {
+            "$ref": "#/$defs/EmbeddingRow"
+          },
+          "title": "Rows",
+          "type": "array"
+        },
+        "spend_usd": {
+          "default": 0.0,
+          "minimum": 0,
+          "title": "Spend Usd",
+          "type": "number"
+        }
+      },
+      "required": [
+        "model",
+        "dim"
+      ],
+      "title": "Embeddings",
+      "type": "object"
+    },
+    "EndpointRef": {
+      "description": "A model someone else runs. `provider_options` is keyed by\nprovider name and passes through to the wire VERBATIM \u2014 cache\ncontrol, thinking budgets, service tiers, anything the canonical\nfields do not name \u2014 so a protocol can always reach the real API,\nand what it asked for is recorded.",
+      "properties": {
+        "model": {
+          "description": "The provider's own model id.",
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "model_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The dated version pinned at seal, when one was pinned (task 000352). Absent means 'whatever the alias resolves to', and the version that ANSWERED is recorded per call either way.",
+          "title": "Model Version"
+        },
+        "provider": {
+          "enum": [
+            "anthropic",
+            "openai",
+            "xai",
+            "gemini",
+            "fireworks",
+            "openai-compatible",
+            "mock"
+          ],
+          "title": "Provider",
+          "type": "string"
+        },
+        "provider_options": {
+          "additionalProperties": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "description": "provider name -> native fields merged after the canonical ones.",
+          "title": "Provider Options",
+          "type": "object"
+        }
+      },
+      "required": [
+        "provider",
+        "model"
+      ],
+      "title": "EndpointRef",
       "type": "object"
     },
     "Fidelity": {
@@ -1520,6 +1933,30 @@
       "title": "SteeringVector",
       "type": "object"
     },
+    "ToolCall": {
+      "description": "A model's request to run a tool. `id` correlates it with the\nresult that answers it.",
+      "properties": {
+        "arguments": {
+          "additionalProperties": true,
+          "title": "Arguments",
+          "type": "object"
+        },
+        "id": {
+          "default": "",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "ToolCall",
+      "type": "object"
+    },
     "ToolInfo": {
       "description": "The producing tool, pinned to a version.\n\n`tool` is a package or script identity (e.g. 'mechbench-compute');\n`version` is its release or commit identifier. Together they are the\ncoarse code-fingerprint until 000162 introduces fine-grained ones.",
       "properties": {
@@ -1539,6 +1976,217 @@
         "version"
       ],
       "title": "ToolInfo",
+      "type": "object"
+    },
+    "ToolResult": {
+      "properties": {
+        "content": {
+          "default": "",
+          "title": "Content",
+          "type": "string"
+        },
+        "is_error": {
+          "default": false,
+          "title": "Is Error",
+          "type": "boolean"
+        },
+        "tool_call_id": {
+          "default": "",
+          "title": "Tool Call Id",
+          "type": "string"
+        }
+      },
+      "title": "ToolResult",
+      "type": "object"
+    },
+    "ToolSpec": {
+      "description": "A tool as offered to a model: name, description, JSON Schema.",
+      "properties": {
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "input_schema": {
+          "additionalProperties": true,
+          "title": "Input Schema",
+          "type": "object"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "ToolSpec",
+      "type": "object"
+    },
+    "Transcript": {
+      "description": "What happened between participants (task 000339). One item of a\nconversation node's output; a document collection of these is what\na hundred runs of the same conversation produce.",
+      "properties": {
+        "id": {
+          "default": "",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "transcript",
+          "default": "transcript",
+          "title": "Kind",
+          "type": "string"
+        },
+        "messages": {
+          "items": {
+            "$ref": "#/$defs/TranscriptMessage"
+          },
+          "title": "Messages",
+          "type": "array"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        },
+        "participants": {
+          "description": "Agent names, in the order they first speak.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Participants",
+          "type": "array"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "spend_usd": {
+          "default": 0.0,
+          "minimum": 0,
+          "title": "Spend Usd",
+          "type": "number"
+        },
+        "stopped_because": {
+          "default": "",
+          "description": "Turn policy's reason: 'max_turns', 'stop_phrase', 'tool_error', \u2026",
+          "title": "Stopped Because",
+          "type": "string"
+        }
+      },
+      "title": "Transcript",
+      "type": "object"
+    },
+    "TranscriptMessage": {
+      "description": "One turn. `participant` is who produced it; `role_as_seen` is\nthe role it carried in the request that produced the NEXT turn \u2014\nin a two-model conversation each side sees the other as the user,\nso one exchange has two role assignments and a reader needs both.",
+      "properties": {
+        "call": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CallProvenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Absent for scripted turns: nobody was asked, nothing was spent."
+        },
+        "index": {
+          "minimum": 0,
+          "title": "Index",
+          "type": "integer"
+        },
+        "participant": {
+          "description": "Agent name, or 'user' for scripted input.",
+          "title": "Participant",
+          "type": "string"
+        },
+        "role_as_seen": {
+          "default": "assistant",
+          "enum": [
+            "user",
+            "assistant",
+            "system"
+          ],
+          "title": "Role As Seen",
+          "type": "string"
+        },
+        "stop_reason": {
+          "default": "",
+          "title": "Stop Reason",
+          "type": "string"
+        },
+        "text": {
+          "default": "",
+          "title": "Text",
+          "type": "string"
+        },
+        "tool_calls": {
+          "items": {
+            "$ref": "#/$defs/ToolCall"
+          },
+          "title": "Tool Calls",
+          "type": "array"
+        },
+        "tool_results": {
+          "items": {
+            "$ref": "#/$defs/ToolResult"
+          },
+          "title": "Tool Results",
+          "type": "array"
+        }
+      },
+      "required": [
+        "index",
+        "participant"
+      ],
+      "title": "TranscriptMessage",
+      "type": "object"
+    },
+    "Usage": {
+      "description": "Tokens a call consumed. Cached input is reported separately\nbecause it is priced separately; it is NOT additional to\n`input_tokens`, it is part of it.",
+      "properties": {
+        "cache_read_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Cache Read Tokens",
+          "type": "integer"
+        },
+        "cache_write_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Cache Write Tokens",
+          "type": "integer"
+        },
+        "input_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Input Tokens",
+          "type": "integer"
+        },
+        "output_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Output Tokens",
+          "type": "integer"
+        },
+        "reasoning_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Reasoning Tokens",
+          "type": "integer"
+        }
+      },
+      "title": "Usage",
       "type": "object"
     },
     "Vector": {
