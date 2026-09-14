@@ -23,6 +23,23 @@ with both headings.
 
 ---
 
+## 0.16.0 — 2026-09-15
+
+### Changes that raise
+
+- _None._
+
+### Changes that alter results without raising
+
+- **`Space`, `Token`, `TokenMass` and `Distribution` are the value
+  types of the typology's second phase.** A vector item carries a
+  `Space` (`{model, layer, point, head, d}`, all five always present);
+  a token is `{id, text}`; a next-token summary is a `Distribution`
+  (`entropy_bits`, `top` ranked as `TokenMass`, `tracked` by name).
+  `Embeddings` is marked superseded by a `Collection` of
+  `activations/vector` and kept for objects written in its shape.
+- The TypeScript bindings gain the same four types.
+
 ## 0.15.0 — 2026-09-14
 
 ### Changes that raise

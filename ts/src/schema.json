@@ -882,6 +882,35 @@
       "title": "ConvergenceRow",
       "type": "object"
     },
+    "Distribution": {
+      "additionalProperties": true,
+      "description": "A summary of a next-token distribution: its entropy in bits, the\nmost likely tokens ranked by probability, and `tracked` \u2014 the tokens\nthe caller asked about, by the names it gave. Every op that reads a\nnext-token distribution emits this shape or a kind that extends it.",
+      "properties": {
+        "entropy_bits": {
+          "title": "Entropy Bits",
+          "type": "number"
+        },
+        "top": {
+          "items": {
+            "$ref": "#/$defs/TokenMass"
+          },
+          "title": "Top",
+          "type": "array"
+        },
+        "tracked": {
+          "additionalProperties": {
+            "$ref": "#/$defs/TokenMass"
+          },
+          "title": "Tracked",
+          "type": "object"
+        }
+      },
+      "required": [
+        "entropy_bits"
+      ],
+      "title": "Distribution",
+      "type": "object"
+    },
     "DlaPrompt": {
       "description": "One prompt's contribution to a DLA sweep (target vs. distractor).",
       "properties": {
@@ -1034,7 +1063,7 @@
       "type": "object"
     },
     "Embeddings": {
-      "description": "The embed call kind's output (task 000348): one row per input,\nflat vectors, the model that produced them recorded.",
+      "description": "The embed call kind's output as first declared (task 000348): one\nrow per input, flat vectors, the model that produced them recorded.\nSuperseded by a `kinds.Collection` of `activations/vector`, each item\ncarrying a `kinds.Space` with `layer: null`, `point: \"embed\"` and the\nprovider model; kept for objects written in this shape.",
       "properties": {
         "description": {
           "default": "",
@@ -2031,6 +2060,62 @@
       "title": "RendererBindingSpec",
       "type": "object"
     },
+    "Space": {
+      "description": "Where a vector lives: the model, the layer (null for a whole-model\npoint such as the embedding), the hook point, the head (null unless\na per-head source) and the width. Every space has these five fields,\nso two spaces compare and sort against each other; two vectors are\ncomparable only when their spaces agree.",
+      "properties": {
+        "d": {
+          "exclusiveMinimum": 0,
+          "title": "D",
+          "type": "integer"
+        },
+        "head": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Head"
+        },
+        "layer": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Layer"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model"
+        },
+        "point": {
+          "title": "Point",
+          "type": "string"
+        }
+      },
+      "required": [
+        "point",
+        "d"
+      ],
+      "title": "Space",
+      "type": "object"
+    },
     "SteeringVector": {
       "description": "A learned or derived direction intended for intervention.\n\nCarries a description of how it was derived \u2014 usually a short\nnatural-language note (\"centroid of capital-city fact vectors minus\ncentroid of person-name fact vectors at L23.resid_post\", or \"SVD\ncomponent 0 of W_V for (L23, H5)\"). Downstream consumers that need\nto reproduce or compose steering vectors read the description.",
       "properties": {
@@ -2100,6 +2185,74 @@
         "derivation"
       ],
       "title": "SteeringVector",
+      "type": "object"
+    },
+    "Token": {
+      "description": "A token, once: its id in the vocabulary and its text.",
+      "properties": {
+        "id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Text"
+        }
+      },
+      "title": "Token",
+      "type": "object"
+    },
+    "TokenMass": {
+      "description": "One entry of a distribution: a token with its probability and\nlog-probability.",
+      "properties": {
+        "logp": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Logp"
+        },
+        "p": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "P"
+        },
+        "token": {
+          "$ref": "#/$defs/Token"
+        }
+      },
+      "required": [
+        "token"
+      ],
+      "title": "TokenMass",
       "type": "object"
     },
     "ToolCall": {

@@ -34,6 +34,49 @@ KIND_ROOT = "~canonical/kinds/"
 COLLECTION = "collection"
 
 
+class Space(BaseModel):
+    """Where a vector lives: the model, the layer (null for a whole-model
+    point such as the embedding), the hook point, the head (null unless
+    a per-head source) and the width. Every space has these five fields,
+    so two spaces compare and sort against each other; two vectors are
+    comparable only when their spaces agree."""
+
+    model: str | None = None
+    layer: int | None = None
+    point: str
+    head: int | None = None
+    d: int = Field(..., gt=0)
+
+
+class Token(BaseModel):
+    """A token, once: its id in the vocabulary and its text."""
+
+    id: int | None = None
+    text: str | None = None
+
+
+class TokenMass(BaseModel):
+    """One entry of a distribution: a token with its probability and
+    log-probability."""
+
+    token: Token
+    p: float | None = None
+    logp: float | None = None
+
+
+class Distribution(BaseModel):
+    """A summary of a next-token distribution: its entropy in bits, the
+    most likely tokens ranked by probability, and `tracked` — the tokens
+    the caller asked about, by the names it gave. Every op that reads a
+    next-token distribution emits this shape or a kind that extends it."""
+
+    model_config = ConfigDict(extra="allow")
+
+    entropy_bits: float
+    top: list[TokenMass] = Field(default_factory=list)
+    tracked: dict[str, TokenMass] = Field(default_factory=dict)
+
+
 class RendererBindingSpec(BaseModel):
     """How a kind is drawn: a platform renderer primitive and the
     payload fields that fill its slots (`{"rows": "items"}`,

@@ -112,8 +112,12 @@ from .kinds import (
     COLLECTION,
     KIND_ROOT,
     Collection,
+    Distribution,
     Kind,
     RendererBindingSpec,
+    Space,
+    Token,
+    TokenMass,
 )
 from .vector_data import (
     CapturedVector,
@@ -124,13 +128,17 @@ from .vector_data import (
     Vector,
 )
 
-__version__ = "0.15.0"
+__version__ = "0.16.0"
 
 __all__ = [
     # Kinds and the one container (the typology, epic 000493)
     "Kind",
     "Collection",
     "RendererBindingSpec",
+    "Space",
+    "Token",
+    "TokenMass",
+    "Distribution",
     "KIND_ROOT",
     "COLLECTION",
     # Document collections + annotations + kind manifests (task 000239)
@@ -233,6 +241,10 @@ __schema_all__ = [
     "Kind",
     "Collection",
     "RendererBindingSpec",
+    "Space",
+    "Token",
+    "TokenMass",
+    "Distribution",
     # External providers (epic 000334): the ui renders transcripts and
     # call costs, so these cross the wire.
     "EndpointRef",

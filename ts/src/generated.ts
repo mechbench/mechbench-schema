@@ -362,6 +362,12 @@ export type PivotLayer = number;
  * Stable id of the producing protocol, e.g. 'step_02_layer_ablation'.
  */
 export type Protocol = string;
+export type EntropyBits = number;
+export type Logp = number | null;
+export type P = number | null;
+export type Id3 = number | null;
+export type Text1 = string | null;
+export type Top = TokenMass[];
 /**
  * Prompt-set category tag (e.g. 'landmark', 'capital'). Pass an empty string when the prompt set has no categorical metadata.
  */
@@ -374,7 +380,7 @@ export type Distractor = string;
 export type DistractorTokenId = number;
 export type Target1 = string;
 export type TargetTokenId = number;
-export type Text1 = string;
+export type Text2 = string;
 /**
  * Per-layer mean; length equals n_layers.
  */
@@ -405,7 +411,7 @@ export type Prompts = DlaPrompt[];
  * Stable id of the producing protocol, e.g. 'step_02_layer_ablation'.
  */
 export type Protocol1 = string;
-export type Id3 = string;
+export type Id4 = string;
 /**
  * Flat vector; length must equal `dim`.
  */
@@ -682,12 +688,17 @@ export type TokenLabels2 = string[] | null;
  * via the `definition` "PerLayerPerPositionData".
  */
 export type PerLayerPerPositionData = LogitLensTrajectory;
-export type Id4 = string;
+export type D = number;
+export type Head1 = number | null;
+export type Layer2 = number | null;
+export type Model12 = string | null;
+export type Point = string;
+export type Id5 = string;
 export type Name5 = string;
 export type Content = string;
 export type IsError = boolean;
 export type ToolCallId = string;
-export type Id5 = string;
+export type Id6 = string;
 export type Kind12 = "text/transcript" | "transcript";
 export type Index = number;
 /**
@@ -696,7 +707,7 @@ export type Index = number;
 export type Participant = string;
 export type RoleAsSeen = "user" | "assistant" | "system";
 export type StopReason = string;
-export type Text2 = string;
+export type Text3 = string;
 export type ToolCalls = ToolCall[];
 export type ToolResults = ToolResult[];
 export type Messages = TranscriptMessage[];
@@ -1134,6 +1145,46 @@ export interface ConvergenceRow {
   title: Title;
 }
 /**
+ * A summary of a next-token distribution: its entropy in bits, the
+ * most likely tokens ranked by probability, and `tracked` — the tokens
+ * the caller asked about, by the names it gave. Every op that reads a
+ * next-token distribution emits this shape or a kind that extends it.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "Distribution".
+ */
+export interface Distribution {
+  entropy_bits: EntropyBits;
+  top?: Top;
+  tracked?: Tracked;
+  [k: string]: unknown;
+}
+/**
+ * One entry of a distribution: a token with its probability and
+ * log-probability.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "TokenMass".
+ */
+export interface TokenMass {
+  logp?: Logp;
+  p?: P;
+  token: Token;
+}
+/**
+ * A token, once: its id in the vocabulary and its text.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "Token".
+ */
+export interface Token {
+  id?: Id3;
+  text?: Text1;
+}
+export interface Tracked {
+  [k: string]: TokenMass;
+}
+/**
  * One prompt's contribution to a DLA sweep (target vs. distractor).
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
@@ -1146,7 +1197,7 @@ export interface DlaPrompt {
   distractor_token_id: DistractorTokenId;
   target: Target1;
   target_token_id: TargetTokenId;
-  text: Text1;
+  text: Text2;
 }
 /**
  * step_33-shape: per-layer (target - distractor) DLA across a prompt battery.
@@ -1183,7 +1234,7 @@ export interface LayerAggregates {
  * via the `definition` "EmbeddingRow".
  */
 export interface EmbeddingRow {
-  id: Id3;
+  id: Id4;
   metadata?: Metadata6;
   values: Values4;
 }
@@ -1191,8 +1242,11 @@ export interface Metadata6 {
   [k: string]: unknown;
 }
 /**
- * The embed call kind's output (task 000348): one row per input,
- * flat vectors, the model that produced them recorded.
+ * The embed call kind's output as first declared (task 000348): one
+ * row per input, flat vectors, the model that produced them recorded.
+ * Superseded by a `kinds.Collection` of `activations/vector`, each item
+ * carrying a `kinds.Space` with `layer: null`, `point: "embed"` and the
+ * provider model; kept for objects written in this shape.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "Embeddings".
@@ -1410,6 +1464,23 @@ export interface PerLayerPerPositionBase {
   token_labels?: TokenLabels2;
 }
 /**
+ * Where a vector lives: the model, the layer (null for a whole-model
+ * point such as the embedding), the hook point, the head (null unless
+ * a per-head source) and the width. Every space has these five fields,
+ * so two spaces compare and sort against each other; two vectors are
+ * comparable only when their spaces agree.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "Space".
+ */
+export interface Space {
+  d: D;
+  head?: Head1;
+  layer?: Layer2;
+  model?: Model12;
+  point: Point;
+}
+/**
  * A model's request to run a tool. `id` correlates it with the
  * result that answers it.
  *
@@ -1418,7 +1489,7 @@ export interface PerLayerPerPositionBase {
  */
 export interface ToolCall {
   arguments?: Arguments;
-  id?: Id4;
+  id?: Id5;
   name: Name5;
 }
 export interface Arguments {
@@ -1442,7 +1513,7 @@ export interface ToolResult {
  * via the `definition` "Transcript".
  */
 export interface Transcript {
-  id?: Id5;
+  id?: Id6;
   kind?: Kind12;
   messages?: Messages;
   metadata?: Metadata7;
@@ -1469,7 +1540,7 @@ export interface TranscriptMessage {
   participant: Participant;
   role_as_seen?: RoleAsSeen;
   stop_reason?: StopReason;
-  text?: Text2;
+  text?: Text3;
   tool_calls?: ToolCalls;
   tool_results?: ToolResults;
 }

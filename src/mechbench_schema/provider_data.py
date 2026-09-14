@@ -222,8 +222,11 @@ class EmbeddingRow(BaseModel):
 
 
 class Embeddings(BaseModel):
-    """The embed call kind's output (task 000348): one row per input,
-    flat vectors, the model that produced them recorded."""
+    """The embed call kind's output as first declared (task 000348): one
+    row per input, flat vectors, the model that produced them recorded.
+    Superseded by a `kinds.Collection` of `activations/vector`, each item
+    carrying a `kinds.Space` with `layer: null`, `point: "embed"` and the
+    provider model; kept for objects written in this shape."""
 
     kind: Literal["embeddings"] = "embeddings"
     name: str = ""
