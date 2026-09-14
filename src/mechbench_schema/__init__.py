@@ -108,6 +108,13 @@ from .per_layer_per_position_data import (
     PerLayerPerPositionBase,
     PerLayerPerPositionData,
 )
+from .kinds import (
+    COLLECTION,
+    KIND_ROOT,
+    Collection,
+    Kind,
+    RendererBindingSpec,
+)
 from .vector_data import (
     CapturedVector,
     CentroidVector,
@@ -117,9 +124,15 @@ from .vector_data import (
     Vector,
 )
 
-__version__ = "0.14.0"
+__version__ = "0.15.0"
 
 __all__ = [
+    # Kinds and the one container (the typology, epic 000493)
+    "Kind",
+    "Collection",
+    "RendererBindingSpec",
+    "KIND_ROOT",
+    "COLLECTION",
     # Document collections + annotations + kind manifests (task 000239)
     "DocumentCollection",
     "DocumentItem",
@@ -215,6 +228,11 @@ __all__ = [
 # Python-side utilities (functions, exceptions, non-Pydantic dataclasses)
 # that don't cross the wire.
 __schema_all__ = [
+    # Kinds and the one container: what the registry serves and what
+    # every plural result is.
+    "Kind",
+    "Collection",
+    "RendererBindingSpec",
     # External providers (epic 000334): the ui renders transcripts and
     # call costs, so these cross the wire.
     "EndpointRef",

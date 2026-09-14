@@ -14,7 +14,7 @@ export type Text = string;
 export type Top1Id = number;
 export type BudgetUsd = number | null;
 export type Description = string;
-export type Kind = "agent";
+export type Kind = "text/agent" | "agent";
 export type MaxTokens = number;
 /**
  * An endpoint, or a local model reference (repo[@rev]).
@@ -289,6 +289,16 @@ export type PairwiseCosine = number[] | null;
  */
 export type Silhouette = number | null;
 /**
+ * The bare name of the kind every item is.
+ */
+export type ItemKind = string;
+export type Items = unknown[];
+/**
+ * The item fields that identify an item; the stored order.
+ */
+export type Key = string[];
+export type Kind4 = string;
+/**
  * Human-readable summary; appears in chart footers.
  */
 export type Description3 = string;
@@ -335,7 +345,7 @@ export type Experiments = ConvergenceRow[];
  * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
 export type GlobalLayers = number[];
-export type Kind4 = "convergence";
+export type Kind5 = "convergence";
 /**
  * HuggingFace model id.
  */
@@ -381,7 +391,7 @@ export type Description4 = string;
  * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
 export type GlobalLayers1 = number[];
-export type Kind5 = "dla_sweep";
+export type Kind6 = "dla_sweep";
 /**
  * HuggingFace model id.
  */
@@ -402,7 +412,7 @@ export type Id3 = string;
 export type Values4 = number[];
 export type Description5 = string;
 export type Dim4 = number;
-export type Kind6 = "embeddings";
+export type Kind7 = "embeddings";
 export type Model5 = EndpointRef | string;
 export type Name3 = string;
 /**
@@ -416,6 +426,31 @@ export type SpendUsd = number;
  * via the `definition` "HookKind".
  */
 export type HookKind1 = "resid_pre" | "resid_post" | "attn_out" | "mlp_out" | "gate_out" | "other";
+export type Primitive = string;
+export type Doc = string;
+/**
+ * The kind this one refines; its fields are inherited.
+ */
+export type Extends = string | null;
+export type Family = string;
+/**
+ * The fields that identify an item in a collection; empty means the kind is not collected.
+ */
+export type Key1 = string[];
+/**
+ * Two-level bare name, `family/kind`.
+ */
+export type Name4 = string;
+/**
+ * Registered path, `~canonical/kinds/<name>`.
+ */
+export type Path = string;
+/**
+ * Produced by the platform rather than by an operation.
+ */
+export type Platform = boolean;
+export type Required = string[];
+export type Summary = string;
 /**
  * Human-readable summary; appears in chart footers.
  */
@@ -424,7 +459,7 @@ export type Description6 = string;
  * Layer indices to be visually highlighted. For Gemma 4 these are the global-attention layers; other architectures may use this for fresh-KV / MoE-routing / whatever architectural non-uniformity. Pass an empty list if the architecture has no layers worth highlighting.
  */
 export type GlobalLayers2 = number[];
-export type Kind7 = "layer_ablation";
+export type Kind9 = "layer_ablation";
 /**
  * HuggingFace model id.
  */
@@ -446,7 +481,7 @@ export type Description7 = string;
  * Layer indices to be visually highlighted. Same semantics as the other domain-axis modules. Empty list if the architecture has no layers worth highlighting.
  */
 export type GlobalLayers3 = number[];
-export type Kind8 = "logit_lens_trajectory";
+export type Kind10 = "logit_lens_trajectory";
 /**
  * Log-probability of target_token under the lens at each (layer, position). Flat row-major, length n_layers * seq_len.
  */
@@ -548,7 +583,7 @@ export type Description9 = string;
  * Layer indices to be visually highlighted. Same semantics as the per_layer_data.PerLayerBase field.
  */
 export type GlobalLayers5 = number[];
-export type Kind9 = "per_head_scalar_grid";
+export type Kind11 = "per_head_scalar_grid";
 /**
  * What the scalars measure (e.g. 'DLA contribution').
  */
@@ -648,12 +683,12 @@ export type TokenLabels2 = string[] | null;
  */
 export type PerLayerPerPositionData = LogitLensTrajectory;
 export type Id4 = string;
-export type Name4 = string;
+export type Name5 = string;
 export type Content = string;
 export type IsError = boolean;
 export type ToolCallId = string;
 export type Id5 = string;
-export type Kind10 = "transcript";
+export type Kind12 = "text/transcript" | "transcript";
 export type Index = number;
 /**
  * Agent name, or 'user' for scripted input.
@@ -1045,6 +1080,21 @@ export interface Metadata5 {
   [k: string]: string;
 }
 /**
+ * The one container. `items` are of `item_kind`, sorted by `key`;
+ * the header (anything else) is whatever the producing operation
+ * recorded, documented on the item kind's declaration.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "Collection".
+ */
+export interface Collection {
+  item_kind: ItemKind;
+  items: Items;
+  key?: Key;
+  kind?: Kind4;
+  [k: string]: unknown;
+}
+/**
  * Cross-experiment summary: N source experiments, one peak layer each.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
@@ -1054,7 +1104,7 @@ export interface ConvergencePayload {
   description: Description3;
   experiments: Experiments;
   global_layers: GlobalLayers;
-  kind?: Kind4;
+  kind?: Kind5;
   model: Model3;
   n_layers: NLayers;
   pivot_layer: PivotLayer;
@@ -1108,7 +1158,7 @@ export interface DlaSweepPayload {
   aggregates: LayerAggregates;
   description: Description4;
   global_layers: GlobalLayers1;
-  kind?: Kind5;
+  kind?: Kind6;
   model: Model4;
   n_layers: NLayers1;
   prompts: Prompts;
@@ -1150,13 +1200,66 @@ export interface Metadata6 {
 export interface Embeddings {
   description?: Description5;
   dim: Dim4;
-  kind?: Kind6;
+  kind?: Kind7;
   model: Model5;
   name?: Name3;
   normalized?: Normalized;
   provenance?: Provenance | null;
   rows?: Rows;
   spend_usd?: SpendUsd;
+}
+/**
+ * A kind's declaration, as the lexicon publishes it: what the
+ * object is, its fields as JSON-Schema property entries, which are
+ * required, what it extends, the key that identifies an item of it
+ * in a collection, and the header fields a collection of it carries.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "Kind".
+ */
+export interface Kind8 {
+  collection_renderer?: RendererBindingSpec | null;
+  doc?: Doc;
+  extends?: Extends;
+  family: Family;
+  fields?: Fields;
+  header?: Header;
+  key?: Key1;
+  name: Name4;
+  path: Path;
+  platform?: Platform;
+  renderer?: RendererBindingSpec | null;
+  required?: Required;
+  summary: Summary;
+}
+/**
+ * How a kind is drawn: a platform renderer primitive and the
+ * payload fields that fill its slots (`{"rows": "items"}`,
+ * `{"text": "text"}`).
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "RendererBindingSpec".
+ */
+export interface RendererBindingSpec {
+  field_map?: FieldMap;
+  primitive: Primitive;
+}
+export interface FieldMap {
+  [k: string]: string;
+}
+/**
+ * Field name → JSON-Schema property (`type`, `description`, …).
+ */
+export interface Fields {
+  [k: string]: {
+    [k: string]: unknown;
+  };
+}
+/**
+ * Field name → what it means, for the fields a collection of this kind carries beside `items`.
+ */
+export interface Header {
+  [k: string]: string;
 }
 /**
  * step_02-shape: per-layer ablation damage across a prompt battery.
@@ -1168,7 +1271,7 @@ export interface LayerAblationPayload {
   aggregates: LayerAggregates;
   description: Description6;
   global_layers: GlobalLayers2;
-  kind?: Kind7;
+  kind?: Kind9;
   model: Model6;
   n_layers: NLayers2;
   prompts: Prompts1;
@@ -1201,7 +1304,7 @@ export interface LayerAblationPayload {
 export interface LogitLensTrajectory {
   description: Description7;
   global_layers: GlobalLayers3;
-  kind?: Kind8;
+  kind?: Kind10;
   logprobs: Logprobs;
   model: Model7;
   n_layers: NLayers3;
@@ -1255,7 +1358,7 @@ export interface PerHeadBase {
 export interface PerHeadScalarGrid {
   description: Description9;
   global_layers: GlobalLayers5;
-  kind?: Kind9;
+  kind?: Kind11;
   metric_name: MetricName1;
   metric_units: MetricUnits1;
   model: Model9;
@@ -1316,7 +1419,7 @@ export interface PerLayerPerPositionBase {
 export interface ToolCall {
   arguments?: Arguments;
   id?: Id4;
-  name: Name4;
+  name: Name5;
 }
 export interface Arguments {
   [k: string]: unknown;
@@ -1340,7 +1443,7 @@ export interface ToolResult {
  */
 export interface Transcript {
   id?: Id5;
-  kind?: Kind10;
+  kind?: Kind12;
   messages?: Messages;
   metadata?: Metadata7;
   participants?: Participants;

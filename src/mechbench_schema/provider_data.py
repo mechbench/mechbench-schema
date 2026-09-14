@@ -155,7 +155,7 @@ class Agent(BaseModel):
     same participant can be reused across protocols and compared
     against itself under one changed field."""
 
-    kind: Literal["agent"] = "agent"
+    kind: Literal["text/agent", "agent"] = "text/agent"
     name: str = Field(..., min_length=1, description="How the transcript refers to it.")
     model: EndpointRef | str = Field(
         ..., description="An endpoint, or a local model reference (repo[@rev]).")
@@ -194,7 +194,7 @@ class Transcript(BaseModel):
     conversation node's output; a document collection of these is what
     a hundred runs of the same conversation produce."""
 
-    kind: Literal["transcript"] = "transcript"
+    kind: Literal["text/transcript", "transcript"] = "text/transcript"
     id: str = ""
     participants: list[str] = Field(
         default_factory=list, description="Agent names, in the order they first speak.")

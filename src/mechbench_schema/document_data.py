@@ -109,9 +109,12 @@ class DocumentItem(BaseModel):
 
 
 class DocumentCollection(BaseModel):
-    """Layer-0 container. The `items` key is what the API's /~items
-    pagination slices; nothing else in the platform depends on item
-    internals."""
+    """The container as it was written before the typology named one
+    container for everything (`kinds.Collection`): the same `items`
+    the API's /~items pagination slices, under the retired kind
+    `document_collection`. Objects on the bench keep this shape; new
+    ones are a `collection` of `text/document` (or of whatever their
+    `item_kind` says)."""
 
     kind: Literal["document_collection"] = "document_collection"
     name: str
@@ -162,8 +165,11 @@ class AnnotationValue(BaseModel):
 
 
 class AnnotationLayer(BaseModel):
-    """A typed overlay over one collection. Numeric layers drive
-    coloring; string layers drive tooltips/labels."""
+    """A typed overlay over one collection, as written before the
+    typology: today's overlay is a `collection` of `text/annotation`
+    whose items are these `values`, with `collection`, `value_type` and
+    `required_fidelity` in the header. Numeric layers drive coloring;
+    string layers drive tooltips/labels."""
 
     kind: Literal["annotation_layer"] = "annotation_layer"
     name: str
@@ -224,10 +230,21 @@ class KindManifest(BaseModel):
             "collections with a collection renderer default to it."
         ),
     )
+    supersedes: list[MechbenchPath] = Field(
+        default_factory=list,
+        description=(
+            "Registered paths this kind replaces. A registered manifest is "
+            "immutable, so a superseded kind is marked here, on its "
+            "successor, never on itself."
+        ),
+    )
     provenance: Provenance | None = None
 
 
-# Base kinds live here so both halves of the platform agree on them.
+# The paths the base kinds were registered under before the typology
+# named them by family. They stay registered and immutable; the kinds
+# that supersede them are `text/document`, `text/transcript` and
+# `text/annotation` under `kinds.KIND_ROOT`.
 BASE_KIND_TEXT = "~canonical/kinds/text"
 BASE_KIND_CONVERSATION = "~canonical/kinds/conversation"
 BASE_KIND_ANNOTATED_TOKENS = "~canonical/kinds/annotated-tokens"

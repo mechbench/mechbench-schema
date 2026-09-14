@@ -62,8 +62,11 @@
           "type": "string"
         },
         "kind": {
-          "const": "agent",
-          "default": "agent",
+          "default": "text/agent",
+          "enum": [
+            "text/agent",
+            "agent"
+          ],
           "title": "Kind",
           "type": "string"
         },
@@ -683,6 +686,42 @@
       "title": "ClusterSet",
       "type": "object"
     },
+    "Collection": {
+      "additionalProperties": true,
+      "description": "The one container. `items` are of `item_kind`, sorted by `key`;\nthe header (anything else) is whatever the producing operation\nrecorded, documented on the item kind's declaration.",
+      "properties": {
+        "item_kind": {
+          "description": "The bare name of the kind every item is.",
+          "title": "Item Kind",
+          "type": "string"
+        },
+        "items": {
+          "items": {},
+          "title": "Items",
+          "type": "array"
+        },
+        "key": {
+          "description": "The item fields that identify an item; the stored order.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Key",
+          "type": "array"
+        },
+        "kind": {
+          "default": "collection",
+          "pattern": "^collection$",
+          "title": "Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "item_kind",
+        "items"
+      ],
+      "title": "Collection",
+      "type": "object"
+    },
     "ConvergencePayload": {
       "description": "Cross-experiment summary: N source experiments, one peak layer each.",
       "properties": {
@@ -1139,6 +1178,115 @@
         "other"
       ],
       "type": "string"
+    },
+    "Kind": {
+      "description": "A kind's declaration, as the lexicon publishes it: what the\nobject is, its fields as JSON-Schema property entries, which are\nrequired, what it extends, the key that identifies an item of it\nin a collection, and the header fields a collection of it carries.",
+      "properties": {
+        "collection_renderer": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RendererBindingSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "doc": {
+          "default": "",
+          "title": "Doc",
+          "type": "string"
+        },
+        "extends": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The kind this one refines; its fields are inherited.",
+          "title": "Extends"
+        },
+        "family": {
+          "title": "Family",
+          "type": "string"
+        },
+        "fields": {
+          "additionalProperties": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "description": "Field name \u2192 JSON-Schema property (`type`, `description`, \u2026).",
+          "title": "Fields",
+          "type": "object"
+        },
+        "header": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Field name \u2192 what it means, for the fields a collection of this kind carries beside `items`.",
+          "title": "Header",
+          "type": "object"
+        },
+        "key": {
+          "description": "The fields that identify an item in a collection; empty means the kind is not collected.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Key",
+          "type": "array"
+        },
+        "name": {
+          "description": "Two-level bare name, `family/kind`.",
+          "title": "Name",
+          "type": "string"
+        },
+        "path": {
+          "description": "Registered path, `~canonical/kinds/<name>`.",
+          "title": "Path",
+          "type": "string"
+        },
+        "platform": {
+          "default": false,
+          "description": "Produced by the platform rather than by an operation.",
+          "title": "Platform",
+          "type": "boolean"
+        },
+        "renderer": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RendererBindingSpec"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "required": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Required",
+          "type": "array"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "path",
+        "family",
+        "summary"
+      ],
+      "title": "Kind",
+      "type": "object"
     },
     "LayerAblationPayload": {
       "description": "step_02-shape: per-layer ablation damage across a prompt battery.",
@@ -1862,6 +2010,27 @@
       "title": "Provenance",
       "type": "object"
     },
+    "RendererBindingSpec": {
+      "description": "How a kind is drawn: a platform renderer primitive and the\npayload fields that fill its slots (`{\"rows\": \"items\"}`,\n`{\"text\": \"text\"}`).",
+      "properties": {
+        "field_map": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Field Map",
+          "type": "object"
+        },
+        "primitive": {
+          "title": "Primitive",
+          "type": "string"
+        }
+      },
+      "required": [
+        "primitive"
+      ],
+      "title": "RendererBindingSpec",
+      "type": "object"
+    },
     "SteeringVector": {
       "description": "A learned or derived direction intended for intervention.\n\nCarries a description of how it was derived \u2014 usually a short\nnatural-language note (\"centroid of capital-city fact vectors minus\ncentroid of person-name fact vectors at L23.resid_post\", or \"SVD\ncomponent 0 of W_V for (L23, H5)\"). Downstream consumers that need\nto reproduce or compose steering vectors read the description.",
       "properties": {
@@ -2033,8 +2202,11 @@
           "type": "string"
         },
         "kind": {
-          "const": "transcript",
-          "default": "transcript",
+          "default": "text/transcript",
+          "enum": [
+            "text/transcript",
+            "transcript"
+          ],
           "title": "Kind",
           "type": "string"
         },

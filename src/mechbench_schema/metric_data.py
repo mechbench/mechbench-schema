@@ -33,7 +33,10 @@ class MetricColumn(BaseModel):
 
 
 class MetricTable(BaseModel):
-    kind: Literal["metric_table"] = "metric_table"
+    """A presentation table. Its kind is `records/table`; `metric_table`
+    is the retired spelling objects written before the typology carry."""
+
+    kind: Literal["records/table", "metric_table"] = "records/table"
     name: str
     description: str = ""
     row_axis: Literal["corpus", "item", "condition"]
