@@ -1,10 +1,3 @@
-"""Verify the Python canonical-CBOR codec matches the shared vectors.
-
-These vectors are the cross-language contract; the TypeScript codec
-must produce byte-identical output on the same logical inputs. See
-`cbor_vectors.py` for the hand-constructed expected-hex values.
-"""
-
 from __future__ import annotations
 
 import pytest
@@ -15,7 +8,7 @@ from mechbench_schema.codec_cbor import (
     load_raw,
 )
 
-from cbor_vectors import VECTORS  # noqa: E402 — tests/ is on sys.path via pytest
+from cbor_vectors import VECTORS  # noqa: E402
 
 
 @pytest.mark.parametrize(("vid", "value", "expected_hex"), VECTORS)
@@ -46,10 +39,8 @@ def test_rejects_inf() -> None:
 
 
 def test_pydantic_roundtrip() -> None:
-    """Exercise the Pydantic path with a model that ships in the package."""
     from mechbench_schema import LayerAblationPayload
 
-    # Smallest valid payload.
     payload = LayerAblationPayload(
         protocol="test",
         description="x",
@@ -62,3 +53,30 @@ def test_pydantic_roundtrip() -> None:
     encoded = dump_canonical(payload)
     restored = load_canonical(encoded, LayerAblationPayload)
     assert restored == payload
+
+
+def test_whole_floats_collapse_to_int_only_within_the_ieee_exact_range() -> None:
+    assert dump_canonical(float(2**53)) == dump_canonical(2**53)
+    assert dump_canonical(float(-(2**53))) == dump_canonical(-(2**53))
+    beyond = dump_canonical(float(2**54))
+    assert beyond != dump_canonical(2**54)
+    assert beyond[0] in (0xFA, 0xFB)
+
+
+def test_booleans_are_not_promoted_to_integers() -> None:
+    assert dump_canonical([True, 1]).hex() == "82f501"
+
+
+def test_the_typescript_suite_checks_the_same_vectors() -> None:
+    import re
+    from pathlib import Path
+
+    mjs = Path(__file__).resolve().parent.parent / "ts" / "src" / "__tests__" / "codec-cbor.test.mjs"
+    text = re.sub(r'"\s*\+\s*"', "", mjs.read_text())
+    ts_ids = [
+        i for i in re.findall(r'^\s*\[?\s*"(\w+)",', text, re.MULTILINE)
+        if not re.fullmatch(r"[0-9a-f]+", i)
+    ]
+    assert ts_ids == [vid for vid, _, _ in VECTORS]
+    for vid, _, expected_hex in VECTORS:
+        assert f'"{expected_hex}"' in text, f"vector {vid}: hex differs in the TypeScript suite"

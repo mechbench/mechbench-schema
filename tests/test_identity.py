@@ -1,5 +1,3 @@
-"""Path grammar: a hash segment is recognised before the named-segment rules."""
-
 import pytest
 
 from mechbench_schema.identity import (

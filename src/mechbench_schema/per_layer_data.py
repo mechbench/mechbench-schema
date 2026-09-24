@@ -1,30 +1,3 @@
-"""Per-layer data shapes.
-
-Records that associate some measurement with each transformer layer.
-Today the measurements are numeric scalars per layer (ablation damage,
-DLA diffs, convergence peak values); the category naturally extends
-to per-layer vectors, matrices, categorical labels, and other
-per-layer quantities that future experiments will produce.
-
-This module organizes the schema by *domain axis* (records indexed by
-layer), not by consumer. The UI renders these as charts, but the same
-records could drive a CSV export, an agent's tool surface, or any
-other downstream renderer.
-
-The three kinds today:
-
-  layer_ablation   — step_02-style: per-layer damage (Δ log p) from
-                      ablating each layer in turn across a prompt battery.
-  dla_sweep        — step_33-style: per-layer (target - distractor) logit
-                      difference across a prompt battery.
-  convergence      — cross-experiment summary: one peak_layer per source
-                      experiment, with rich metadata per row.
-
-Add a new kind by (a) writing the payload model here, (b) adding its kind
-literal to PerLayerData, (c) exporting it from __init__.py, (d) re-running
-scripts/codegen.py.
-"""
-
 from __future__ import annotations
 
 from typing import Annotated, Literal, Union
@@ -34,18 +7,8 @@ from pydantic import BaseModel, Field
 from .provenance import Provenance
 
 
-# --- Common envelope fields ---------------------------------------------------
-
 class PerLayerBase(BaseModel):
-    """Fields every per-layer chart-data file carries.
-
-    `protocol` is the stable id of the recipe that produced this data: the
-    source script's module name for research runs, or the platform protocol
-    for jobs queued through mechbench-api. `model` is the HuggingFace model
-    id. `n_layers` and
-    `global_layers` describe the model's layer structure so charts can
-    adapt across model variants (E4B: 42, E2B: 30, ...).
-    """
+    """Fields every per-layer record carries."""
 
     protocol: str = Field(..., description="Stable id of the producing protocol, e.g. 'step_02_layer_ablation'.")
     description: str = Field(..., description="Human-readable summary; appears in chart footers.")
@@ -64,9 +27,8 @@ class PerLayerBase(BaseModel):
     provenance: Provenance | None = Field(
         None,
         description=(
-            "Emission provenance (task 000237). Optional on read for "
-            "records written before 0.9.0; the API requires it on new "
-            "writes."
+            "Emission provenance. Optional on read; the API requires it "
+            "on new writes."
         ),
     )
 
@@ -77,8 +39,6 @@ class LayerAggregates(BaseModel):
     mean: list[float] = Field(..., description="Per-layer mean; length equals n_layers.")
     median: list[float] = Field(..., description="Per-layer median; length equals n_layers.")
 
-
-# --- Kind 1: layer_ablation ---------------------------------------------------
 
 class AblationPrompt(BaseModel):
     """One prompt's contribution to a per-layer ablation sweep."""
@@ -94,14 +54,12 @@ class AblationPrompt(BaseModel):
 
 
 class LayerAblationPayload(PerLayerBase):
-    """step_02-shape: per-layer ablation damage across a prompt battery."""
+    """Per-layer ablation damage across a prompt battery."""
 
     kind: Literal["layer_ablation"] = "layer_ablation"
     prompts: list[AblationPrompt]
     aggregates: LayerAggregates
 
-
-# --- Kind 2: dla_sweep --------------------------------------------------------
 
 class DlaPrompt(BaseModel):
     """One prompt's contribution to a DLA sweep (target vs. distractor)."""
@@ -125,14 +83,13 @@ class DlaPrompt(BaseModel):
 
 
 class DlaSweepPayload(PerLayerBase):
-    """step_33-shape: per-layer (target - distractor) DLA across a prompt battery."""
+    """Per-layer (target - distractor) direct logit attribution across a
+    prompt battery."""
 
     kind: Literal["dla_sweep"] = "dla_sweep"
     prompts: list[DlaPrompt]
     aggregates: LayerAggregates
 
-
-# --- Kind 3: convergence ------------------------------------------------------
 
 class ConvergenceRow(BaseModel):
     """One source experiment's contribution to a cross-experiment summary."""
@@ -166,8 +123,6 @@ class ConvergencePayload(PerLayerBase):
     pivot_layer: int = Field(..., ge=0, description="The layer the convergence centers on.")
     experiments: list[ConvergenceRow]
 
-
-# --- Discriminated union over all per-layer kinds ----------------------------
 
 PerLayerData = Annotated[
     Union[LayerAblationPayload, DlaSweepPayload, ConvergencePayload],

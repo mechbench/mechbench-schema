@@ -1,28 +1,3 @@
-"""Models someone else runs (task 000351, epic 000334).
-
-Four shapes cross a repo boundary once a protocol can call an external
-provider, and they belong here rather than in any one consumer:
-
-- `EndpointRef` — the third form of a model reference. A base plus an
-  adapter stack says WHERE weights come from; an endpoint says WHO RUNS
-  THEM, and that is a different kind of fact: there are no weights of
-  ours to fuse, and the node that names one must carry a spending cap.
-- `CallProvenance` — what one call to someone else's model cost and who
-  answered it. Provenance is the reason to own the transport at all: a
-  result that cannot say which dated model version produced it is a
-  claim rather than a measurement.
-- `Agent` — a participant: a model reference, a system prompt, tools,
-  sampling. A conversation is a graph of these, so an agent has to be
-  an object the bench can store and a protocol can reference.
-- `Transcript` — what happened between them. Each message records the
-  participant that produced it AND the role it was SEEN as, because in
-  a two-model conversation each side perceives the other as the user:
-  one exchange, two role assignments, and a reader needs both.
-
-`Embeddings` rides along as the vector-shaped output of the embed call
-kind (000348).
-"""
-
 from __future__ import annotations
 
 from typing import Any, Literal
@@ -32,16 +7,11 @@ from pydantic import BaseModel, Field, model_validator
 from .identity import MechbenchPath
 from .provenance import Provenance
 
-# Base kinds, here so both halves of the platform agree on them.
 BASE_KIND_AGENT = "~canonical/kinds/agent"
 BASE_KIND_TRANSCRIPT = "~canonical/kinds/transcript"
 BASE_KIND_EMBEDDINGS = "~canonical/kinds/embeddings"
 BASE_KIND_CALL_PROVENANCE = "~canonical/kinds/call-provenance"
 
-#: Providers that answer chat calls. `openai-compatible` is the generic
-#: host (Together, Groq, DeepSeek, Mistral, OpenRouter, a self-hosted
-#: vLLM or llama.cpp server); `mock` is the deterministic test provider
-#: (task 000350), a real name because dry runs and cassettes record it.
 EndpointProvider = Literal[
     "anthropic", "openai", "xai", "gemini", "fireworks",
     "openai-compatible", "mock",
@@ -49,20 +19,17 @@ EndpointProvider = Literal[
 
 
 class EndpointRef(BaseModel):
-    """A model someone else runs. `provider_options` is keyed by
-    provider name and passes through to the wire VERBATIM — cache
-    control, thinking budgets, service tiers, anything the canonical
-    fields do not name — so a protocol can always reach the real API,
-    and what it asked for is recorded."""
+    """A model someone else runs. `provider_options` is keyed by provider
+    name and passed to that provider's API verbatim."""
 
     provider: EndpointProvider
     model: str = Field(..., min_length=1, description="The provider's own model id.")
     model_version: str | None = Field(
         None,
         description=(
-            "The dated version pinned at seal, when one was pinned (task "
-            "000352). Absent means 'whatever the alias resolves to', and the "
-            "version that ANSWERED is recorded per call either way."
+            "The dated version pinned at seal, if any. Absent means whatever "
+            "the alias resolves to; the version that answered is recorded "
+            "per call either way."
         ),
     )
     provider_options: dict[str, dict[str, Any]] = Field(
@@ -72,9 +39,8 @@ class EndpointRef(BaseModel):
 
 
 class Usage(BaseModel):
-    """Tokens a call consumed. Cached input is reported separately
-    because it is priced separately; it is NOT additional to
-    `input_tokens`, it is part of it."""
+    """Tokens a call consumed. Cached input is part of `input_tokens`, not
+    additional to it."""
 
     input_tokens: int = Field(0, ge=0)
     output_tokens: int = Field(0, ge=0)
@@ -84,10 +50,8 @@ class Usage(BaseModel):
 
 
 class CallProvenance(BaseModel):
-    """One call to an external provider, as the item that carries it
-    records it. The manifest sums these; a reader should be able to
-    reconstruct the bill and the identity of what answered from the
-    result alone."""
+    """One call to an external provider: what was asked for, what answered,
+    and what it cost."""
 
     kind: Literal["call_provenance"] = "call_provenance"
     provider: str
@@ -116,13 +80,10 @@ class CallProvenance(BaseModel):
     throttled_seconds: float = Field(
         0.0, ge=0, description="Time spent waiting on rate limits, not on the model.")
     replayed: bool = Field(
-        False, description="Answered from a cassette rather than the wire (task 000350).")
+        False, description="Answered from a cassette rather than the wire.")
     provider_options: dict[str, Any] = Field(default_factory=dict)
     rate_limits: dict[str, Any] = Field(
         default_factory=dict, description="What the response headers said about quota.")
-
-
-# --- participants and transcripts --------------------------------------------
 
 
 class ToolSpec(BaseModel):
@@ -135,8 +96,8 @@ class ToolSpec(BaseModel):
 
 
 class ToolCall(BaseModel):
-    """A model's request to run a tool. `id` correlates it with the
-    result that answers it."""
+    """A model's request to run a tool; `id` matches the result that
+    answers it."""
 
     id: str = ""
     name: str
@@ -150,10 +111,8 @@ class ToolResult(BaseModel):
 
 
 class Agent(BaseModel):
-    """A participant in a conversation (task 000339): which model, what
-    it was told, what it may call. An agent is a bench object so the
-    same participant can be reused across protocols and compared
-    against itself under one changed field."""
+    """A conversation participant: a model, its system prompt, tools and
+    sampling."""
 
     kind: Literal["text/agent", "agent"] = "text/agent"
     name: str = Field(..., min_length=1, description="How the transcript refers to it.")
@@ -165,18 +124,15 @@ class Agent(BaseModel):
     top_p: float | None = None
     max_tokens: int = Field(1024, gt=0)
     provider_options: dict[str, dict[str, Any]] = Field(default_factory=dict)
-    #: Mandatory on remote participants — the api refuses a protocol
-    #: whose remote node has no cap (task 000335).
     budget_usd: float | None = Field(None, gt=0)
     description: str = ""
     provenance: Provenance | None = None
 
 
 class TranscriptMessage(BaseModel):
-    """One turn. `participant` is who produced it; `role_as_seen` is
-    the role it carried in the request that produced the NEXT turn —
-    in a two-model conversation each side sees the other as the user,
-    so one exchange has two role assignments and a reader needs both."""
+    """One turn. `participant` produced it; `role_as_seen` is the role it
+    carried in the request for the next turn, since in a two-model
+    conversation each side sees the other as the user."""
 
     index: int = Field(..., ge=0)
     participant: str = Field(..., description="Agent name, or 'user' for scripted input.")
@@ -190,9 +146,7 @@ class TranscriptMessage(BaseModel):
 
 
 class Transcript(BaseModel):
-    """What happened between participants (task 000339). One item of a
-    conversation node's output; a document collection of these is what
-    a hundred runs of the same conversation produce."""
+    """The messages exchanged between participants in one conversation."""
 
     kind: Literal["text/transcript", "transcript"] = "text/transcript"
     id: str = ""
@@ -222,11 +176,8 @@ class EmbeddingRow(BaseModel):
 
 
 class Embeddings(BaseModel):
-    """The embed call kind's output as first declared (task 000348): one
-    row per input, flat vectors, the model that produced them recorded.
-    Superseded by a `kinds.Collection` of `activations/vector`, each item
-    carrying a `kinds.Space` with `layer: null`, `point: "embed"` and the
-    provider model; kept for objects written in this shape."""
+    """Embedding vectors, one row per input. A legacy shape: new objects
+    are a `collection` of `activations/vector`."""
 
     kind: Literal["embeddings"] = "embeddings"
     name: str = ""
@@ -249,8 +200,7 @@ class Embeddings(BaseModel):
 
 
 class AgentCollection(BaseModel):
-    """A named set of participants — what a conversation node binds in
-    one edge instead of N."""
+    """A named set of conversation participants."""
 
     kind: Literal["agent_collection"] = "agent_collection"
     name: str = ""
@@ -260,6 +210,4 @@ class AgentCollection(BaseModel):
 
 
 def endpoint_path(ref: EndpointRef) -> MechbenchPath:
-    """A stable, readable identity for an endpoint — what a manifest
-    prints and a catalog groups by."""
     return f"{ref.provider}:{ref.model}"

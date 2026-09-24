@@ -1,44 +1,9 @@
-"""Per-(layer, position) data shapes.
-
-Records indexed along *both* the transformer-layer axis and the token-
-position axis. The residual stream, and every observation derived from
-it without compressing position away, lives here.
-
-Per the task 000158 framing, future kinds include:
-
-  logit_lens_trajectory — [n_layers × seq_len] ranks + logprobs of a
-                           target token. Shipped today; migrates the
-                           old LensStep/LensTrajectory from records.py.
-  causal_trace_grid     — [n_layers × seq_len] post-intervention logit
-                           differences (ROME-style plot). Add when a
-                           real causal-tracing consumer arrives.
-  per_position_attribution — [n_layers × seq_len] DLA values at each
-                           position, for callers that want more than
-                           the final-position scalar.
-  residual_snapshot     — [n_layers × seq_len × d_model] vectors at
-                           every (layer, position). Binary transport
-                           needed before this can ship at scale; see
-                           task 000161.
-
-Serialization: per-(layer, position) tensors are stored as flat
-row-major lists on the wire, length `n_layers * seq_len`. Consumers
-reshape at ingest, same convention as attention_trace and
-per_head_data.
-
-The archetypal envelope carries sequence-level metadata (prompt_id,
-prompt_text, token_labels) alongside the usual architectural metadata
-(model, n_layers, seq_len, global_layers). Every kind in this module
-inherits these fields.
-"""
-
 from __future__ import annotations
 
 from typing import Annotated, Literal, Union
 
 from pydantic import BaseModel, Field, model_validator
 
-
-# --- Common envelope ---------------------------------------------------------
 
 class PerLayerPerPositionBase(BaseModel):
     """Fields every per-(layer, position) record carries."""
@@ -78,25 +43,9 @@ class PerLayerPerPositionBase(BaseModel):
     )
 
 
-# --- Kind: logit_lens_trajectory ---------------------------------------------
-
 class LogitLensTrajectory(PerLayerPerPositionBase):
-    """A logit-lens trajectory over layers and positions.
-
-    Projects the residual stream at each (layer, position) through the
-    model's output head and records the target token's rank and
-    log-probability. Optionally records the argmax token at each
-    position ("top_tokens"), useful for narrating a trajectory.
-
-    The three flat lists (`ranks`, `logprobs`, optionally `top_tokens`)
-    are all row-major `[n_layers * seq_len]`: index `layer * seq_len +
-    position`. Consumers reshape at ingest.
-
-    Replaces the old records.LensStep + records.LensTrajectory pair,
-    which modeled one step per entry and paid struct-per-entry
-    overhead. The flat-list shape is tighter on the wire and matches
-    the convention used by the other per-layer and per-head modules.
-    """
+    """A target token's rank and log-probability under the logit lens at
+    each (layer, position)."""
 
     kind: Literal["logit_lens_trajectory"] = "logit_lens_trajectory"
     target_token: str = Field(
@@ -157,8 +106,6 @@ class LogitLensTrajectory(PerLayerPerPositionBase):
             )
         return self
 
-
-# --- Discriminated union over all per-(layer, position) kinds ---------------
 
 PerLayerPerPositionData = Annotated[
     Union[LogitLensTrajectory],

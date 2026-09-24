@@ -1,32 +1,3 @@
-"""Vector data shapes.
-
-A vector is a single direction in residual-stream space, with metadata
-describing where it came from and what it means. Unlike the
-per-*-data modules (which organize records along architectural axes),
-this module describes an **atomic** shape — one vector, one record.
-
-Four origins today, discriminated by the `origin` field:
-
-  captured    — A vector read from a specific (hook_point, prompt_id,
-                 position, layer) during a forward pass. The atomic
-                 unit of the geometry analyses in mechbench-compute.
-                 Migrated from the old records.py `FactVectorRecord`.
-  steering    — A learned or derived direction applied as an
-                 intervention. Carries the derivation story.
-  probe       — A linear-probe weight vector. Carries what the probe
-                 predicts.
-  centroid    — The centroid of a cluster of vectors. Carries the
-                 cluster id and member count.
-
-Companion module: `cluster_data.py` (task 000160) uses these vectors as
-the atomic members of a cluster.
-
-Bulk storage caveat: a single d_model-wide float32 vector is
-~10 KB of JSON; collections get heavy fast. See task 000161 for the
-binary-transport story. For now, inline `values` on the wire; revisit
-when real consumers hit the size limit.
-"""
-
 from __future__ import annotations
 
 from typing import Annotated, Literal, Union
@@ -35,8 +6,6 @@ from pydantic import BaseModel, Field, model_validator
 
 
 class _VectorBase(BaseModel):
-    """Fields shared by every vector variant."""
-
     values: list[float] = Field(
         ...,
         description=(
@@ -71,8 +40,6 @@ class _VectorBase(BaseModel):
         return self
 
 
-# Hook-point kinds known to mechbench-compute._arch.LAYER_HOOK_POINTS.
-# Kept in a Literal to generate a tight TypeScript union on the UI side.
 HookKind = Literal[
     "resid_pre",
     "resid_post",
@@ -84,12 +51,7 @@ HookKind = Literal[
 
 
 class CapturedVector(_VectorBase):
-    """A vector read from a hook point during a forward pass.
-
-    Replaces the old `FactVectorRecord` from records.py. Adds the `origin`
-    discriminator and renames the old `kind` field to `hook_kind` to make
-    room for `origin` at the top level without collision.
-    """
+    """A vector read from a hook point during a forward pass."""
 
     origin: Literal["captured"] = "captured"
     hook_point: str = Field(
@@ -110,14 +72,7 @@ class CapturedVector(_VectorBase):
 
 
 class SteeringVector(_VectorBase):
-    """A learned or derived direction intended for intervention.
-
-    Carries a description of how it was derived — usually a short
-    natural-language note ("centroid of capital-city fact vectors minus
-    centroid of person-name fact vectors at L23.resid_post", or "SVD
-    component 0 of W_V for (L23, H5)"). Downstream consumers that need
-    to reproduce or compose steering vectors read the description.
-    """
+    """A direction for intervention; `derivation` says how it was obtained."""
 
     origin: Literal["steering"] = "steering"
     derivation: str = Field(
@@ -162,8 +117,6 @@ class CentroidVector(_VectorBase):
         description="Number of member vectors averaged into this centroid.",
     )
 
-
-# --- Discriminated union over all vector origins ----------------------------
 
 Vector = Annotated[
     Union[CapturedVector, SteeringVector, ProbeVector, CentroidVector],

@@ -1,25 +1,3 @@
-"""Cluster data shapes.
-
-A cluster is a named group of vectors with optional aggregate stats (a
-centroid, a member count, cross-cluster relationships). This module
-captures the collection-shape category: one level up from the atomic
-`Vector` records in `vector_data.py`, one level below the
-architectural-axis modules.
-
-Two records:
-
-  Cluster     — one named group. id, label, members (list of Vectors),
-                 optional centroid, optional metadata.
-  ClusterSet  — a collection of clusters with cross-cluster stats
-                 (pairwise centroid cosines, aggregate silhouette,
-                 metadata).
-
-Bulk caveat: `Cluster.members` is inline on the wire. A cluster of
-thousands of d_model-wide vectors is multi-megabyte JSON. See task
-000161 for the binary-transport path; for now, inline — revisit when a
-real consumer hits the size limit.
-"""
-
 from __future__ import annotations
 
 from pydantic import BaseModel, Field, model_validator
@@ -28,13 +6,7 @@ from .vector_data import CentroidVector, Vector
 
 
 class Cluster(BaseModel):
-    """A named group of vectors with optional aggregate stats.
-
-    `members` is stored inline for simplicity. `centroid` is optional —
-    computed on demand by callers that care; a Cluster with many members
-    but no centroid is a valid, useful record (the geometry analyses
-    often compute cluster membership without materializing a centroid).
-    """
+    """A named group of vectors, with an optional centroid."""
 
     id: str = Field(..., description="Stable cluster identifier.")
     label: str = Field(
@@ -47,9 +19,7 @@ class Cluster(BaseModel):
     members: list[Vector] = Field(
         ...,
         description=(
-            "The member vectors, inline on the wire. Length should equal "
-            "n_members (validated). For large clusters see task 000161 "
-            "(binary transport) before scaling up."
+            "The member vectors, inline. Length equals n_members (validated)."
         ),
     )
     centroid: CentroidVector | None = Field(
@@ -93,14 +63,9 @@ class Cluster(BaseModel):
 
 
 class ClusterSet(BaseModel):
-    """A collection of clusters plus cross-cluster aggregate stats.
-
-    The pairwise-cosine matrix is stored as a flat upper-triangle list
-    (excluding the diagonal), length `n * (n - 1) / 2` for `n` clusters,
-    indexed row-major: entry `[i, j]` with `i < j` sits at index
-    `i * (n - 1) - (i * (i - 1)) // 2 + (j - i - 1)`. Callers that want
-    a square matrix reshape on ingest.
-    """
+    """A set of clusters with cross-cluster statistics. `pairwise_cosine`
+    is the upper triangle without the diagonal, row-major: entry (i, j)
+    with i < j sits at `i * (n - 1) - i * (i - 1) // 2 + (j - i - 1)`."""
 
     id: str = Field(..., description="Stable identifier for this cluster-set.")
     label: str = Field("", description="Human-readable label for the set.")

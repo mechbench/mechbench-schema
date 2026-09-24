@@ -1,45 +1,18 @@
-"""Kinds and the one container (mechbench's typology; the lexicon in
-mechbench-compute is the declaration, this is its wire contract).
-
-A *kind* names the shape of one object: two-level and bare
-(`records/table`, `activations/vector`, `text/document`), registered in
-the catalog under `~canonical/kinds/<name>`. Kinds form a lattice
-through `extends`; a kind that declares a `key` can be collected.
-
-A *collection* is the one plural container. Its `item_kind` names what
-the items are, its `key` is the fields that identify an item, and the
-items are stored in key order, so the same items in any order are the
-same bytes. Whatever else the producing operation recorded rides in
-the header beside `items`; the kind's declaration documents those
-fields. There is no `Set<T>` or `List<T>` distinction: order is a
-property of the key, and a map is a collection keyed by a string.
-
-Older objects on the bench carry the shapes that preceded this — a
-`document_collection`, a `metric_table`, a `residual_vectors` with
-`rows` — and the models for those remain below and in their modules,
-because the bench does not rewrite what it stored. Readers resolve
-those spellings through the lexicon's alias table.
-"""
-
 from __future__ import annotations
 
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
-#: Where a kind is registered: `KIND_ROOT + name`.
 KIND_ROOT = "~canonical/kinds/"
 
-#: The one container's kind.
 COLLECTION = "collection"
 
 
 class Space(BaseModel):
-    """Where a vector lives: the model, the layer (null for a whole-model
-    point such as the embedding), the hook point, the head (null unless
-    a per-head source) and the width. Every space has these five fields,
-    so two spaces compare and sort against each other; two vectors are
-    comparable only when their spaces agree."""
+    """Where a vector lives: model, layer (null for a whole-model point
+    such as the embedding), hook point, head (null unless per-head) and
+    width. Two vectors are comparable only when their spaces agree."""
 
     model: str | None = None
     layer: int | None = None
@@ -49,15 +22,14 @@ class Space(BaseModel):
 
 
 class Token(BaseModel):
-    """A token, once: its id in the vocabulary and its text."""
+    """A token: its vocabulary id and its text."""
 
     id: int | None = None
     text: str | None = None
 
 
 class TokenMass(BaseModel):
-    """One entry of a distribution: a token with its probability and
-    log-probability."""
+    """A token with its probability and log-probability."""
 
     token: Token
     p: float | None = None
@@ -65,10 +37,9 @@ class TokenMass(BaseModel):
 
 
 class Distribution(BaseModel):
-    """A summary of a next-token distribution: its entropy in bits, the
-    most likely tokens ranked by probability, and `tracked` — the tokens
-    the caller asked about, by the names it gave. Every op that reads a
-    next-token distribution emits this shape or a kind that extends it."""
+    """A next-token distribution summary: entropy in bits, the most likely
+    tokens, and `tracked`, the tokens the caller asked about under the
+    names it gave."""
 
     model_config = ConfigDict(extra="allow")
 
@@ -78,18 +49,16 @@ class Distribution(BaseModel):
 
 
 class RendererBindingSpec(BaseModel):
-    """How a kind is drawn: a platform renderer primitive and the
-    payload fields that fill its slots (`{"rows": "items"}`,
-    `{"text": "text"}`)."""
+    """How a kind is drawn: a renderer primitive and the payload fields
+    that fill its slots."""
 
     primitive: str
     field_map: dict[str, str] = Field(default_factory=dict)
 
 
 class Kind(BaseModel):
-    """A kind's declaration, as the lexicon publishes it: what the
-    object is, its fields as JSON-Schema property entries, which are
-    required, what it extends, the key that identifies an item of it
+    """A kind's declaration: its fields as JSON-Schema properties, which
+    are required, what it extends, the key that identifies an item of it
     in a collection, and the header fields a collection of it carries."""
 
     name: str = Field(..., description="Two-level bare name, `family/kind`.")
@@ -114,9 +83,8 @@ class Kind(BaseModel):
 
 
 class Collection(BaseModel):
-    """The one container. `items` are of `item_kind`, sorted by `key`;
-    the header (anything else) is whatever the producing operation
-    recorded, documented on the item kind's declaration."""
+    """Many items of one kind: `items` are of `item_kind`, sorted by `key`;
+    any other field is header recorded by the producing operation."""
 
     model_config = ConfigDict(extra="allow")
 

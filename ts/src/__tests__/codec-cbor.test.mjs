@@ -1,28 +1,8 @@
-// Cross-language canonical-CBOR vector test.
-// Mirrors mechbench-schema/tests/test_codec_cbor.py — same logical
-// inputs, same expected hex. If both pass, the byte-identity
-// invariant the content-addressability story requires is enforced
-// across the Python / TS boundary.
-//
-// Plain node test runner (`node --test`) rather than a bundler-
-// dependent framework so the schema package stays dep-light.
-
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { Buffer } from "node:buffer";
 import { dumpCanonical, loadCanonical } from "../codec-cbor.ts";
 
-/**
- * Vectors must match `mechbench-schema/tests/cbor_vectors.py`
- * byte-for-byte. The JS representation of each Python value:
- *   - Python int → JS number (safe-int range only).
- *   - Python float → JS number. Whole-valued floats land as
- *     integers in JS automatically; to force "float 0.0" vs
- *     "int 0" we'd need BigDecimal/BigInt games, but under
- *     dCBOR they encode the same way anyway.
- *   - Python None → null.
- *   - Python dict → object.
- */
 const VECTORS = [
   ["int_0", 0, "00"],
   ["int_1", 1, "01"],

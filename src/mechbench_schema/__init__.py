@@ -1,17 +1,3 @@
-"""mechbench-schema — typed emission contract for the mechbench family.
-
-This package is the single source of truth for every interpretability-record
-shape that crosses a repo boundary. Python consumers (mechbench-compute,
-mechbench-runner, mechbench-experiments) import types from
-here; TypeScript consumers (mechbench-ui) import types from the parallel
-mechbench-schema npm package, which is generated from these Pydantic models
-via scripts/codegen.py.
-
-Rule of thumb: if the shape is ever serialized to disk, sent over the wire,
-or rendered by a non-Python consumer, it belongs here. If the shape is only
-used as an in-memory container within a single repo, it does not.
-"""
-
 from .attention_trace import (
     AttentionPattern,
     AttentionTraceData,
@@ -131,7 +117,6 @@ from .vector_data import (
 __version__ = "0.16.1"
 
 __all__ = [
-    # Kinds and the one container (the typology, epic 000493)
     "Kind",
     "Collection",
     "RendererBindingSpec",
@@ -141,7 +126,6 @@ __all__ = [
     "Distribution",
     "KIND_ROOT",
     "COLLECTION",
-    # Document collections + annotations + kind manifests (task 000239)
     "DocumentCollection",
     "DocumentItem",
     "DocumentPayload",
@@ -158,11 +142,8 @@ __all__ = [
     "BASE_KIND_TEXT",
     "BASE_KIND_CONVERSATION",
     "BASE_KIND_ANNOTATED_TOKENS",
-    # Metric tables (task 000244)
     "MetricTable",
     "MetricColumn",
-    # External providers: endpoints, call provenance, agents,
-    # transcripts, embeddings (epic 000334, task 000351)
     "EndpointRef",
     "EndpointProvider",
     "Usage",
@@ -181,14 +162,12 @@ __all__ = [
     "BASE_KIND_TRANSCRIPT",
     "BASE_KIND_EMBEDDINGS",
     "BASE_KIND_CALL_PROVENANCE",
-    # Provenance + fidelity (the emission envelope, task 000237)
     "Provenance",
     "ToolInfo",
     "Emitted",
     "Fidelity",
     "fidelity_satisfies",
     "fingerprint_params",
-    # Per-layer data (records indexed by transformer layer)
     "PerLayerBase",
     "LayerAggregates",
     "AblationPrompt",
@@ -198,28 +177,22 @@ __all__ = [
     "ConvergenceRow",
     "ConvergencePayload",
     "PerLayerData",
-    # Per-head data (records indexed by (layer, head))
     "PerHeadBase",
     "PerHeadScalarGrid",
     "PerHeadData",
-    # Attention-trace data (records indexed by (layer, head, position, position))
     "AttentionPattern",
     "AttentionTraceData",
-    # Vector data (atomic directions in residual-stream space)
     "CapturedVector",
     "SteeringVector",
     "ProbeVector",
     "CentroidVector",
     "HookKind",
     "Vector",
-    # Cluster data (collections of vectors with aggregate stats)
     "Cluster",
     "ClusterSet",
-    # Per-(layer, position) data (residual-stream-axis records)
     "PerLayerPerPositionBase",
     "LogitLensTrajectory",
     "PerLayerPerPositionData",
-    # Identity / namespacing (see docs/IDENTITY_AND_NAMESPACING.md)
     "MechbenchPath",
     "ParsedPath",
     "PathCategory",
@@ -232,12 +205,7 @@ __all__ = [
     "make_scoped_hash_path",
 ]
 
-# Names that should be emitted to TS via codegen. Subset of __all__ — excludes
-# Python-side utilities (functions, exceptions, non-Pydantic dataclasses)
-# that don't cross the wire.
 __schema_all__ = [
-    # Kinds and the one container: what the registry serves and what
-    # every plural result is.
     "Kind",
     "Collection",
     "RendererBindingSpec",
@@ -245,8 +213,6 @@ __schema_all__ = [
     "Token",
     "TokenMass",
     "Distribution",
-    # External providers (epic 000334): the ui renders transcripts and
-    # call costs, so these cross the wire.
     "EndpointRef",
     "Usage",
     "CallProvenance",
@@ -259,7 +225,6 @@ __schema_all__ = [
     "Transcript",
     "EmbeddingRow",
     "Embeddings",
-    # Per-layer data
     "PerLayerBase",
     "LayerAggregates",
     "AblationPrompt",
@@ -269,29 +234,22 @@ __schema_all__ = [
     "ConvergenceRow",
     "ConvergencePayload",
     "PerLayerData",
-    # Per-head data
     "PerHeadBase",
     "PerHeadScalarGrid",
     "PerHeadData",
-    # Attention-trace data
     "AttentionPattern",
     "AttentionTraceData",
-    # Vector data
     "CapturedVector",
     "SteeringVector",
     "ProbeVector",
     "CentroidVector",
     "HookKind",
     "Vector",
-    # Cluster data
     "Cluster",
     "ClusterSet",
-    # Per-(layer, position) data
     "PerLayerPerPositionBase",
     "LogitLensTrajectory",
     "PerLayerPerPositionData",
-    # Identity (only the validated-string type crosses the wire; parsers and
-    # helpers are Python-side-only)
     "MechbenchPath",
     "PathCategory",
 ]

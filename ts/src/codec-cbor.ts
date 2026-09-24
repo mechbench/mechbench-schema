@@ -1,18 +1,3 @@
-/**
- * Canonical-CBOR codec — the cross-language byte-identical counterpart
- * to `mechbench_schema.codec_cbor` on the Python side. Task 000186.
- *
- * Follows the stricter dCBOR conventions (IETF draft-ietf-cbor-dcbor):
- * map keys sorted by length-then-lexicographic, shortest-form IEEE
- * floats, AND redundant-representation collapsing — whole-valued
- * floats within the IEEE-exact integer range encode as CBOR
- * integers, so `0` and `0.0` hash identically.
- *
- * Use this instead of JSON on any surface where a hash over the
- * bytes is load-bearing (cache entries at rest, content-addressed
- * completion bodies). Human-facing JSON envelopes stay JSON.
- */
-
 import { encode, dcborEncodeOptions, decode } from "cbor2";
 
 export function dumpCanonical(value: unknown): Uint8Array {

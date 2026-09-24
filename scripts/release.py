@@ -1,21 +1,4 @@
 #!/usr/bin/env python3
-"""The release gate (task 000300), schema edition.
-
-Same contract as compute's and the runner's: no upload until the suite
-is green, the wheel builds, and the wheel installs into a FRESH venv
-with every dependency resolved from the real index — then a smoke that
-exercises what a consumer does on a machine that has nothing else.
-
-One check is specific to this repo: the generated TypeScript must match
-fresh codegen output. `ts/src/generated.ts` and `ts/src/schema.json` are
-derived files, and a release that ships Python models the TS bindings
-do not know about is exactly the drift this package exists to prevent.
-
-Usage:
-    python scripts/release.py              # gate, then upload
-    python scripts/release.py --dry-run    # gate only
-"""
-
 from __future__ import annotations
 
 import os
@@ -44,10 +27,6 @@ def die(step: str, proc: subprocess.CompletedProcess | None = None) -> None:
     sys.exit(1)
 
 
-#: Both headings are required, and an empty list says `_None._` — see
-#: mechbench/docs/RELEASE_NOTES.md. "There were none" and "nobody
-#: thought about it" must not look the same, which is the whole point
-#: of gating on it rather than trusting it.
 REQUIRED_HEADINGS = (
     "### Changes that raise",
     "### Changes that alter results without raising",
@@ -55,7 +34,6 @@ REQUIRED_HEADINGS = (
 
 
 def check_changelog(version: str) -> str | None:
-    """The version's entry, or a sentence saying what is wrong with it."""
     path = REPO / "CHANGELOG.md"
     if not path.exists():
         return "CHANGELOG.md is missing"
@@ -93,7 +71,6 @@ def main() -> None:
     problem = check_changelog(ver)
 
     if problem:
-
         die(f"release notes: {problem}")
 
 

@@ -1,22 +1,3 @@
-"""Metric tables — aggregate results referencing their inputs (task
-000244; docs/THE_BENCH.md §7 Phase C).
-
-The record family between documents and charts: an analysis over one
-or more collections/overlays producing named values. `row_axis`
-declares what a row is:
-
-  corpus     one row per collection (corpus-level statistics)
-  item       one row per document item (per-story aggregates — the
-             feed for layer-valued sorting, task 000243)
-  condition  one row per experimental condition — under the 000248
-             template model, one row per *binding* of a sweep, which
-             is what makes cross-condition tables aligned by
-             construction.
-
-Rows are plain dicts keyed by column name so GenericChart-style
-consumers can treat them as record arrays without unwrapping.
-"""
-
 from __future__ import annotations
 
 from typing import Literal
@@ -33,9 +14,6 @@ class MetricColumn(BaseModel):
 
 
 class MetricTable(BaseModel):
-    """A presentation table. Its kind is `records/table`; `metric_table`
-    is the retired spelling objects written before the typology carry."""
-
     kind: Literal["records/table", "metric_table"] = "records/table"
     name: str
     description: str = ""

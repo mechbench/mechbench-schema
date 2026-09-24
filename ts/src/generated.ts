@@ -25,7 +25,7 @@ export type Model = EndpointRef | string;
  */
 export type Model1 = string;
 /**
- * The dated version pinned at seal, when one was pinned (task 000352). Absent means 'whatever the alias resolves to', and the version that ANSWERED is recorded per call either way.
+ * The dated version pinned at seal, if any. Absent means whatever the alias resolves to; the version that answered is recorded per call either way.
  */
 export type ModelVersion = string | null;
 export type Provider = "anthropic" | "openai" | "xai" | "gemini" | "fireworks" | "openai-compatible" | "mock";
@@ -38,8 +38,9 @@ export type Name = string;
  */
 export type CreatedAt = string;
 /**
- * Recording granularity for document data. See module docstring for
- * the degradation-chain contract.
+ * Recording granularity of document data, finest first: trace (token
+ * ids, tokenizer, offsets, generation spans), segments (structure as
+ * strings), text (decoded strings only).
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "Fidelity".
@@ -50,7 +51,7 @@ export type Fidelity = "text" | "segments" | "trace";
  */
 export type Inputs = string[];
 /**
- * The operation that produced this object (task 000248) — a registered op path when one exists. Optional until the operation registry lands; recording it now prevents archaeology later.
+ * The operation that produced this object: a registered op path when one exists.
  */
 export type Operation = string | null;
 /**
@@ -101,7 +102,7 @@ export type NKeys = number;
  */
 export type NQueries = number;
 /**
- * Optional per-position decoded tokens, for axis labelling. Assumes self-attention (same labels on both axes); if the shape is asymmetric, model the split explicitly.
+ * Optional per-position decoded tokens, labelling both axes (self-attention).
  */
 export type TokenLabels = string[] | null;
 /**
@@ -135,7 +136,7 @@ export type PriceTable = string;
 export type Priced = boolean;
 export type Provider1 = string;
 /**
- * Answered from a cassette rather than the wire (task 000350).
+ * Answered from a cassette rather than the wire.
  */
 export type Replayed = boolean;
 /**
@@ -261,7 +262,7 @@ export type TargetLabel = string;
  */
 export type Values3 = number[];
 /**
- * The member vectors, inline on the wire. Length should equal n_members (validated). For large clusters see task 000161 (binary transport) before scaling up.
+ * The member vectors, inline. Length equals n_members (validated).
  */
 export type Members = (CapturedVector | SteeringVector | ProbeVector | CentroidVector)[];
 /**
@@ -537,7 +538,7 @@ export type TokenLabels1 = string[] | null;
  */
 export type TopTokens = string[] | null;
 /**
- * A mechbench object id. See mechbench/docs/IDENTITY_AND_NAMESPACING.md for the full grammar. Five categories: user-named (<owner>/<project>/.../<leaf>), canonical (~canonical/<area>/.../<leaf>), platform (~system/<area>/.../<leaf>), global content-hashed (~hash/<algo>:<digest>), and workspace-scoped content-hashed (<owner>/<project>/~hash/<algo>:<digest>).
+ * A mechbench object id. Five categories: user-named (<owner>/<project>/.../<leaf>), canonical (~canonical/<area>/.../<leaf>), platform (~system/<area>/.../<leaf>), global content-hashed (~hash/<algo>:<digest>), and workspace-scoped content-hashed (<owner>/<project>/~hash/<algo>:<digest>).
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "MechbenchPath".
@@ -743,10 +744,8 @@ export interface AblationPrompt {
   top1_id: Top1Id;
 }
 /**
- * A participant in a conversation (task 000339): which model, what
- * it was told, what it may call. An agent is a bench object so the
- * same participant can be reused across protocols and compared
- * against itself under one changed field.
+ * A conversation participant: a model, its system prompt, tools and
+ * sampling.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "Agent".
@@ -766,11 +765,8 @@ export interface Agent {
   top_p?: TopP;
 }
 /**
- * A model someone else runs. `provider_options` is keyed by
- * provider name and passes through to the wire VERBATIM — cache
- * control, thinking budgets, service tiers, anything the canonical
- * fields do not name — so a protocol can always reach the real API,
- * and what it asked for is recorded.
+ * A model someone else runs. `provider_options` is keyed by provider
+ * name and passed to that provider's API verbatim.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "EndpointRef".
@@ -790,15 +786,7 @@ export interface ProviderOptions {
   };
 }
 /**
- * What produced an emitted object, from what, when.
- *
- * `created_at` is an ISO-8601 UTC timestamp string (e.g.
- * '2026-08-17T21:04:05Z'). `inputs` are the MechbenchPaths (including
- * `~hash/...` forms) of the objects this one was computed from — the
- * lineage index is derived from this list at emission time.
- * `params_fingerprint` comes from `fingerprint_params` over the run
- * config. `schema_version` records the mechbench-schema version the
- * object was written under.
+ * What produced an emitted object, from which inputs, and when.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "Provenance".
@@ -817,11 +805,7 @@ export interface Provenance {
   schema_version: SchemaVersion;
 }
 /**
- * The producing tool, pinned to a version.
- *
- * `tool` is a package or script identity (e.g. 'mechbench-compute');
- * `version` is its release or commit identifier. Together they are the
- * coarse code-fingerprint until 000162 introduces fine-grained ones.
+ * The producing tool and its version or commit.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "ToolInfo".
@@ -850,8 +834,7 @@ export interface InputSchema {
   [k: string]: unknown;
 }
 /**
- * A named set of participants — what a conversation node binds in
- * one edge instead of N.
+ * A named set of conversation participants.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "AgentCollection".
@@ -864,14 +847,8 @@ export interface AgentCollection {
   provenance?: Provenance | null;
 }
 /**
- * Post-softmax attention weights for one (layer, head) over a sequence.
- *
- * The weights matrix is stored as a flat row-major `[n_queries * n_keys]`
- * list. Consumers reshape on ingest; this keeps the wire format
- * JSON-native and trivially diffable. `token_labels`, when present,
- * labels both axes (self-attention) — for cross-attention the caller
- * should split into query_labels / key_labels (not yet modeled;
- * add when needed).
+ * Post-softmax attention weights for one (layer, head), flattened
+ * row-major.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "AttentionPattern".
@@ -886,10 +863,8 @@ export interface AttentionPattern {
   weights: Weights;
 }
 /**
- * One call to an external provider, as the item that carries it
- * records it. The manifest sums these; a reader should be able to
- * reconstruct the bill and the identity of what answered from the
- * result alone.
+ * One call to an external provider: what was asked for, what answered,
+ * and what it cost.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "CallProvenance".
@@ -923,9 +898,8 @@ export interface RateLimits {
   [k: string]: unknown;
 }
 /**
- * Tokens a call consumed. Cached input is reported separately
- * because it is priced separately; it is NOT additional to
- * `input_tokens`, it is part of it.
+ * Tokens a call consumed. Cached input is part of `input_tokens`, not
+ * additional to it.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "Usage".
@@ -939,10 +913,6 @@ export interface Usage {
 }
 /**
  * A vector read from a hook point during a forward pass.
- *
- * Replaces the old `FactVectorRecord` from records.py. Adds the `origin`
- * discriminator and renames the old `kind` field to `hook_kind` to make
- * room for `origin` at the top level without collision.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "CapturedVector".
@@ -991,12 +961,7 @@ export interface Metadata1 {
   [k: string]: string;
 }
 /**
- * A named group of vectors with optional aggregate stats.
- *
- * `members` is stored inline for simplicity. `centroid` is optional —
- * computed on demand by callers that care; a Cluster with many members
- * but no centroid is a valid, useful record (the geometry analyses
- * often compute cluster membership without materializing a centroid).
+ * A named group of vectors, with an optional centroid.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "Cluster".
@@ -1013,13 +978,7 @@ export interface Cluster {
   n_members: NMembers1;
 }
 /**
- * A learned or derived direction intended for intervention.
- *
- * Carries a description of how it was derived — usually a short
- * natural-language note ("centroid of capital-city fact vectors minus
- * centroid of person-name fact vectors at L23.resid_post", or "SVD
- * component 0 of W_V for (L23, H5)"). Downstream consumers that need
- * to reproduce or compose steering vectors read the description.
+ * A direction for intervention; `derivation` says how it was obtained.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "SteeringVector".
@@ -1068,13 +1027,9 @@ export interface Metadata4 {
   [k: string]: string;
 }
 /**
- * A collection of clusters plus cross-cluster aggregate stats.
- *
- * The pairwise-cosine matrix is stored as a flat upper-triangle list
- * (excluding the diagonal), length `n * (n - 1) / 2` for `n` clusters,
- * indexed row-major: entry `[i, j]` with `i < j` sits at index
- * `i * (n - 1) - (i * (i - 1)) // 2 + (j - i - 1)`. Callers that want
- * a square matrix reshape on ingest.
+ * A set of clusters with cross-cluster statistics. `pairwise_cosine`
+ * is the upper triangle without the diagonal, row-major: entry (i, j)
+ * with i < j sits at `i * (n - 1) - i * (i - 1) // 2 + (j - i - 1)`.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "ClusterSet".
@@ -1091,9 +1046,8 @@ export interface Metadata5 {
   [k: string]: string;
 }
 /**
- * The one container. `items` are of `item_kind`, sorted by `key`;
- * the header (anything else) is whatever the producing operation
- * recorded, documented on the item kind's declaration.
+ * Many items of one kind: `items` are of `item_kind`, sorted by `key`;
+ * any other field is header recorded by the producing operation.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "Collection".
@@ -1121,7 +1075,7 @@ export interface ConvergencePayload {
   pivot_layer: PivotLayer;
   protocol: Protocol;
   /**
-   * Emission provenance (task 000237). Optional on read for records written before 0.9.0; the API requires it on new writes.
+   * Emission provenance. Optional on read; the API requires it on new writes.
    */
   provenance?: Provenance | null;
 }
@@ -1145,10 +1099,9 @@ export interface ConvergenceRow {
   title: Title;
 }
 /**
- * A summary of a next-token distribution: its entropy in bits, the
- * most likely tokens ranked by probability, and `tracked` — the tokens
- * the caller asked about, by the names it gave. Every op that reads a
- * next-token distribution emits this shape or a kind that extends it.
+ * A next-token distribution summary: entropy in bits, the most likely
+ * tokens, and `tracked`, the tokens the caller asked about under the
+ * names it gave.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "Distribution".
@@ -1160,8 +1113,7 @@ export interface Distribution {
   [k: string]: unknown;
 }
 /**
- * One entry of a distribution: a token with its probability and
- * log-probability.
+ * A token with its probability and log-probability.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "TokenMass".
@@ -1172,7 +1124,7 @@ export interface TokenMass {
   token: Token;
 }
 /**
- * A token, once: its id in the vocabulary and its text.
+ * A token: its vocabulary id and its text.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "Token".
@@ -1200,7 +1152,8 @@ export interface DlaPrompt {
   text: Text2;
 }
 /**
- * step_33-shape: per-layer (target - distractor) DLA across a prompt battery.
+ * Per-layer (target - distractor) direct logit attribution across a
+ * prompt battery.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "DlaSweepPayload".
@@ -1215,7 +1168,7 @@ export interface DlaSweepPayload {
   prompts: Prompts;
   protocol: Protocol1;
   /**
-   * Emission provenance (task 000237). Optional on read for records written before 0.9.0; the API requires it on new writes.
+   * Emission provenance. Optional on read; the API requires it on new writes.
    */
   provenance?: Provenance | null;
 }
@@ -1242,11 +1195,8 @@ export interface Metadata6 {
   [k: string]: unknown;
 }
 /**
- * The embed call kind's output as first declared (task 000348): one
- * row per input, flat vectors, the model that produced them recorded.
- * Superseded by a `kinds.Collection` of `activations/vector`, each item
- * carrying a `kinds.Space` with `layer: null`, `point: "embed"` and the
- * provider model; kept for objects written in this shape.
+ * Embedding vectors, one row per input. A legacy shape: new objects
+ * are a `collection` of `activations/vector`.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "Embeddings".
@@ -1263,9 +1213,8 @@ export interface Embeddings {
   spend_usd?: SpendUsd;
 }
 /**
- * A kind's declaration, as the lexicon publishes it: what the
- * object is, its fields as JSON-Schema property entries, which are
- * required, what it extends, the key that identifies an item of it
+ * A kind's declaration: its fields as JSON-Schema properties, which
+ * are required, what it extends, the key that identifies an item of it
  * in a collection, and the header fields a collection of it carries.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
@@ -1287,9 +1236,8 @@ export interface Kind8 {
   summary: Summary;
 }
 /**
- * How a kind is drawn: a platform renderer primitive and the
- * payload fields that fill its slots (`{"rows": "items"}`,
- * `{"text": "text"}`).
+ * How a kind is drawn: a renderer primitive and the payload fields
+ * that fill its slots.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "RendererBindingSpec".
@@ -1316,7 +1264,7 @@ export interface Header {
   [k: string]: string;
 }
 /**
- * step_02-shape: per-layer ablation damage across a prompt battery.
+ * Per-layer ablation damage across a prompt battery.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "LayerAblationPayload".
@@ -1331,26 +1279,13 @@ export interface LayerAblationPayload {
   prompts: Prompts1;
   protocol: Protocol2;
   /**
-   * Emission provenance (task 000237). Optional on read for records written before 0.9.0; the API requires it on new writes.
+   * Emission provenance. Optional on read; the API requires it on new writes.
    */
   provenance?: Provenance | null;
 }
 /**
- * A logit-lens trajectory over layers and positions.
- *
- * Projects the residual stream at each (layer, position) through the
- * model's output head and records the target token's rank and
- * log-probability. Optionally records the argmax token at each
- * position ("top_tokens"), useful for narrating a trajectory.
- *
- * The three flat lists (`ranks`, `logprobs`, optionally `top_tokens`)
- * are all row-major `[n_layers * seq_len]`: index `layer * seq_len +
- * position`. Consumers reshape at ingest.
- *
- * Replaces the old records.LensStep + records.LensTrajectory pair,
- * which modeled one step per entry and paid struct-per-entry
- * overhead. The flat-list shape is tighter on the wire and matches
- * the convention used by the other per-layer and per-head modules.
+ * A target token's rank and log-probability under the logit lens at
+ * each (layer, position).
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "LogitLensTrajectory".
@@ -1373,13 +1308,7 @@ export interface LogitLensTrajectory {
   top_tokens?: TopTokens;
 }
 /**
- * Fields every per-head data file carries.
- *
- * `n_heads` is the query-side head count per attention block;
- * `n_kv_heads` is the (smaller) KV-side count under grouped-query
- * attention. Charts rendering per-head data typically iterate the full
- * n_heads × n_layers grid; some downstream analyses care about the
- * KV-grouping (e.g. KV-sharing-boundary effects) and need n_kv_heads.
+ * Fields every per-head record carries.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "PerHeadBase".
@@ -1394,17 +1323,8 @@ export interface PerHeadBase {
   protocol: Protocol4;
 }
 /**
- * [n_layers × n_heads] grid of scalar values, one per head.
- *
- * Covers the common archetypes: per-head DLA contribution, OV-circuit
- * rank-0 singular value, attention entropy, Q/K silhouette, etc. The
- * `metric_name` and `metric_units` fields on the envelope describe what
- * the numbers *mean*; consumers render accordingly.
- *
- * The `values` field is stored as a flat row-major `[n_layers * n_heads]`
- * list of floats rather than a nested `list[list[float]]`. This keeps
- * the wire format JSON-native and trivially diffable; consumers reshape
- * on ingest.
+ * One scalar per (layer, head); `metric_name` and `metric_units` say
+ * what it measures.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "PerHeadScalarGrid".
@@ -1423,14 +1343,7 @@ export interface PerHeadScalarGrid {
   values: Values5;
 }
 /**
- * Fields every per-layer chart-data file carries.
- *
- * `protocol` is the stable id of the recipe that produced this data: the
- * source script's module name for research runs, or the platform protocol
- * for jobs queued through mechbench-api. `model` is the HuggingFace model
- * id. `n_layers` and
- * `global_layers` describe the model's layer structure so charts can
- * adapt across model variants (E4B: 42, E2B: 30, ...).
+ * Fields every per-layer record carries.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "PerLayerBase".
@@ -1442,7 +1355,7 @@ export interface PerLayerBase {
   n_layers: NLayers6;
   protocol: Protocol6;
   /**
-   * Emission provenance (task 000237). Optional on read for records written before 0.9.0; the API requires it on new writes.
+   * Emission provenance. Optional on read; the API requires it on new writes.
    */
   provenance?: Provenance | null;
 }
@@ -1464,11 +1377,9 @@ export interface PerLayerPerPositionBase {
   token_labels?: TokenLabels2;
 }
 /**
- * Where a vector lives: the model, the layer (null for a whole-model
- * point such as the embedding), the hook point, the head (null unless
- * a per-head source) and the width. Every space has these five fields,
- * so two spaces compare and sort against each other; two vectors are
- * comparable only when their spaces agree.
+ * Where a vector lives: model, layer (null for a whole-model point
+ * such as the embedding), hook point, head (null unless per-head) and
+ * width. Two vectors are comparable only when their spaces agree.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "Space".
@@ -1481,8 +1392,8 @@ export interface Space {
   point: Point;
 }
 /**
- * A model's request to run a tool. `id` correlates it with the
- * result that answers it.
+ * A model's request to run a tool; `id` matches the result that
+ * answers it.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "ToolCall".
@@ -1505,9 +1416,7 @@ export interface ToolResult {
   tool_call_id?: ToolCallId;
 }
 /**
- * What happened between participants (task 000339). One item of a
- * conversation node's output; a document collection of these is what
- * a hundred runs of the same conversation produce.
+ * The messages exchanged between participants in one conversation.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "Transcript".
@@ -1523,10 +1432,9 @@ export interface Transcript {
   stopped_because?: StoppedBecause;
 }
 /**
- * One turn. `participant` is who produced it; `role_as_seen` is
- * the role it carried in the request that produced the NEXT turn —
- * in a two-model conversation each side sees the other as the user,
- * so one exchange has two role assignments and a reader needs both.
+ * One turn. `participant` produced it; `role_as_seen` is the role it
+ * carried in the request for the next turn, since in a two-model
+ * conversation each side sees the other as the user.
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "TranscriptMessage".
