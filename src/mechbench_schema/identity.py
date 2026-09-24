@@ -7,6 +7,7 @@ from typing import Annotated, Literal
 from pydantic import AfterValidator, Field
 
 
+# external: mechbench-ui — src/lib/mechbenchPath.ts re-implements this path grammar, its limits and the category names; change both together
 _SEGMENT_PATTERN = r"[a-z0-9](?:[a-z0-9_-]{0,61}[a-z0-9])?"
 _SEGMENT_RE = re.compile(f"^{_SEGMENT_PATTERN}$")
 
