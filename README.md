@@ -35,10 +35,16 @@ mechbench-schema/
 │   ├── __init__.py                    # __all__ + __schema_all__
 │   ├── attention_trace.py
 │   ├── cluster_data.py
+│   ├── codec_cbor.py                  # canonical (dCBOR) encoding for hashed payloads
+│   ├── document_data.py
 │   ├── identity.py
+│   ├── kinds.py
+│   ├── metric_data.py
 │   ├── per_head_data.py
 │   ├── per_layer_data.py
 │   ├── per_layer_per_position_data.py
+│   ├── provenance.py
+│   ├── provider_data.py
 │   └── vector_data.py
 ├── ts/                                # published to npm as "mechbench-schema"
 │   ├── package.json
@@ -74,7 +80,7 @@ pip install mechbench-schema
 from mechbench_schema import LayerAblationPayload, DlaSweepPayload
 
 payload = LayerAblationPayload(
-    experiment="step_02_layer_ablation",
+    protocol="layer_ablation",
     description="Per-layer ablation damage on FACTUAL_15.",
     model="mlx-community/gemma-4-E4B-it-bf16",
     n_layers=42,
@@ -111,22 +117,17 @@ const payload: LayerAblationPayload = JSON.parse(text);
 - `~hash/<algo>:<digest>` — global content-hashed (deduplicated across users)
 - `<owner>/<project>/~hash/<algo>:<digest>` — workspace-scoped content-hashed
 
-Full spec in the meta repo's IDENTITY_AND_NAMESPACING.md. The Python side (`mechbench_schema.identity`) owns the authoritative validator; a mirror implementation lives in `mechbench-ui/src/lib/mechbenchPath.ts` for UI-side early failure.
+The Python side (`mechbench_schema.identity`) owns the authoritative validator; a mirror implementation lives in `mechbench-ui/src/lib/mechbenchPath.ts` for UI-side early failure.
+
+## Comments
+
+Comments are almost entirely absent by rule: see [docs/COMMENTS.md](docs/COMMENTS.md).
 
 ## Why one repo, two publications
 
 Schemas that live in two repos drift. The only invariant that matters — "Python and TS agree on the shape" — is enforced by keeping the source in one place and generating the target. Consumers never need the other language's toolchain to install; `pip` and `npm` each resolve to a clean single-language package.
 
 See [the family overview](https://mechbench.ai) for the rationale behind this and other multi-repo decisions.
-
-## Status
-
-Version 0.8.0. Seven modules in active use; the legacy `records.py` holding pen was retired when the domain-axis reorg completed. `mechbench-experiments`' two exporters (`step_02_layer_ablation`, `step_33_dla_factual_sweep`) emit via Pydantic models; `mechbench-ui`'s chart interfaces are one-line aliases over the generated TS types.
-
-Open work lives in the meta repo's `tasks/mechbench-schema/` directory. The two notable open epics downstream of this repo:
-
-- **`000161`** — compact binary formats for records at rest and in transit (safetensors for tensor-bulk, parquet for record-collections).
-- **`000163`** — the identity-and-namespacing epic that produced `MechbenchPath`; Phase 4 (content-addressing grammar) remains open and coordinates with `000162` (the DAG-solver epic in `mechbench-compute`).
 
 ## License
 

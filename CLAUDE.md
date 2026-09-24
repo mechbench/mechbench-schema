@@ -8,7 +8,7 @@ The typed emission contract for the mechbench family. One source of truth (Pydan
 
 ## Workflow for schema changes
 
-1. Edit `src/mechbench_schema/records.py` (or add a new module under `src/mechbench_schema/`).
+1. Edit a module under `src/mechbench_schema/` (or add one). Follow docs/COMMENTS.md: no comments, and a class docstring only on a published model.
 2. Export the new type from `__init__.py` so it appears in `__all__`.
 3. Run `python scripts/codegen.py`.
 4. Stage the Python source + both generated files (`ts/src/schema.json`, `ts/src/generated.ts`) in one PR.
