@@ -128,7 +128,7 @@ from .vector_data import (
     Vector,
 )
 
-__version__ = "0.16.0"
+__version__ = "0.16.1"
 
 __all__ = [
     # Kinds and the one container (the typology, epic 000493)
