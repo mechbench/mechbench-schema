@@ -23,7 +23,7 @@ with both headings.
 
 ---
 
-## Unreleased
+## 0.17.0 — 2026-09-24
 
 ### Changes that raise
 
@@ -43,6 +43,13 @@ _None._
   TypeScript `Provider` type and `schema.json` gain the same value.
   `tests/test_endpoint_provider.py` is new: it validates an
   `EndpointRef` for every listed provider.
+- **Comments and docstrings erased.** Only directives remain as comments,
+  and class docstrings remain only on published models, rewritten to say
+  what each type is; `schema.json` changed only in `description` fields.
+  A gate in the suite keeps it so. Tests now hold the facts the comments
+  carried (the TypeScript codec's vectors match Python's, whole floats
+  collapse only within 2^53, booleans are not promoted, relative imports
+  end in `.js`).
 
 ## 0.16.1 — 2026-09-23
 
