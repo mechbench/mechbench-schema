@@ -52,6 +52,10 @@ RESERVED_SCOPED_PREFIXES = frozenset({"~hash"})
 # Soft limits enforced by the validator.
 MAX_TOTAL_LENGTH = 255
 MAX_SEGMENT_LENGTH = 63
+# A hash segment is `<algo>:<hex digest>`: a sha256 one is 71 characters and
+# a sha512 one 135, so the 63-character limit for a named segment cannot
+# apply to it.
+MAX_HASH_SEGMENT_LENGTH = 145
 
 # Category names — stable literal strings used both in parsed output and in
 # the UI for routing decisions.
@@ -74,14 +78,19 @@ class InvalidPathError(ValueError):
 def _validate_segment(segment: str, *, allow_hash: bool = False) -> None:
     if not segment:
         raise InvalidPathError("empty segment")
+    # Hash segments (`<algo>:<digest>`) are recognised before the named-segment
+    # rules: they contain `:`, which _INVALID_CHARS rejects, and a digest is
+    # longer than a named segment may be.
+    if allow_hash and _HASH_RE.match(segment):
+        if len(segment) > MAX_HASH_SEGMENT_LENGTH:
+            raise InvalidPathError(
+                f"hash segment {segment!r} exceeds {MAX_HASH_SEGMENT_LENGTH}-char limit"
+            )
+        return
     if len(segment) > MAX_SEGMENT_LENGTH:
         raise InvalidPathError(
             f"segment {segment!r} exceeds {MAX_SEGMENT_LENGTH}-char limit"
         )
-    # Hash segments (`<algo>:<digest>`) get validated against _HASH_RE first;
-    # they legitimately contain `:` which _INVALID_CHARS would otherwise reject.
-    if allow_hash and _HASH_RE.match(segment):
-        return
     bad_chars = _INVALID_CHARS & set(segment)
     if bad_chars:
         raise InvalidPathError(

@@ -23,6 +23,28 @@ with both headings.
 
 ---
 
+## 0.16.1 — 2026-09-23
+
+### Changes that raise
+
+_None._
+
+### Changes that alter results without raising
+
+_None._ A path that validated before validates the same way.
+
+### Other
+
+- **A hash segment is recognised before the named-segment length limit.**
+  `_validate_segment` checked the 63-character limit first, so every
+  `sha256:<64 hex>` segment (71 characters) was refused and no sha256
+  hash path, global or scoped, could be written. That is why an object
+  whose lineage cites a held-back intermediate by hash could not be
+  stored (compute task 000666). A hash segment now has its own limit,
+  145 characters, room for sha512; a named segment keeps 63, and a `:`
+  outside a hash segment is still refused. `tests/test_identity.py` is
+  new: its four hash cases fail on 0.16.0.
+
 ## 0.16.0 — 2026-09-15
 
 ### Changes that raise
