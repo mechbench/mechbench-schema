@@ -23,6 +23,27 @@ with both headings.
 
 ---
 
+## Unreleased
+
+### Changes that raise
+
+_None._ Every `EndpointRef` that validated before validates the same way.
+
+### Changes that alter results without raising
+
+_None._
+
+### Other
+
+- **`EndpointProvider` gains `deepseek`.** mechbench-compute's provider
+  registry has had a DeepSeek entry, but the schema literal did not
+  list it, so a DeepSeek `EndpointRef` failed validation. The literal
+  now matches the registry exactly: `anthropic`, `openai`, `xai`,
+  `gemini`, `fireworks`, `deepseek`, `openai-compatible`, `mock`. The
+  TypeScript `Provider` type and `schema.json` gain the same value.
+  `tests/test_endpoint_provider.py` is new: it validates an
+  `EndpointRef` for every listed provider.
+
 ## 0.16.1 — 2026-09-23
 
 ### Changes that raise

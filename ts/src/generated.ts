@@ -28,7 +28,15 @@ export type Model1 = string;
  * The dated version pinned at seal, if any. Absent means whatever the alias resolves to; the version that answered is recorded per call either way.
  */
 export type ModelVersion = string | null;
-export type Provider = "anthropic" | "openai" | "xai" | "gemini" | "fireworks" | "openai-compatible" | "mock";
+export type Provider =
+  | "anthropic"
+  | "openai"
+  | "xai"
+  | "gemini"
+  | "fireworks"
+  | "deepseek"
+  | "openai-compatible"
+  | "mock";
 /**
  * How the transcript refers to it.
  */

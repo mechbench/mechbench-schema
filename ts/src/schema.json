@@ -1164,6 +1164,7 @@
             "xai",
             "gemini",
             "fireworks",
+            "deepseek",
             "openai-compatible",
             "mock"
           ],

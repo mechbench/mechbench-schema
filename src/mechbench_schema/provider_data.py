@@ -13,7 +13,7 @@ BASE_KIND_EMBEDDINGS = "~canonical/kinds/embeddings"
 BASE_KIND_CALL_PROVENANCE = "~canonical/kinds/call-provenance"
 
 EndpointProvider = Literal[
-    "anthropic", "openai", "xai", "gemini", "fireworks",
+    "anthropic", "openai", "xai", "gemini", "fireworks", "deepseek",
     "openai-compatible", "mock",
 ]
 
