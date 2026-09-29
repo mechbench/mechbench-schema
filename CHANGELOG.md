@@ -23,6 +23,28 @@ with both headings.
 
 ---
 
+## 0.18.0 — 2026-09-29
+
+### Changes that raise
+
+_None._ Every `Provenance` that validated before validates the same way.
+
+### Changes that alter results without raising
+
+_None._
+
+### Other
+
+- **`Provenance.extension`**, optional: `ExtensionPin{address, version,
+  hash}`, the extension version whose operation produced the object —
+  its address (`<owner>/<project>/extensions/<name>`), its counter, and
+  the `sha256:` digest of its extension object. `operation` keeps the
+  bare address (`MechbenchPath` is unchanged); the pin says which bytes
+  ran. A core operation's provenance has none. In the TS bindings as
+  `ExtensionPin` and `Provenance.extension`.
+
+---
+
 ## 0.17.0 — 2026-09-24
 
 ### Changes that raise

@@ -46,6 +46,18 @@ export type Name = string;
  */
 export type CreatedAt = string;
 /**
+ * The extension's address, '<owner>/<project>/extensions/<name>'.
+ */
+export type ExtensionAddress = string;
+/**
+ * 'sha256:<hex>' digest of the extension object.
+ */
+export type ExtensionHash = string;
+/**
+ * The extension's version counter.
+ */
+export type ExtensionVersion = number;
+/**
  * Recording granularity of document data, finest first: trace (token
  * ids, tokenizer, offsets, generation spans), segments (structure as
  * strings), text (decoded strings only).
@@ -802,6 +814,10 @@ export interface ProviderOptions {
 export interface Provenance {
   created_at: CreatedAt;
   /**
+   * The extension version that provided `operation`, when an extension did; absent for a core operation.
+   */
+  extension?: ExtensionPin | null;
+  /**
    * Recording granularity, for document-bearing objects; None otherwise.
    */
   fidelity?: Fidelity | null;
@@ -811,6 +827,17 @@ export interface Provenance {
   params_ref?: ParamsRef;
   produced_by: ToolInfo;
   schema_version: SchemaVersion;
+}
+/**
+ * The extension version whose operation produced an object: its address, its counter, and the digest of its extension object.
+ *
+ * This interface was referenced by `MechbenchSchema`'s JSON-Schema
+ * via the `definition` "ExtensionPin".
+ */
+export interface ExtensionPin {
+  address: ExtensionAddress;
+  hash: ExtensionHash;
+  version: ExtensionVersion;
 }
 /**
  * The producing tool and its version or commit.

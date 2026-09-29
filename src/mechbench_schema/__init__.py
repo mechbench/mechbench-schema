@@ -72,6 +72,7 @@ from .provider_data import (
 )
 from .provenance import (
     Emitted,
+    ExtensionPin,
     Fidelity,
     Provenance,
     ToolInfo,
@@ -114,7 +115,7 @@ from .vector_data import (
     Vector,
 )
 
-__version__ = "0.17.0"
+__version__ = "0.18.0"
 
 __all__ = [
     "Kind",
@@ -163,6 +164,7 @@ __all__ = [
     "BASE_KIND_EMBEDDINGS",
     "BASE_KIND_CALL_PROVENANCE",
     "Provenance",
+    "ExtensionPin",
     "ToolInfo",
     "Emitted",
     "Fidelity",

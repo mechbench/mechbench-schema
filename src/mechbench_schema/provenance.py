@@ -43,6 +43,14 @@ def fingerprint_params(params: Any) -> str:
     return f"sha256:{digest}"
 
 
+class ExtensionPin(BaseModel):
+    """The extension version whose operation produced an object: its address, its counter, and the digest of its extension object."""
+
+    address: MechbenchPath = Field(..., title="ExtensionAddress", description="The extension's address, '<owner>/<project>/extensions/<name>'.")
+    version: int = Field(..., ge=1, title="ExtensionVersion", description="The extension's version counter.")
+    hash: str = Field(..., title="ExtensionHash", pattern=r"^sha256:[0-9a-f]{64}$", description="'sha256:<hex>' digest of the extension object.")
+
+
 class Provenance(BaseModel):
     """What produced an emitted object, from which inputs, and when."""
 
@@ -66,6 +74,13 @@ class Provenance(BaseModel):
         description=(
             "The operation that produced this object: a registered op "
             "path when one exists."
+        ),
+    )
+    extension: ExtensionPin | None = Field(
+        None,
+        description=(
+            "The extension version that provided `operation`, when an "
+            "extension did; absent for a core operation."
         ),
     )
     params_ref: MechbenchPath | None = Field(

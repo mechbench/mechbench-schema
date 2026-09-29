@@ -1188,6 +1188,35 @@
       "title": "EndpointRef",
       "type": "object"
     },
+    "ExtensionPin": {
+      "description": "The extension version whose operation produced an object: its address, its counter, and the digest of its extension object.",
+      "properties": {
+        "address": {
+          "description": "The extension's address, '<owner>/<project>/extensions/<name>'.",
+          "title": "ExtensionAddress",
+          "type": "string"
+        },
+        "hash": {
+          "description": "'sha256:<hex>' digest of the extension object.",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "ExtensionHash",
+          "type": "string"
+        },
+        "version": {
+          "description": "The extension's version counter.",
+          "minimum": 1,
+          "title": "ExtensionVersion",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "address",
+        "version",
+        "hash"
+      ],
+      "title": "ExtensionPin",
+      "type": "object"
+    },
     "Fidelity": {
       "description": "Recording granularity of document data, finest first: trace (token\nids, tokenizer, offsets, generation spans), segments (structure as\nstrings), text (decoded strings only).",
       "enum": [
@@ -1960,6 +1989,18 @@
           "description": "ISO-8601 UTC timestamp, e.g. '2026-08-17T21:04:05Z'.",
           "title": "Created At",
           "type": "string"
+        },
+        "extension": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExtensionPin"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The extension version that provided `operation`, when an extension did; absent for a core operation."
         },
         "fidelity": {
           "anyOf": [
