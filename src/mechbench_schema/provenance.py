@@ -4,7 +4,7 @@ import hashlib
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, SerializerFunctionWrapHandler, model_serializer
 
 from .codec_cbor import dump_canonical
 from .identity import MechbenchPath
@@ -90,6 +90,13 @@ class Provenance(BaseModel):
             "params_fingerprint which is only verifiable)."
         ),
     )
+
+    @model_serializer(mode="wrap")
+    def drop_absent_extension(self, handler: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        out = handler(self)
+        if out.get("extension") is None:
+            out.pop("extension", None)
+        return out
 
 
 class Emitted(BaseModel):

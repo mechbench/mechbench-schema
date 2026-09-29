@@ -23,6 +23,23 @@ with both headings.
 
 ---
 
+## 0.18.1 — 2026-09-29
+
+### Changes that raise
+
+_None._
+
+### Changes that alter results without raising
+
+- **An absent `Provenance.extension` is not dumped.** In 0.18.0 a
+  provenance without an extension pin dumped `"extension": null`, which
+  would have changed the bytes (and so the content hash) of every
+  object a core operation stores. `model_dump` now leaves the key out
+  when it is `None`, so a core operation's provenance dumps exactly as
+  it did in 0.17.0. Validation is unchanged.
+
+---
+
 ## 0.18.0 — 2026-09-29
 
 ### Changes that raise
