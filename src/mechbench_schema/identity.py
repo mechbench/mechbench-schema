@@ -7,7 +7,7 @@ from typing import Annotated, Literal
 from pydantic import AfterValidator, Field
 
 
-# external: mechbench-models — src/path.ts is this grammar's twin, held to it by path_cases.json; mechbench-ui src/lib/mechbenchPath.ts carries the segment rule; change all three together
+# external: mechbench-models — src/path.ts is this grammar's twin, held to it by path_cases.json (the UI checks paths with it); change both together
 _SEGMENT_PATTERN = r"[a-z0-9](?:[a-z0-9._-]{0,61}[a-z0-9])?"
 _SEGMENT_RE = re.compile(f"^{_SEGMENT_PATTERN}$")
 
