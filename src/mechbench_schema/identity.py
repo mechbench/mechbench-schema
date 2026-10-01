@@ -16,7 +16,7 @@ _HASH_RE = re.compile(f"^{_HASH_PATTERN}$")
 
 _INVALID_CHARS = set(" \\:?*<>|\"'#%\t\n\r")
 
-RESERVED_ROOTS = frozenset({"~system", "~canonical", "~hash"})
+RESERVED_ROOTS = frozenset({"~system", "~canonical", "~hash", "~scratch"})
 
 RESERVED_SCOPED_PREFIXES = frozenset({"~hash"})
 
@@ -30,6 +30,7 @@ PathCategory = Literal[
     "platform",
     "global_hash",
     "scoped_hash",
+    "scratch",
 ]
 
 
@@ -89,6 +90,15 @@ def _validate_mechbench_path(path: str) -> str:
             )
         return path
 
+    if first == "~scratch":
+        if len(segments) != 3:
+            raise InvalidPathError(
+                f"scratch path {path!r} must be '~scratch/<live-run-id>/<name>'"
+            )
+        _validate_segment(segments[1])
+        _validate_segment(segments[2])
+        return path
+
     if first in {"~system", "~canonical"}:
         if len(segments) < 3:
             raise InvalidPathError(
@@ -144,12 +154,13 @@ MechbenchPath = Annotated[
     Field(
         description=(
             "A mechbench object id. "
-            "Five categories: user-named (<owner>/<project>/.../<leaf>), "
+            "Six categories: user-named (<owner>/<project>/.../<leaf>), "
             "canonical (~canonical/<area>/.../<leaf>), "
             "platform (~system/<area>/.../<leaf>), "
             "global content-hashed (~hash/<algo>:<digest>), "
-            "and workspace-scoped content-hashed "
-            "(<owner>/<project>/~hash/<algo>:<digest>)."
+            "workspace-scoped content-hashed "
+            "(<owner>/<project>/~hash/<algo>:<digest>), "
+            "and a live run's scratch (~scratch/<live-run-id>/<name>)."
         ),
     ),
 ]
@@ -167,6 +178,7 @@ class ParsedPath:
     area_path: tuple[str, ...] = ()
     hash_algo: str | None = None
     hash_digest: str | None = None
+    live_run_id: str | None = None
 
 
 def parse_path(path: str) -> ParsedPath:
@@ -182,6 +194,14 @@ def parse_path(path: str) -> ParsedPath:
             category="global_hash",
             hash_algo=m.group("algo"),
             hash_digest=m.group("digest"),
+        )
+
+    if first == "~scratch":
+        return ParsedPath(
+            raw=path,
+            category="scratch",
+            live_run_id=segments[1],
+            leaf=segments[2],
         )
 
     if first == "~canonical":
@@ -261,3 +281,7 @@ def make_scoped_hash_path(
 ) -> str:
     path = f"{owner}/{project}/~hash/{algo}:{digest}"
     return _validate_mechbench_path(path)
+
+
+def make_scratch_path(live_run_id: str, name: str) -> str:
+    return _validate_mechbench_path(f"~scratch/{live_run_id}/{name}")

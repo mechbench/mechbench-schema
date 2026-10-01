@@ -23,6 +23,29 @@ with both headings.
 
 ---
 
+## 0.19.0 — 2026-10-01
+
+### Changes that raise
+
+_None._ No path that validated before began with `~scratch`.
+
+### Changes that alter results without raising
+
+_None._
+
+### Other
+
+- **`~scratch` is a reserved root.** A path under it is exactly
+  `~scratch/<live-run-id>/<name>`: three segments, the live run's id
+  and a name (or `t<seq>`), each a plain segment; anything else under
+  it raises.
+- `PathCategory` gains `"scratch"`; `ParsedPath.live_run_id` names the
+  live run; `make_scratch_path(live_run_id, name)`. Scratch is a live
+  run's working space: it carries no lineage and is never cited or
+  published (the API refuses both).
+
+---
+
 ## 0.18.1 — 2026-09-29
 
 ### Changes that raise

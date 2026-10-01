@@ -4,6 +4,8 @@ from mechbench_schema.identity import (
     InvalidPathError,
     make_global_hash_path,
     make_scoped_hash_path,
+    make_scratch_path,
+    RESERVED_ROOTS,
     parse_path,
 )
 
@@ -38,3 +40,38 @@ def test_a_hash_segment_has_its_own_limit():
 def test_a_colon_outside_a_hash_segment_is_still_refused():
     with pytest.raises(InvalidPathError):
         parse_path("benji/mechbench/not:a-hash")
+
+
+LIVE = "live_7k2m9q4r8t1v5x3z6b0c"
+
+
+def test_scratch_is_a_reserved_root():
+    assert "~scratch" in RESERVED_ROOTS
+
+
+@pytest.mark.parametrize("leaf", ["d", "t1", "t123", "base", "my_axis-2"])
+def test_a_scratch_path_names_its_live_run_and_leaf(leaf):
+    parsed = parse_path(make_scratch_path(LIVE, leaf))
+    assert parsed.category == "scratch"
+    assert parsed.live_run_id == LIVE
+    assert parsed.leaf == leaf
+    assert parsed.owner is None and parsed.project is None
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "~scratch",
+        f"~scratch/{LIVE}",
+        f"~scratch/{LIVE}/a/b",
+        f"~scratch/{LIVE}/t1/x",
+        f"~scratch/{LIVE}/T1",
+        f"~scratch/{LIVE}/d.cbor",
+        f"~scratch/{LIVE}/~hash",
+        f"~scratch/LIVE_X/d",
+        f"benji/mechbench/~scratch/{LIVE}",
+    ],
+)
+def test_a_scratch_path_is_exactly_three_named_segments(path):
+    with pytest.raises(InvalidPathError):
+        parse_path(path)

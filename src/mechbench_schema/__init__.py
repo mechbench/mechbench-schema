@@ -16,6 +16,7 @@ from .identity import (
     make_global_hash_path,
     make_platform_path,
     make_scoped_hash_path,
+    make_scratch_path,
     make_user_path,
     parse_path,
 )
@@ -115,7 +116,7 @@ from .vector_data import (
     Vector,
 )
 
-__version__ = "0.18.1"
+__version__ = "0.19.0"
 
 __all__ = [
     "Kind",
@@ -205,6 +206,7 @@ __all__ = [
     "make_platform_path",
     "make_global_hash_path",
     "make_scoped_hash_path",
+    "make_scratch_path",
 ]
 
 __schema_all__ = [
