@@ -23,6 +23,29 @@ with both headings.
 
 ---
 
+## 0.20.0 — 2026-10-01
+
+### Changes that raise
+
+- **`..` inside a segment raises by name** (`dotdot`). No path that
+  validated before held a dot, so none that validated before raises now.
+
+### Changes that alter results without raising
+
+- **A dot is legal inside a path segment.** The segment pattern is
+  `[a-z0-9](?:[a-z0-9._-]{0,61}[a-z0-9])?`: a dot never leading, never
+  trailing, never doubled, still lowercase, still at most 63 characters.
+  `adapters.safetensors`, `model-00001-of-00002.safetensors`,
+  `config.json` and `nodes/train.checkpoints` now parse where they
+  raised before; `.hidden`, `name.` and `a..b` still raise. Code that
+  relied on `parse_path` refusing a dotted segment now gets a path.
+
+### Other
+
+- The `MechbenchPath` description states the segment rule.
+
+---
+
 ## 0.19.0 — 2026-10-01
 
 ### Changes that raise

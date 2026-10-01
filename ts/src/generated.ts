@@ -558,7 +558,7 @@ export type TokenLabels1 = string[] | null;
  */
 export type TopTokens = string[] | null;
 /**
- * A mechbench object id. Six categories: user-named (<owner>/<project>/.../<leaf>), canonical (~canonical/<area>/.../<leaf>), platform (~system/<area>/.../<leaf>), global content-hashed (~hash/<algo>:<digest>), workspace-scoped content-hashed (<owner>/<project>/~hash/<algo>:<digest>), and a live run's scratch (~scratch/<live-run-id>/<name>).
+ * A mechbench object id. Six categories: user-named (<owner>/<project>/.../<leaf>), canonical (~canonical/<area>/.../<leaf>), platform (~system/<area>/.../<leaf>), global content-hashed (~hash/<algo>:<digest>), workspace-scoped content-hashed (<owner>/<project>/~hash/<algo>:<digest>), and a live run's scratch (~scratch/<live-run-id>/<name>). A segment is lowercase letters and digits with internal '-', '_' and '.', a dot never leading, trailing or doubled, at most 63 characters (e.g. adapters.safetensors).
  *
  * This interface was referenced by `MechbenchSchema`'s JSON-Schema
  * via the `definition` "MechbenchPath".

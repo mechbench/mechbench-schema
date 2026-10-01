@@ -7,8 +7,8 @@ from typing import Annotated, Literal
 from pydantic import AfterValidator, Field
 
 
-# external: mechbench-ui — src/lib/mechbenchPath.ts re-implements this path grammar, its limits and the category names; change both together
-_SEGMENT_PATTERN = r"[a-z0-9](?:[a-z0-9_-]{0,61}[a-z0-9])?"
+# external: mechbench-models — src/path.ts is this grammar's twin, held to it by path_cases.json; mechbench-ui src/lib/mechbenchPath.ts carries the segment rule; change all three together
+_SEGMENT_PATTERN = r"[a-z0-9](?:[a-z0-9._-]{0,61}[a-z0-9])?"
 _SEGMENT_RE = re.compile(f"^{_SEGMENT_PATTERN}$")
 
 _HASH_PATTERN = r"(?P<algo>[a-z0-9]+):(?P<digest>[0-9a-f]+)"
@@ -56,10 +56,14 @@ def _validate_segment(segment: str, *, allow_hash: bool = False) -> None:
         raise InvalidPathError(
             f"segment {segment!r} contains invalid characters: {sorted(bad_chars)!r}"
         )
+    if ".." in segment:
+        raise InvalidPathError(
+            f"segment {segment!r} contains '..' (dotdot): a dot is never doubled"
+        )
     if not _SEGMENT_RE.match(segment):
         raise InvalidPathError(
-            f"segment {segment!r} does not match "
-            f"[a-z0-9][a-z0-9_-]*[a-z0-9] (lowercase alnum + internal - / _)"
+            f"segment {segment!r} does not match {_SEGMENT_PATTERN} "
+            f"(lowercase alnum with internal - _ and .)"
         )
 
 
@@ -160,7 +164,10 @@ MechbenchPath = Annotated[
             "global content-hashed (~hash/<algo>:<digest>), "
             "workspace-scoped content-hashed "
             "(<owner>/<project>/~hash/<algo>:<digest>), "
-            "and a live run's scratch (~scratch/<live-run-id>/<name>)."
+            "and a live run's scratch (~scratch/<live-run-id>/<name>). "
+            "A segment is lowercase letters and digits with internal "
+            "'-', '_' and '.', a dot never leading, trailing or doubled, "
+            "at most 63 characters (e.g. adapters.safetensors)."
         ),
     ),
 ]

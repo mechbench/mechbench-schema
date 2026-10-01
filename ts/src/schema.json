@@ -1579,7 +1579,7 @@
       "type": "object"
     },
     "MechbenchPath": {
-      "description": "A mechbench object id. Six categories: user-named (<owner>/<project>/.../<leaf>), canonical (~canonical/<area>/.../<leaf>), platform (~system/<area>/.../<leaf>), global content-hashed (~hash/<algo>:<digest>), workspace-scoped content-hashed (<owner>/<project>/~hash/<algo>:<digest>), and a live run's scratch (~scratch/<live-run-id>/<name>).",
+      "description": "A mechbench object id. Six categories: user-named (<owner>/<project>/.../<leaf>), canonical (~canonical/<area>/.../<leaf>), platform (~system/<area>/.../<leaf>), global content-hashed (~hash/<algo>:<digest>), workspace-scoped content-hashed (<owner>/<project>/~hash/<algo>:<digest>), and a live run's scratch (~scratch/<live-run-id>/<name>). A segment is lowercase letters and digits with internal '-', '_' and '.', a dot never leading, trailing or doubled, at most 63 characters (e.g. adapters.safetensors).",
       "type": "string"
     },
     "PathCategory": {
@@ -2018,7 +2018,7 @@
         "inputs": {
           "description": "Paths of the objects this one was computed from.",
           "items": {
-            "description": "A mechbench object id. Six categories: user-named (<owner>/<project>/.../<leaf>), canonical (~canonical/<area>/.../<leaf>), platform (~system/<area>/.../<leaf>), global content-hashed (~hash/<algo>:<digest>), workspace-scoped content-hashed (<owner>/<project>/~hash/<algo>:<digest>), and a live run's scratch (~scratch/<live-run-id>/<name>).",
+            "description": "A mechbench object id. Six categories: user-named (<owner>/<project>/.../<leaf>), canonical (~canonical/<area>/.../<leaf>), platform (~system/<area>/.../<leaf>), global content-hashed (~hash/<algo>:<digest>), workspace-scoped content-hashed (<owner>/<project>/~hash/<algo>:<digest>), and a live run's scratch (~scratch/<live-run-id>/<name>). A segment is lowercase letters and digits with internal '-', '_' and '.', a dot never leading, trailing or doubled, at most 63 characters (e.g. adapters.safetensors).",
             "type": "string"
           },
           "title": "Inputs",
@@ -2027,7 +2027,7 @@
         "operation": {
           "anyOf": [
             {
-              "description": "A mechbench object id. Six categories: user-named (<owner>/<project>/.../<leaf>), canonical (~canonical/<area>/.../<leaf>), platform (~system/<area>/.../<leaf>), global content-hashed (~hash/<algo>:<digest>), workspace-scoped content-hashed (<owner>/<project>/~hash/<algo>:<digest>), and a live run's scratch (~scratch/<live-run-id>/<name>).",
+              "description": "A mechbench object id. Six categories: user-named (<owner>/<project>/.../<leaf>), canonical (~canonical/<area>/.../<leaf>), platform (~system/<area>/.../<leaf>), global content-hashed (~hash/<algo>:<digest>), workspace-scoped content-hashed (<owner>/<project>/~hash/<algo>:<digest>), and a live run's scratch (~scratch/<live-run-id>/<name>). A segment is lowercase letters and digits with internal '-', '_' and '.', a dot never leading, trailing or doubled, at most 63 characters (e.g. adapters.safetensors).",
               "type": "string"
             },
             {
@@ -2054,7 +2054,7 @@
         "params_ref": {
           "anyOf": [
             {
-              "description": "A mechbench object id. Six categories: user-named (<owner>/<project>/.../<leaf>), canonical (~canonical/<area>/.../<leaf>), platform (~system/<area>/.../<leaf>), global content-hashed (~hash/<algo>:<digest>), workspace-scoped content-hashed (<owner>/<project>/~hash/<algo>:<digest>), and a live run's scratch (~scratch/<live-run-id>/<name>).",
+              "description": "A mechbench object id. Six categories: user-named (<owner>/<project>/.../<leaf>), canonical (~canonical/<area>/.../<leaf>), platform (~system/<area>/.../<leaf>), global content-hashed (~hash/<algo>:<digest>), workspace-scoped content-hashed (<owner>/<project>/~hash/<algo>:<digest>), and a live run's scratch (~scratch/<live-run-id>/<name>). A segment is lowercase letters and digits with internal '-', '_' and '.', a dot never leading, trailing or doubled, at most 63 characters (e.g. adapters.safetensors).",
               "type": "string"
             },
             {
