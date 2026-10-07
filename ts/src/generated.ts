@@ -29,14 +29,7 @@ export type Model1 = string;
  */
 export type ModelVersion = string | null;
 export type Provider =
-  | "anthropic"
-  | "openai"
-  | "xai"
-  | "gemini"
-  | "fireworks"
-  | "deepseek"
-  | "openai-compatible"
-  | "mock";
+  "anthropic" | "openai" | "xai" | "gemini" | "fireworks" | "deepseek" | "openai-compatible" | "mock";
 /**
  * How the transcript refers to it.
  */

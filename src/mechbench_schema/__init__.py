@@ -116,7 +116,7 @@ from .vector_data import (
     Vector,
 )
 
-__version__ = "0.20.1"
+__version__ = "0.20.2"
 
 __all__ = [
     "Kind",

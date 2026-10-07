@@ -23,7 +23,7 @@ with both headings.
 
 ---
 
-## 0.20.1 — 2026-10-07
+## 0.20.2 — 2026-10-07
 
 ### Changes that raise
 
@@ -35,6 +35,10 @@ _None._
 
 ### Other
 
+- `scripts/codegen.py` runs the TypeScript generator pinned in
+  `ts/package.json` (json-schema-to-typescript 15.0.4, prettier 3.9.9,
+  locked), so the generated file is the same on every machine;
+  `generated.ts` reflows one union under the newer prettier.
 - The first release published by CI through PyPI trusted publishing;
   `scripts/release.py` only checks (`--check`), and nothing uploads
   from a laptop.

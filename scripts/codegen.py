@@ -53,10 +53,17 @@ HEADER = (
 
 def generate_ts() -> None:
     TS_OUT.parent.mkdir(parents=True, exist_ok=True)
+    ts_dir = REPO / "ts"
+    json2ts = ts_dir / "node_modules" / ".bin" / "json2ts"
+    if not json2ts.exists():
+        try:
+            subprocess.run(["npm", "ci", "--prefix", str(ts_dir)], check=True,
+                           capture_output=True, text=True)
+        except FileNotFoundError:
+            print("npm not found. Install Node.js (https://nodejs.org).", file=sys.stderr)
+            sys.exit(1)
     cmd = [
-        "npx",
-        "--yes",
-        "json-schema-to-typescript@^15",
+        str(json2ts),
         str(JSON_OUT),
         "--no-additionalProperties",
         "--unreachableDefinitions",
@@ -66,7 +73,7 @@ def generate_ts() -> None:
     try:
         result = subprocess.run(cmd, check=True, capture_output=True, text=True)
     except FileNotFoundError:
-        print("npx not found. Install Node.js (https://nodejs.org).", file=sys.stderr)
+        print(f"{json2ts} not found; run npm ci in ts/.", file=sys.stderr)
         sys.exit(1)
     TS_OUT.write_text(HEADER + result.stdout)
     print(f"wrote {TS_OUT.relative_to(REPO)}")
