@@ -53,7 +53,11 @@ def check_changelog(version: str) -> str | None:
 
 
 def main() -> None:
-    dry = "--dry-run" in sys.argv
+    if "--check" not in sys.argv:
+        print("usage: scripts/release.py --check    run the gate; dist/ holds what "
+              "CI publishes (a v<version> tag on main publishes; "
+              "mechbench-runner/docs/RELEASING.md)")
+        sys.exit(2)
     m = re.search(r'^version = "([^"]+)"',
                   (REPO / "pyproject.toml").read_text(), re.MULTILINE)
     if not m:
@@ -138,15 +142,6 @@ def main() -> None:
                 die(f"smoke: {name}", proc)
 
     print(f"\ngate PASSED for {ver}")
-    if dry:
-        print("dry run — not uploading")
-        return
-    print("uploading…")
-    proc = run(["uvx", "twine", "upload", f"dist/mechbench_schema-{ver}*"],
-               timeout=600)
-    if proc.returncode != 0:
-        die("twine upload", proc)
-    print(f"published mechbench-schema {ver}")
 
 
 if __name__ == "__main__":
