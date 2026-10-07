@@ -23,6 +23,24 @@ with both headings.
 
 ---
 
+## 0.20.1 — 2026-10-07
+
+### Changes that raise
+
+_None._
+
+### Changes that alter results without raising
+
+_None._
+
+### Other
+
+- The first release published by CI through PyPI trusted publishing;
+  `scripts/release.py` only checks (`--check`), and nothing uploads
+  from a laptop.
+
+---
+
 ## 0.20.0 — 2026-10-01
 
 ### Changes that raise
